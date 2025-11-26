@@ -12,36 +12,36 @@ typedef struct RnBuffer8
 RnBuffer8;
 
 RnBuffer8
-rn_buffer8_make(u8* values, ssize size);
+rnBuffer8Make(u8* values, ssize size);
 
 RnBuffer8
-rn_buffer8_cut(RnBuffer8* self, ssize index, ssize size);
+rnBuffer8Cut(RnBuffer8* self, ssize index, ssize size);
 
 ssize
-rn_buffer8_size(RnBuffer8* self);
+rnBuffer8Size(RnBuffer8* self);
 
 ssize
-rn_buffer8_count(RnBuffer8* self);
+rnBuffer8Count(RnBuffer8* self);
 
 void
-rn_buffer8_clear(RnBuffer8* self);
+rnBuffer8Clear(RnBuffer8* self);
 
 ssize
-rn_buffer_drop_head(RnBuffer8* self, ssize size);
+rnBuffer8DropHead(RnBuffer8* self, ssize size);
 
 ssize
-rn_buffer8_insert_head(RnBuffer8* self, u8* values, ssize size);
+rnBuffer8InsertHead(RnBuffer8* self, u8* values, ssize size);
 
 ssize
-rn_buffer8_remove_head(RnBuffer8* self, u8* values, ssize size);
+rnBuffer8RemoveHead(RnBuffer8* self, u8* values, ssize size);
 
 ssize
-rn_buffer_drop_tail(RnBuffer8* self, ssize size);
+rnBuffer8DropTail(RnBuffer8* self, ssize size);
 
 ssize
-rn_buffer8_insert_tail(RnBuffer8* self, u8* values, ssize size);
+rnBuffer8InsertTail(RnBuffer8* self, u8* values, ssize size);
 
 ssize
-rn_buffer8_remove_tail(RnBuffer8* self, u8* values, ssize size);
+rnBuffer8RemoveTail(RnBuffer8* self, u8* values, ssize size);
 
 #endif // RN_BASE_MEMORY_BUFFER8_H

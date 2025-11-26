@@ -1,23 +1,21 @@
 #ifndef RN_BASE_DEFINES_H
 #define RN_BASE_DEFINES_H
 
-#define rn_cast(type, expr) ((type) expr)
+#define rnManySize(expr) sizeof(expr) / sizeof(*(expr))
+#define rnManyStep(expr) sizeof(*(expr))
 
-#define rn_array_count(expr)  sizeof(expr) / sizeof(*(expr))
-#define rn_array_stride(expr) sizeof(*(expr))
+#define rnMin(a, b) ((a) < (b) ? (a) : (b))
+#define rnMax(a, b) ((a) < (b) ? (b) : (a))
 
-#define rn_min(a, b) ((a) < (b) ? (a) : (b))
-#define rn_max(a, b) ((a) < (b) ? (b) : (a))
+#define rnClampTop(x, max) rnMin(x, max)
+#define rnClampBot(x, min) rnMax(x, min)
 
-#define rn_clamp_top(x, max) rn_min(x, max)
-#define rn_clamp_bot(x, min) rn_max(x, min)
+#define rnClamp(x, min, max) rnMax(min, rnMin(x, max))
 
-#define rn_clamp(x, min, max) rn_max(min, rn_min(x, max))
+#define __rnText__(expr) # expr
+#define __rnGlue__(a, b) a ## b
 
-#define __rn_text__(expr) # expr
-#define __rn_glue__(a, b) a ## b
-
-#define rn_text(expr) __rn_text__(expr)
-#define rn_glue(a, b) __rn_glue__(a, b)
+#define rnText(expr) __rnText__(expr)
+#define rnGlue(a, b) __rnGlue__(a, b)
 
 #endif // RN_BASE_DEFINES_H

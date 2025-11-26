@@ -4,7 +4,7 @@
 #include "./buffer8.h"
 
 RnBuffer8
-rn_buffer8_make(u8* values, ssize size)
+rnBuffer8Make(u8* values, ssize size)
 {
     RnBuffer8 result = {0};
 
@@ -18,7 +18,7 @@ rn_buffer8_make(u8* values, ssize size)
 }
 
 RnBuffer8
-rn_buffer8_cut(RnBuffer8* self, ssize index, ssize size)
+rnBuffer8Cut(RnBuffer8* self, ssize index, ssize size)
 {
     RnBuffer8 result = {0};
 
@@ -32,27 +32,27 @@ rn_buffer8_cut(RnBuffer8* self, ssize index, ssize size)
 }
 
 ssize
-rn_buffer8_size(RnBuffer8* self)
+rnBuffer8Size(RnBuffer8* self)
 {
     return self->size;
 }
 
 ssize
-rn_buffer8_count(RnBuffer8* self)
+rnBuffer8Count(RnBuffer8* self)
 {
     return self->count;
 }
 
 void
-rn_buffer8_clear(RnBuffer8* self)
+rnBuffer8Clear(RnBuffer8* self)
 {
     self->count = 0;
 }
 
 ssize
-rn_buffer8_drop_head(RnBuffer8* self, ssize size)
+rnBuffer8DropHead(RnBuffer8* self, ssize size)
 {
-    size = rn_clamp(size, 0, self->count);
+    size = rnClamp(size, 0, self->count);
 
     if (size != 0) {
         self->count -= size;
@@ -65,7 +65,7 @@ rn_buffer8_drop_head(RnBuffer8* self, ssize size)
 }
 
 ssize
-rn_buffer8_insert_head(RnBuffer8* self, u8* values, ssize size)
+rnBuffer8InsertHead(RnBuffer8* self, u8* values, ssize size)
 {
     if (values == 0 || size <= 0 || size > self->size - self->count)
         return 0;
@@ -82,11 +82,11 @@ rn_buffer8_insert_head(RnBuffer8* self, u8* values, ssize size)
 }
 
 ssize
-rn_buffer8_remove_head(RnBuffer8* self, u8* values, ssize size)
+rnBuffer8RemoveHead(RnBuffer8* self, u8* values, ssize size)
 {
     if (values == 0) return 0;
 
-    size = rn_clamp(size, 0, self->count);
+    size = rnClamp(size, 0, self->count);
 
     for (ssize i = 0; i < size; i += 1)
         values[i] = self->values[i];
@@ -100,9 +100,9 @@ rn_buffer8_remove_head(RnBuffer8* self, u8* values, ssize size)
 }
 
 ssize
-rn_buffer8_drop_tail(RnBuffer8* self, ssize size)
+rnBuffer8DropTail(RnBuffer8* self, ssize size)
 {
-    size = rn_clamp(size, 0, self->count);
+    size = rnClamp(size, 0, self->count);
 
     if (size != 0)
         self->count -= size;
@@ -111,7 +111,7 @@ rn_buffer8_drop_tail(RnBuffer8* self, ssize size)
 }
 
 ssize
-rn_buffer8_insert_tail(RnBuffer8* self, u8* values, ssize size)
+rnBuffer8InsertTail(RnBuffer8* self, u8* values, ssize size)
 {
     if (values == 0 || size <= 0 || size > self->size - self->count)
         return 0;
@@ -125,11 +125,11 @@ rn_buffer8_insert_tail(RnBuffer8* self, u8* values, ssize size)
 }
 
 ssize
-rn_buffer8_remove_tail(RnBuffer8* self, u8* values, ssize size)
+rnBuffer8RemoveTail(RnBuffer8* self, u8* values, ssize size)
 {
     if (values == 0) return 0;
 
-    size = rn_clamp(size, 0, self->count);
+    size = rnClamp(size, 0, self->count);
 
     self->count -= size;
 

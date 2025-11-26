@@ -4,7 +4,7 @@
 #include "./common.h"
 
 ssize
-rn_memory_align_forward(ssize value, ssize align)
+rnMemoryAlignForward(ssize value, ssize align)
 {
     if (value <= 0 || align <= 1) return 0;
 

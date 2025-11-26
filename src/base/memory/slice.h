@@ -3,10 +3,11 @@
 
 #include "./common.h"
 
-#define rn_slice_cut(memory, start, stop) rn_memory_slice_make(memory, \
-    rn_max(start, 0), rn_min(stop, rn_array_count(memory)), rn_array_stride(memory))
+#define rnSlice(memory) \
+    rnMemorySliceMake(memory, 0, rnManySize(memory), rnManyStep(memory))
 
-#define rn_slice(memory) rn_slice_cut(memory, 0, rn_array_count(memory))
+#define rnSliceCut(memory, start, stop) \
+    rnMemorySliceMake(memory, rnMax(start, 0), rnMin(stop, rnManySize(memory)), rnManyStep(memory))
 
 typedef struct RnMemorySlice
 {
@@ -17,24 +18,24 @@ typedef struct RnMemorySlice
 RnMemorySlice;
 
 RnMemorySlice
-rn_memory_slice_make(void* memory, ssize start, ssize stop, ssize step);
+rnMemorySliceMake(void* memory, ssize start, ssize stop, ssize step);
 
 ssize
-rn_memory_slice_size(RnMemorySlice self);
+rnMemorySliceSize(RnMemorySlice self);
 
 ssize
-rn_memory_slice_step(RnMemorySlice self);
+rnMemorySliceStep(RnMemorySlice self);
 
 ssize
-rn_memory_slice_bytes(RnMemorySlice self);
+rnMemorySliceBytes(RnMemorySlice self);
 
 void*
-rn_memory_slice_zero(RnMemorySlice self);
+rnMemorySliceZero(RnMemorySlice self);
 
 void*
-rn_memory_slice_flip(RnMemorySlice self);
+rnMemorySliceFlip(RnMemorySlice self);
 
 void*
-rn_memory_slice_swap(RnMemorySlice self, ssize index, ssize other);
+rnMemorySliceSwap(RnMemorySlice self, ssize index, ssize other);
 
 #endif // RN_BASE_MEMORY_SLICE_H

@@ -4,7 +4,7 @@
 #include "./slice.h"
 
 RnMemorySlice
-rn_memory_slice_make(void* memory, ssize start, ssize stop, ssize step)
+rnMemorySliceMake(void* memory, ssize start, ssize stop, ssize step)
 {
 	RnMemorySlice result = {0};
 
@@ -13,7 +13,7 @@ rn_memory_slice_make(void* memory, ssize start, ssize stop, ssize step)
 
     if (stop - start > RN_MAX_SSIZE / step) return result;
 
-	result.values = rn_cast(u8*, memory) + start * step;
+	result.values = ((u8*) memory) + start * step;
 	result.size   = stop - start;
 	result.step   = step;
 
@@ -21,25 +21,25 @@ rn_memory_slice_make(void* memory, ssize start, ssize stop, ssize step)
 }
 
 ssize
-rn_memory_slice_size(RnMemorySlice self)
+rnMemorySliceSize(RnMemorySlice self)
 {
     return self.size;
 }
 
 ssize
-rn_memory_slice_step(RnMemorySlice self)
+rnMemorySliceStep(RnMemorySlice self)
 {
     return self.step;
 }
 
 ssize
-rn_memory_slice_bytes(RnMemorySlice self)
+rnMemorySliceBytes(RnMemorySlice self)
 {
     return self.size * self.step;
 }
 
 void*
-rn_memory_slice_zero(RnMemorySlice self)
+rnMemorySliceZero(RnMemorySlice self)
 {
     for (ssize i = 0; i < self.size * self.step; i += 1)
         self.values[i] = 0;
@@ -48,16 +48,16 @@ rn_memory_slice_zero(RnMemorySlice self)
 }
 
 void*
-rn_memory_slice_flip(RnMemorySlice self)
+rnMemorySliceFlip(RnMemorySlice self)
 {
     for (ssize i = 0, j = self.size - 1; i < j; i += 1, j -= 1)
-        rn_memory_slice_swap(self, i, j);
+        rnMemorySliceSwap(self, i, j);
 
     return self.values;
 }
 
 void*
-rn_memory_slice_swap(RnMemorySlice self, ssize index, ssize other)
+rnMemorySliceSwap(RnMemorySlice self, ssize index, ssize other)
 {
     if (index < 0 || index >= self.size) return 0;
     if (other < 0 || other >= self.size) return 0;

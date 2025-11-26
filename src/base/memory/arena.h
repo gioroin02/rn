@@ -12,18 +12,18 @@ typedef struct RnMemoryArena
 RnMemoryArena;
 
 RnMemoryArena
-rn_memory_arena_make(void* memory, ssize size);
+rnMemoryArenaMake(void* memory, ssize size);
 
 void
-rn_memory_arena_clear(RnMemoryArena* self);
+rnMemoryArenaClear(RnMemoryArena* self);
 
 void*
-rn_memory_arena_tell(RnMemoryArena* self);
+rnMemoryArenaTell(RnMemoryArena* self);
 
 RnMemorySlice
-rn_memory_arena_reserve_slice(RnMemoryArena* self, ssize amount, ssize step);
+rnMemoryArenaReserveSlice(RnMemoryArena* self, ssize amount, ssize step);
 
 b32
-rn_memory_arena_release_slice(RnMemoryArena* self, RnMemorySlice value);
+rnMemoryArenaReleaseSlice(RnMemoryArena* self, RnMemorySlice value);
 
 #endif // RN_BASE_MEMORY_ARENA_H

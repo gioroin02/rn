@@ -4,33 +4,33 @@
 #include "./arena.h"
 
 RnMemoryArena
-rn_memory_arena_from_slice(void* memory, ssize size)
+rnMemoryArenaMake(void* memory, ssize size)
 {
     RnMemoryArena result = {0};
 
     if (memory == 0 || size <= 0)
         return result;
 
-    result.values = rn_cast(u8*, memory);
+    result.values = ((u8*) memory);
     result.size   = size;
 
     return result;
 }
 
 void
-rn_memory_arena_clear(RnMemoryArena* self)
+rnMemoryArenaClear(RnMemoryArena* self)
 {
     self->count = 0;
 }
 
 void*
-rn_memory_arena_tell(RnMemoryArena* self)
+rnMemoryArenaTell(RnMemoryArena* self)
 {
     return self->values + self->count;
 }
 
 RnMemorySlice
-rn_memory_arena_reserve_slice(RnMemoryArena* self, ssize amount, ssize step)
+rnMemoryArenaReserveSlice(RnMemoryArena* self, ssize amount, ssize step)
 {
     RnMemorySlice result = {0};
 
@@ -38,26 +38,26 @@ rn_memory_arena_reserve_slice(RnMemoryArena* self, ssize amount, ssize step)
         return result;
 
     ssize size   = amount * step;
-    void* memory = rn_memory_arena_tell(self);
+    void* memory = rnMemoryArenaTell(self);
 
     if (self->count < 0 || self->count + size > self->size)
         return result;
 
-    result = rn_memory_slice_make(memory, 0, amount, step);
+    result = rnMemorySliceMake(memory, 0, amount, step);
 
-    rn_memory_slice_zero(result);
+    rnMemorySliceZero(result);
 
-    self->count = rn_memory_align_forward(
+    self->count = rnMemoryAlignForward(
         self->count + size, RN_MEMORY_DEFAULT_ALIGNMENT);
 
     return result;
 }
 
 b32
-rn_memory_arena_release_slice(RnMemoryArena* self, RnMemorySlice value)
+rnMemoryArenaReleaseSlice(RnMemoryArena* self, RnMemorySlice value)
 {
     ssize diff = value.values - self->values;
-    ssize size = rn_memory_slice_bytes(value);
+    ssize size = rnMemorySliceBytes(value);
 
     if (size <= 0 || diff < 0 || diff + size > self->size)
         return 0;
