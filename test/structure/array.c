@@ -2,20 +2,29 @@
 
 #include <stdio.h>
 
+typedef struct RnArray(u32) RnArrayU32;
+
 int
 main(int argc, char** argv)
 {
     u32 memory[16] = {0};
 
-    struct { u32* values; RN_ARRAY_TAG; } array =
-        {.values = memory, .size = 16};
+    RnArrayU32 array = {.values = memory, .meta = {.size = 16}};
 
-    ssize count = 0;
+    ssize index = 0;
 
-    count = rnArrayInsert(&array, count, 156);
-    count = rnArrayInsert(&array, count, 222);
-    count = rnArrayInsert(&array, count, 9);
+    index += rnArrayInsert(&array, index, 156);
+    index += rnArrayInsert(&array, index, 222);
+    index += rnArrayInsert(&array, index, 9);
+    index += rnArrayInsert(&array, index, 453);
+    index += rnArrayInsert(&array, index, 333);
 
-    for (ssize i = 0; i < array.count; i += 1)
-        printf("#%03lli %lu\n", i, array.values[i]);
+    u32   temp  = 0;
+    ssize state = rnArrayRemove(&array, 0, &temp);
+
+    printf("remove (0, &x) -> (x = %lu, %s)\n", temp, state ? "SUCC" : "FAIL");
+    printf("remove (2)     -> (%s)\n", rnArrayRemove(&array, 2, 0) ? "SUCC" : "FAIL");
+
+    for (ssize i = 0; i < rnArrayCount(&array); i += 1)
+        printf("#%03lli %lu\n", i, *rnArrayGetRef(&array, i));
 }

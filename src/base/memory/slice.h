@@ -3,11 +3,21 @@
 
 #include "./common.h"
 
-#define rnSlice(memory) \
-    rnMemorySliceMake(memory, 0, rnManySize(memory), rnManyStep(memory))
+#define rnSlice(expr)                   \
+    rnMemorySliceMake(                  \
+        expr,                           \
+        0,                              \
+        sizeof(expr) / sizeof(*(expr)), \
+        sizeof(*(expr))                 \
+    )
 
-#define rnSliceCut(memory, start, stop) \
-    rnMemorySliceMake(memory, rnMax(start, 0), rnMin(stop, rnManySize(memory)), rnManyStep(memory))
+#define rnSliceCut(expr, start, stop)                \
+    rnMemorySliceMake(                               \
+        expr,                                        \
+        rnMax(start, 0),                             \
+        rnMin(stop, sizeof(expr) / sizeof(*(expr))), \
+        sizeof(*(expr))                              \
+    )
 
 typedef struct RnMemorySlice
 {
