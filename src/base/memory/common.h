@@ -16,4 +16,10 @@
 ssize
 rnMemoryAlignForward(ssize value, ssize align);
 
+b32
+rnMemoryIsByteOrderNetwork();
+
+b32
+rnMemoryIsByteOrderReverse();
+
 #endif // RN_BASE_MEMORY_COMMON_H
