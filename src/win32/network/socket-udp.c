@@ -52,22 +52,7 @@ rnWin32SocketUDPDestroy(RnWin32SocketUDP* self)
 }
 
 b32
-rnWin32SocketUDPBind(RnWin32SocketUDP* self, RnAddressIP address, u16 port)
-{
-    if (self == 0 || self->kind != address.kind || port <= 0) return 0;
-
-    ssize type = 0;
-
-    RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
-
-    if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
-        return 0;
-
-    return 1;
-}
-
-b32
-rnWin32SocketUDPListen(RnWin32SocketUDP* self, u16 port)
+rnWin32SocketUDPBind(RnWin32SocketUDP* self, u16 port)
 {
     if (self == 0 || port <= 0) return 0;
 
@@ -152,7 +137,7 @@ rnWin32SocketUDPReadHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddre
 {
     if (self == 0 || values == 0 || size <= 0) return 0;
 
-    int   type  = 0;
+    int   type  = sizeof(RnSockAddrStorage);
     ssize count = 0;
 
     RnSockAddrStorage storage = {0};

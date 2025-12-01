@@ -11,7 +11,6 @@
     #define __rnSocketUDPCreate__    rnWin32SocketUDPCreate
     #define __rnSocketUDPDestroy__   rnWin32SocketUDPDestroy
     #define __rnSocketUDPBind__      rnWin32SocketUDPBind
-    #define __rnSocketUDPListen__    rnWin32SocketUDPListen
     #define __rnSocketUDPConnect__   rnWin32SocketUDPConnect
     #define __rnSocketUDPWrite__     rnWin32SocketUDPWrite
     #define __rnSocketUDPWriteHost__ rnWin32SocketUDPWriteHost
@@ -43,15 +42,9 @@ rnSocketUDPDestroy(RnSocketUDP* self)
 }
 
 b32
-rnSocketUDPBind(RnSocketUDP* self, RnAddressIP address, u16 port)
+rnSocketUDPBind(RnSocketUDP* self, u16 port)
 {
-    return __rnSocketUDPBind__(self, address, port);
-}
-
-b32
-rnSocketUDPListen(RnSocketUDP* self, u16 port)
-{
-    return __rnSocketUDPListen__(self, port);
+    return __rnSocketUDPBind__(self, port);
 }
 
 b32

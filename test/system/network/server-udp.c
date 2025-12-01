@@ -24,21 +24,12 @@ main(int argc, char** argv)
 
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(socket, RnAddressIP_IPv6);
+    rnSocketUDPCreate(socket, RnAddressIP_IPv4);
 
-    if (rnSocketUDPListen(socket, 50000) == 0)
+    if (rnSocketUDPBind(socket, 50000) == 0)
         return printf("Error during 'bind'\n");
 
-    int len = sizeof(RnSockAddrStorage);
-    RnSockAddrStorage local = {0};
-    if (getsockname(*((SOCKET*) socket), (RnSockAddr*)&local, &len) == 0) {
-        u16 real_port = ntohs(((struct sockaddr_in*)&local)->sin_port);
-        printf("Porta del socket: %u\n", real_port);
-    } else {
-        printf("getsockname fallito: %d\n", WSAGetLastError());
-    }
-
-    for (ssize conns = 0; conns < 2;) {
+    for (ssize conns = 0; conns < 2; conns += 1) {
         RnAddressIP address = {0};
         u16         port    = 0;
 
@@ -47,18 +38,14 @@ main(int argc, char** argv)
         ssize msgInSize  = sizeof(msgIn);
         ssize msgInCount = rnSocketUDPReadHost(socket, msgIn, msgInSize, &address, &port);
 
-        if (msgInCount > 0) {
-            printf("%s\n", msgIn);
+        printf("%s\n", msgIn);
 
-            u8 msgOut[] = {"Messaggio da server"};
+        u8 msgOut[] = {"Messaggio da server"};
 
-            ssize msgOutSize  = sizeof(msgOut);
-            ssize msgOutCount = sizeof(msgOut);
+        ssize msgOutSize  = sizeof(msgOut);
+        ssize msgOutCount = sizeof(msgOut);
 
-            rnSocketUDPWriteHost(socket, msgOut, msgOutCount, address, port);
-
-            conns += 1;
-        }
+        rnSocketUDPWriteHost(socket, msgOut, msgOutCount, address, port);
     }
 
     rnSocketUDPDestroy(socket);

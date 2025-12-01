@@ -22,8 +22,7 @@ main(int argc, char** argv)
     ssize msgOutSize  = sizeof(msgOut);
     ssize msgOutCount = sizeof(msgOut);
 
-    rnSocketUDPWriteHost(socket, msgOut, msgOutCount,
-        rnAddressIPv4Local(), 50000);
+    rnSocketUDPWriteHost(socket, msgOut, msgOutCount, rnAddressIPv4Local(), 50000);
 
     u8 msgIn[256] = {0};
 

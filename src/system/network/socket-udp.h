@@ -15,10 +15,7 @@ void
 rnSocketUDPDestroy(RnSocketUDP* self);
 
 b32
-rnSocketUDPBind(RnSocketUDP* self, RnAddressIP address, u16 port);
-
-b32
-rnSocketUDPListen(RnSocketUDP* self, u16 port);
+rnSocketUDPBind(RnSocketUDP* self, u16 port);
 
 b32
 rnSocketUDPConnect(RnSocketUDP* self, RnAddressIP address, u16 port);
