@@ -2,14 +2,18 @@
 
 #include <stdio.h>
 
-typedef struct RnArray(u32) RnArrayU32;
+typedef RnArray(u32) RnArrayU32;
 
 int
 main(int argc, char** argv)
 {
-    u32 memory[16] = {0};
+    u8 memory[256] = {0};
 
-    RnArrayU32 array = {.values = memory, .meta = {.size = 16}};
+    RnMemoryArena arena = rnMemoryArenaMake(memory, sizeof(memory));
+
+    RnArrayU32 array = {0};
+
+    printf("reserve = %lli\n", rnArrayReserve(&array, &arena, 17));
 
     ssize index = 0;
 

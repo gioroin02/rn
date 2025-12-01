@@ -5,32 +5,42 @@
 
 #define RN_ARRAY_TAG struct { ssize size; ssize count; }
 
-#define RnArray(type) { RN_ARRAY_TAG meta; type* values; }
+#define RnArray(type) struct { RN_ARRAY_TAG arrayTag; type* values; }
 
-#define rnArraySize(self)           rnMetaArraySize(&(self)->meta)
-#define rnArrayCount(self)          rnMetaArrayCount(&(self)->meta)
-#define rnArrayFront(self)          rnMetaArrayFront(&(self)->meta)
-#define rnArrayBack(self)           rnMetaArrayBack(&(self)->meta)
-#define rnArrayIsEmpty(self)        rnMetaArrayIsEmpty(&(self)->meta)
-#define rnArrayIsFull(self)         rnMetaArrayIsFull(&(self)->meta)
-#define rnArrayIsIndex(self, index) rnMetaArrayIsIndex(&(self)->meta, index)
+#define rnArrayReserve(self, arena, size) ( \
+    (self)->values = rnArrayTagReserve(     \
+        &(self)->arrayTag,                  \
+        (self)->values,                     \
+        arena,                              \
+        size,                               \
+        sizeof(*(self)->values)),           \
+    rnArraySize(self)                       \
+)
 
-#define rnArrayInsert(self, index, value) (      \
-    rnMetaArrayExtend(                           \
-        &(self)->meta,                           \
-        (self)->values,                          \
-        rnEval(index),                           \
-        sizeof(*(self)->values)                  \
-    ) != 0 ? (                                   \
-        (self)->values[rnEval(index)] = value    \
-    ), 1                                         \
-    :  0                                         \
+#define rnArraySize(self)           rnArrayTagSize(&(self)->arrayTag)
+#define rnArrayCount(self)          rnArrayTagCount(&(self)->arrayTag)
+#define rnArrayFront(self)          rnArrayTagFront(&(self)->arrayTag)
+#define rnArrayBack(self)           rnArrayTagBack(&(self)->arrayTag)
+#define rnArrayIsEmpty(self)        rnArrayTagIsEmpty(&(self)->arrayTag)
+#define rnArrayIsFull(self)         rnArrayTagIsFull(&(self)->arrayTag)
+#define rnArrayIsIndex(self, index) rnArrayTagIsIndex(&(self)->arrayTag, index)
+
+#define rnArrayInsert(self, index, value) (     \
+    rnArrayTagExtend(                           \
+        &(self)->arrayTag,                      \
+        (self)->values,                         \
+        rnEval(index),                          \
+        sizeof(*(self)->values)                 \
+    ) != 0 ? (                                  \
+        (self)->values[rnEval(index)] = value   \
+    ), 1                                        \
+    :  0                                        \
 )
 
 #define rnArrayRemove(self, index, value) (      \
     rnArrayIsIndex(self, rnEval(index)) != 0 ? ( \
-        rnMetaArrayShrink(                       \
-            &(self)->meta,                       \
+        rnArrayTagShrink(                        \
+            &(self)->arrayTag,                   \
             (self)->values,                      \
             rnEval(index),                       \
             value,                               \
@@ -51,31 +61,34 @@
     : 0                                      \
 )
 
-ssize
-rnMetaArraySize(void* meta);
+void*
+rnArrayTagReserve(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step);
 
 ssize
-rnMetaArrayCount(void* meta);
+rnArrayTagSize(void* tag);
 
 ssize
-rnMetaArrayFront(void* meta);
+rnArrayTagCount(void* tag);
 
 ssize
-rnMetaArrayBack(void* meta);
+rnArrayTagFront(void* tag);
+
+ssize
+rnArrayTagBack(void* tag);
 
 b32
-rnMetaArrayIsEmpty(void* meta);
+rnArrayTagIsEmpty(void* tag);
 
 b32
-rnMetaArrayIsFull(void* meta);
+rnArrayTagIsFull(void* tag);
 
 b32
-rnMetaArrayIsIndex(void* meta, ssize index);
+rnArrayTagIsIndex(void* tag, ssize index);
 
 b32
-rnMetaArrayExtend(void* meta, void* values, ssize index, ssize step);
+rnArrayTagExtend(void* tag, void* values, ssize index, ssize step);
 
 b32
-rnMetaArrayShrink(void* meta, void* values, ssize index, void* value, ssize step);
+rnArrayTagShrink(void* tag, void* values, ssize index, void* value, ssize step);
 
 #endif // RN_STRUCTURE_ARRAY_H

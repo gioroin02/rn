@@ -3,17 +3,34 @@
 
 #include "./array.h"
 
-typedef struct RnMetaArray
+typedef struct RnArrayTag
 {
     ssize size;
     ssize count;
 }
-RnMetaArray;
+RnArrayTag;
+
+void*
+rnArrayTagReserve(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step)
+{
+    RnArrayTag* self = ((RnArrayTag*) tag);
+
+    if (self == 0 || values != 0 || step <= 0 || size <= 0)
+        return 0;
+
+    u8* memory = rnMemoryArenaReserve(arena, size, step, &size);
+
+    if (memory != 0) self->size = size / step;
+
+    self->count = 0;
+
+    return memory;
+}
 
 ssize
-rnMetaArraySize(void* meta)
+rnArrayTagSize(void* tag)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self != 0)
         return self->size;
@@ -22,9 +39,9 @@ rnMetaArraySize(void* meta)
 }
 
 ssize
-rnMetaArrayCount(void* meta)
+rnArrayTagCount(void* tag)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self != 0)
         return self->count;
@@ -33,15 +50,15 @@ rnMetaArrayCount(void* meta)
 }
 
 ssize
-rnMetaArrayFront(void* meta)
+rnArrayTagFront(void* tag)
 {
     return 0;
 }
 
 ssize
-rnMetaArrayBack(void* meta)
+rnArrayTagBack(void* tag)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self != 0 && self->count > 0)
         return self->count - 1;
@@ -50,9 +67,9 @@ rnMetaArrayBack(void* meta)
 }
 
 b32
-rnMetaArrayIsEmpty(void* meta)
+rnArrayTagIsEmpty(void* tag)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self != 0 && self->count == 0)
         return 1;
@@ -61,9 +78,9 @@ rnMetaArrayIsEmpty(void* meta)
 }
 
 b32
-rnMetaArrayIsFull(void* meta)
+rnArrayTagIsFull(void* tag)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self != 0 && self->count == self->size)
         return 1;
@@ -72,9 +89,9 @@ rnMetaArrayIsFull(void* meta)
 }
 
 b32
-rnMetaArrayIsIndex(void* meta, ssize index)
+rnArrayTagIsIndex(void* tag, ssize index)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self == 0 || index < 0 || index >= self->count)
         return 0;
@@ -83,9 +100,9 @@ rnMetaArrayIsIndex(void* meta, ssize index)
 }
 
 b32
-rnMetaArrayExtend(void* meta, void* values, ssize index, ssize step)
+rnArrayTagExtend(void* tag, void* values, ssize index, ssize step)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self == 0 || values == 0 || step <= 0 || index < 0 || index > self->count)
         return 0;
@@ -102,9 +119,9 @@ rnMetaArrayExtend(void* meta, void* values, ssize index, ssize step)
 }
 
 b32
-rnMetaArrayShrink(void* meta, void* values, ssize index, void* value, ssize step)
+rnArrayTagShrink(void* tag, void* values, ssize index, void* value, ssize step)
 {
-    RnMetaArray* self = ((RnMetaArray*) meta);
+    RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self == 0 || values == 0 || step <= 0 || index < 0 || index >= self->count)
         return 0;
