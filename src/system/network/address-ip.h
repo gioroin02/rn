@@ -4,13 +4,14 @@
 #include "./import.h"
 
 #define RN_ADDRESS_IPV4_SIZE ((ssize) 4)
+
+#define rnAddressIPv4Empty() ((RnAddressIP) {.kind = RnAddressIP_IPv4})
+#define rnAddressIPv4Local() ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {[0] = 127, [3] = 1}})
+
 #define RN_ADDRESS_IPV6_SIZE ((ssize) 8)
 
-#define rnAddressIPv4Local() \
-    ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {[0] = 127, [3] = 1}})
-
-#define rnAddressIPv6Local() \
-    ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {[7] = 1}})
+#define rnAddressIPv6Empty() ((RnAddressIP) {.kind = RnAddressIP_IPv6})
+#define rnAddressIPv6Local() ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {[7] = 1}})
 
 typedef enum RnAddressIPKind
 {
@@ -67,6 +68,12 @@ rnAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7
 
 RnAddressIP
 rnAddressIPv6FromArray(u16* values, ssize size);
+
+RnAddressIP
+rnAddressIPEmpty(RnAddressIPKind kind);
+
+RnAddressIP
+rnAddressIPLocal(RnAddressIPKind kind);
 
 b32
 rnAddressIPIsEqual(RnAddressIP self, RnAddressIP value);

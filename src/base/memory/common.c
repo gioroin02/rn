@@ -16,26 +16,15 @@ rnMemoryAlignForward(ssize value, ssize align)
     return value;
 }
 
-b32
-rnMemoryIsByteOrderNetwork()
+RnByteOrder
+rnGetHostByteOrder()
 {
     u16 value = 0xab;
 
     if (*((u8*) &value) == 0xa)
-        return 1;
+        return RnByteOrder_Network;
 
-    return 0;
-}
-
-b32
-rnMemoryIsByteOrderReverse()
-{
-    u16 value = 0xab;
-
-    if (*((u8*) &value) == 0xb)
-        return 1;
-
-    return 0;
+    return RnByteOrder_Reverse;
 }
 
 #endif // RN_BASE_MEMORY_COMMON_C

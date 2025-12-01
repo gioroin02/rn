@@ -25,6 +25,18 @@
 
 #endif
 
+b32
+rnSystemMemoryStart()
+{
+    return 1;
+}
+
+void
+rnSystemMemoryStop()
+{
+    // Empty...
+}
+
 ssize
 rnSystemMemoryPageSize()
 {

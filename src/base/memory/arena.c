@@ -29,40 +29,40 @@ rnMemoryArenaTell(RnMemoryArena* self)
     return self->values + self->count;
 }
 
-RnMemorySlice
-rnMemoryArenaReserveSlice(RnMemoryArena* self, ssize amount, ssize step)
+void*
+rnMemoryArenaReserve(RnMemoryArena* self, ssize count, ssize step, ssize* result)
 {
-    RnMemorySlice result = {0};
-
-    if (amount <= 0 || step <= 0 || amount > RN_MAX_SSIZE / step)
-        return result;
-
-    ssize size   = amount * step;
     void* memory = rnMemoryArenaTell(self);
+    ssize count  = self->count;
+
+    if (count <= 0 || step <= 0 || count > RN_MAX_SSIZE / step)
+        return 0;
+
+    ssize size = count * step;
 
     if (self->count < 0 || self->count + size > self->size)
-        return result;
-
-    result = rnMemorySliceMake(memory, 0, amount, step);
-
-    rnMemorySliceZero(result);
+        return 0;
 
     self->count = rnMemoryAlignForward(
         self->count + size, RN_MEMORY_DEFAULT_ALIGNMENT);
 
-    return result;
+    for (ssize i = 0; i < self->count - count; i += 1)
+        ((u8*) memory)[i] = 0;
+
+    if (result != 0) *result = self->count - count;
+
+    return memory;
 }
 
 b32
-rnMemoryArenaReleaseSlice(RnMemoryArena* self, RnMemorySlice value)
+rnMemoryArenaRelease(RnMemoryArena* self, void* memory)
 {
-    ssize diff = value.values - self->values;
-    ssize size = rnMemorySliceBytes(value);
+    ssize diff = ((u8*) memory) - self->values;
 
-    if (size <= 0 || diff < 0 || diff + size > self->size)
+    if (diff % RN_MEMORY_DEFAULT_ALIGNMENT != 0)
         return 0;
 
-    if (diff % RN_MEMORY_DEFAULT_ALIGNMENT != 0) return 0;
+    if (diff < 0 || diff >= self->count) return 0;
 
     self->count = diff;
 

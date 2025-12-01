@@ -3,6 +3,12 @@
 
 #include "./slice.h"
 
+#define rnMemoryArenaReserveType(self, type) \
+    ((type*) rnMemoryArenaReserve(self, 1, sizeof(type), 0))
+
+#define rnMemoryArenaReserveMany(self, type, count) \
+    ((type*) rnMemoryArenaReserve(self, count, sizeof(type), 0))
+
 typedef struct RnMemoryArena
 {
     u8*   values;
@@ -20,10 +26,10 @@ rnMemoryArenaClear(RnMemoryArena* self);
 void*
 rnMemoryArenaTell(RnMemoryArena* self);
 
-RnMemorySlice
-rnMemoryArenaReserveSlice(RnMemoryArena* self, ssize amount, ssize step);
+void*
+rnMemoryArenaReserve(RnMemoryArena* self, ssize count, ssize step, ssize* result);
 
 b32
-rnMemoryArenaReleaseSlice(RnMemoryArena* self, RnMemorySlice value);
+rnMemoryArenaRelease(RnMemoryArena* self, void* memory);
 
 #endif // RN_BASE_MEMORY_ARENA_H

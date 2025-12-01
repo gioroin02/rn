@@ -77,6 +77,31 @@ rnAddressIPv6FromArray(u16* values, ssize size)
     return result;
 }
 
+RnAddressIP
+rnAddressIPEmpty(RnAddressIPKind kind)
+{
+    switch (kind) {
+        case RnAddressIP_IPv4: return rnAddressIPv4Empty();
+        case RnAddressIP_IPv6: return rnAddressIPv6Empty();
+
+        default: break;
+    }
+
+    return (RnAddressIP) {0};
+}
+
+RnAddressIP
+rnAddressIPLocal(RnAddressIPKind kind)
+{
+    switch (kind) {
+        case RnAddressIP_IPv4: return rnAddressIPv4Local();
+        case RnAddressIP_IPv6: return rnAddressIPv6Local();
+
+        default: break;
+    }
+
+    return (RnAddressIP) {0};
+}
 
 b32
 rnAddressIPIsEqual(RnAddressIP self, RnAddressIP value)

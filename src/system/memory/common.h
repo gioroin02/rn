@@ -3,6 +3,12 @@
 
 #include "./import.h"
 
+b32
+rnSystemMemoryStart();
+
+void
+rnSystemMemoryStop();
+
 ssize
 rnSystemMemoryPageSize();
 
