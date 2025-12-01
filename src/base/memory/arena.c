@@ -30,21 +30,21 @@ rnMemoryArenaTell(RnMemoryArena* self)
 }
 
 void*
-rnMemoryArenaReserve(RnMemoryArena* self, ssize count, ssize step, ssize* result)
+rnMemoryArenaReserve(RnMemoryArena* self, ssize size, ssize step, ssize* result)
 {
     void* memory = rnMemoryArenaTell(self);
     ssize count  = self->count;
 
-    if (count <= 0 || step <= 0 || count > RN_MAX_SSIZE / step)
+    if (size <= 0 || step <= 0 || size > RN_MAX_SSIZE / step)
         return 0;
 
-    ssize size = count * step;
+    ssize bytes = size * step;
 
-    if (self->count < 0 || self->count + size > self->size)
+    if (self->count < 0 || self->count + bytes > self->size)
         return 0;
 
     self->count = rnMemoryAlignForward(
-        self->count + size, RN_MEMORY_DEFAULT_ALIGNMENT);
+        self->count + bytes, RN_MEMORY_DEFAULT_ALIGNMENT);
 
     for (ssize i = 0; i < self->count - count; i += 1)
         ((u8*) memory)[i] = 0;

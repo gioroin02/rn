@@ -31,9 +31,9 @@ rnCopyNetFromHost(u8* dest, u8* values, ssize size, ssize step)
         } break;
 
         case RnByteOrder_Reverse: {
-            for (ssize i = 0; i < size; i += 1) {
-                for (ssize j = step; j > 0; j -= 1)
-                    dest[i + j - 1] = values[i + j - 1];
+            for (ssize i = 0; i < size * step; i += step) {
+                for (ssize j = 0; j < step; j += 1)
+                    dest[i + step - j - 1] = values[i + j];
             }
         } break;
 
@@ -53,9 +53,9 @@ rnCopyHostFromNet(u8* dest, u8* values, ssize size, ssize step)
         } break;
 
         case RnByteOrder_Reverse: {
-            for (ssize i = 0; i < size; i += 1) {
-                for (ssize j = step; j > 0; j -= 1)
-                    dest[i + j - 1] = values[i + j - 1];
+            for (ssize i = 0; i < size * step; i += step) {
+                for (ssize j = 0; j < step; j += 1)
+                    dest[i + step - j - 1] = values[i + j];
             }
         } break;
 
@@ -65,10 +65,9 @@ rnCopyHostFromNet(u8* dest, u8* values, ssize size, ssize step)
     return dest;
 }
 
-ssize
+b32
 rnSockAddrStorageSetAddress(RnSockAddrStorage* self, RnAddressIP address)
 {
-    ssize result = 0;
     u8*   dest   = 0;
     u8*   values = 0;
     ssize size   = 0;
@@ -78,7 +77,6 @@ rnSockAddrStorageSetAddress(RnSockAddrStorage* self, RnAddressIP address)
         case RnAddressIP_IPv4: {
             self->ss_family = AF_INET;
 
-            result = sizeof(RnSockAddrIn4);
             dest   = rnSockAddrIn4Address(self);
             values = address.ipv4.values;
             size   = sizeof(address.ipv4.values);
@@ -88,7 +86,6 @@ rnSockAddrStorageSetAddress(RnSockAddrStorage* self, RnAddressIP address)
         case RnAddressIP_IPv6: {
             self->ss_family = AF_INET6;
 
-            result = sizeof(RnSockAddrIn6);
             dest   = rnSockAddrIn6Address(self);
             values = address.ipv6.values;
             size   = sizeof(address.ipv6.values);
@@ -100,15 +97,13 @@ rnSockAddrStorageSetAddress(RnSockAddrStorage* self, RnAddressIP address)
 
     rnCopyNetFromHost(dest, values, size, step);
 
-    return result;
+    return 1;
 }
 
-ssize
+b32
 rnSockAddrStorageSetPort(RnSockAddrStorage* self, u16 port)
 {
-    u8*   dest   = 0;
-    u8*   values = ((u8*) &port);
-    ssize step   = sizeof(port);
+    u8* dest = 0;
 
     switch (self->ss_family) {
         case AF_INET:  dest = rnSockAddrIn4Port(self); break;
@@ -117,9 +112,9 @@ rnSockAddrStorageSetPort(RnSockAddrStorage* self, u16 port)
         default: return 0;
     }
 
-    rnCopyNetFromHost(dest, values, 1, step);
+    rnCopyNetFromHost(dest, ((u8*) &port), 1, sizeof(port));
 
-    return step;
+    return 1;
 }
 
 RnAddressIP
@@ -163,10 +158,7 @@ u16
 rnSockAddrStorageGetPort(RnSockAddrStorage* self)
 {
     u16 result = 0;
-
-    u8*   dest   = ((u8*) &result);
-    u8*   values = 0;
-    ssize step   = sizeof(result);
+    u8* values = 0;
 
     switch (self->ss_family) {
         case AF_INET:  values = rnSockAddrIn4Port(self); break;
@@ -175,7 +167,7 @@ rnSockAddrStorageGetPort(RnSockAddrStorage* self)
         default: return 0;
     }
 
-    rnCopyHostFromNet(dest, values, 1, step);
+    rnCopyHostFromNet(((u8*) &result), values, 1, sizeof(result));
 
     return result;
 }

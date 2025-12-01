@@ -3,10 +3,10 @@
 
 #include "./slice.h"
 
-#define rnMemoryArenaReserveType(self, type) \
+#define rnMemoryArenaReserveOneOf(self, type) \
     ((type*) rnMemoryArenaReserve(self, 1, sizeof(type), 0))
 
-#define rnMemoryArenaReserveMany(self, type, count) \
+#define rnMemoryArenaReserveManyOf(self, type, count) \
     ((type*) rnMemoryArenaReserve(self, count, sizeof(type), 0))
 
 typedef struct RnMemoryArena
@@ -27,7 +27,7 @@ void*
 rnMemoryArenaTell(RnMemoryArena* self);
 
 void*
-rnMemoryArenaReserve(RnMemoryArena* self, ssize count, ssize step, ssize* result);
+rnMemoryArenaReserve(RnMemoryArena* self, ssize size, ssize step, ssize* result);
 
 b32
 rnMemoryArenaRelease(RnMemoryArena* self, void* memory);

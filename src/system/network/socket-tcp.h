@@ -21,7 +21,7 @@ b32
 rnSocketTCPBind(RnSocketTCP* self, RnAddressIP address, u16 port);
 
 b32
-rnSocketTCPListen(RnSocketTCP* self, u16 port, ssize max);
+rnSocketTCPListen(RnSocketTCP* self);
 
 b32
 rnSocketTCPConnect(RnSocketTCP* self, RnAddressIP address, u16 port);

@@ -54,9 +54,9 @@ rnSocketTCPBind(RnSocketTCP* self, RnAddressIP address, u16 port)
 }
 
 b32
-rnSocketTCPListen(RnSocketTCP* self, u16 port, ssize max)
+rnSocketTCPListen(RnSocketTCP* self)
 {
-    return __rnSocketTCPListen__(self, port, max);
+    return __rnSocketTCPListen__(self);
 }
 
 b32

@@ -1,9 +1,9 @@
-#ifndef RN_WIN32_NETWORK_SOCKET_TCP_C
-#define RN_WIN32_NETWORK_SOCKET_TCP_C
+#ifndef RN_WIN32_NETWORK_SOCKET_UDP_C
+#define RN_WIN32_NETWORK_SOCKET_UDP_C
 
 #pragma comment(lib, "Ws2_32.lib")
 
-#include "./socket-tcp.h"
+#include "./socket-udp.h"
 #include "./address.c"
 
 #define WIN32_LEAN_AND_MEAN
@@ -11,21 +11,21 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-struct RnWin32SocketTCP
+struct RnWin32SocketUDP
 {
     SOCKET          handle;
     RnAddressIPKind kind;
     b32             bound;
 };
 
-RnWin32SocketTCP*
-rnWin32SocketTCPReserve(RnMemoryArena* arena)
+RnWin32SocketUDP*
+rnWin32SocketUDPReserve(RnMemoryArena* arena)
 {
-    return rnMemoryArenaReserveOneOf(arena, RnWin32SocketTCP);
+    return rnMemoryArenaReserveOneOf(arena, RnWin32SocketUDP);
 }
 
 b32
-rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
+rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIPKind kind)
 {
     if (self == 0 || self->bound != 0 || kind == RnAddressIP_None)
         return 0;
@@ -33,7 +33,7 @@ rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
     RnSockAddrStorage storage = rnSockAddrStorageMakeEmpty(kind);
 
     SOCKET handle = WSASocket(storage.ss_family,
-        SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+        SOCK_DGRAM, IPPROTO_UDP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -44,7 +44,7 @@ rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
 }
 
 b32
-rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
+rnWin32SocketUDPAccept(RnWin32SocketUDP* self, RnWin32SocketUDP* value)
 {
     int type = sizeof(RnSockAddrStorage);
 
@@ -52,7 +52,7 @@ rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
         return 0;
 
     RnSockAddrStorage storage = {0};
-    RnWin32SocketTCP  temp    = {0};
+    RnWin32SocketUDP  temp    = {0};
 
     temp.handle = accept(self->handle, ((RnSockAddr*) &storage), &type);
 
@@ -67,18 +67,18 @@ rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 }
 
 void
-rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
+rnWin32SocketUDPDestroy(RnWin32SocketUDP* self)
 {
     if (self == 0) return;
 
     if (self->handle != INVALID_SOCKET)
         closesocket(self->handle);
 
-    *self = (RnWin32SocketTCP) {0};
+    *self = (RnWin32SocketUDP) {0};
 }
 
 b32
-rnWin32SocketTCPBind(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+rnWin32SocketUDPBind(RnWin32SocketUDP* self, RnAddressIP address, u16 port)
 {
     ssize type = 0;
 
@@ -96,7 +96,7 @@ rnWin32SocketTCPBind(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 }
 
 b32
-rnWin32SocketTCPListen(RnWin32SocketTCP* self)
+rnWin32SocketUDPListen(RnWin32SocketUDP* self)
 {
     if (self == 0) return 0;
 
@@ -107,7 +107,7 @@ rnWin32SocketTCPListen(RnWin32SocketTCP* self)
 }
 
 b32
-rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+rnWin32SocketUDPConnect(RnWin32SocketUDP* self, RnAddressIP address, u16 port)
 {
     ssize type = 0;
 
@@ -123,7 +123,7 @@ rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 }
 
 ssize
-rnWin32SocketTCPWrite(RnWin32SocketTCP* self, u8* values, ssize size)
+rnWin32SocketUDPWrite(RnWin32SocketUDP* self, u8* values, ssize size)
 {
     ssize count = 0;
 
@@ -141,7 +141,28 @@ rnWin32SocketTCPWrite(RnWin32SocketTCP* self, u8* values, ssize size)
 }
 
 ssize
-rnWin32SocketTCPRead(RnWin32SocketTCP* self, u8* values, ssize size)
+rnWin32SocketUDPWriteHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port)
+{
+    ssize type  = 0;
+    ssize count = 0;
+
+    RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
+
+    while (count < size) {
+        ssize temp = sendto(self->handle, ((char*) values + count),
+            ((int) size - count), 0, ((RnSockAddr*) &storage), type);
+
+        if (temp <= 0 || temp > size - count)
+            break;
+
+        count += temp;
+    }
+
+    return count;
+}
+
+ssize
+rnWin32SocketUDPRead(RnWin32SocketUDP* self, u8* values, ssize size)
 {
     ssize count = recv(self->handle,
         ((char*) values), ((int) size), 0);
@@ -152,4 +173,26 @@ rnWin32SocketTCPRead(RnWin32SocketTCP* self, u8* values, ssize size)
     return count;
 }
 
-#endif // RN_WIN32_NETWORK_SOCKET_TCP_C
+ssize
+rnWin32SocketUDPReadHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port)
+{
+    int   type  = 0;
+    ssize count = 0;
+
+    RnSockAddrStorage storage = {0};
+
+    count = recvfrom(self->handle, ((char*) values),
+        ((int) size), 0, ((RnSockAddr*) &storage), &type);
+
+    if (count <= 0 || count > size) return 0;
+
+    if (address != 0)
+        *address = rnSockAddrStorageGetAddress(&storage);
+
+    if (port != 0)
+        *port = rnSockAddrStorageGetPort(&storage);
+
+    return count;
+}
+
+#endif // RN_WIN32_NETWORK_SOCKET_UDP_C
