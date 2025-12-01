@@ -11,9 +11,6 @@ rnSocketUDPReserve(RnMemoryArena* arena);
 b32
 rnSocketUDPCreate(RnSocketUDP* self, RnAddressIPKind kind);
 
-b32
-rnSocketUDPAccept(RnSocketUDP* self, RnSocketUDP* value);
-
 void
 rnSocketUDPDestroy(RnSocketUDP* self);
 
@@ -21,7 +18,7 @@ b32
 rnSocketUDPBind(RnSocketUDP* self, RnAddressIP address, u16 port);
 
 b32
-rnSocketUDPListen(RnSocketUDP* self);
+rnSocketUDPListen(RnSocketUDP* self, u16 port);
 
 b32
 rnSocketUDPConnect(RnSocketUDP* self, RnAddressIP address, u16 port);

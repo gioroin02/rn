@@ -22,33 +22,30 @@ main(int argc, char** argv)
 
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
-    RnSocketUDP* listener = rnSocketUDPReserve(&arena);
+    RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(listener, RnAddressIP_IPv4);
+    rnSocketUDPCreate(socket, RnAddressIP_IPv6);
 
-    if (rnSocketUDPBind(listener, rnAddressIPv4Empty(), 50000) == 0)
+    if (rnSocketUDPListen(socket, 50000) == 0)
         return printf("Error during 'bind'\n");
 
     int len = sizeof(RnSockAddrStorage);
     RnSockAddrStorage local = {0};
-    if (getsockname(*((SOCKET*) listener), (RnSockAddr*)&local, &len) == 0) {
+    if (getsockname(*((SOCKET*) socket), (RnSockAddr*)&local, &len) == 0) {
         u16 real_port = ntohs(((struct sockaddr_in*)&local)->sin_port);
-        printf("Socket realmente boundato sulla porta: %u\n", real_port);
+        printf("Porta del socket: %u\n", real_port);
     } else {
         printf("getsockname fallito: %d\n", WSAGetLastError());
     }
-    ssize conns = 0;
 
-    while (conns < 2) {
+    for (ssize conns = 0; conns < 2;) {
         RnAddressIP address = {0};
         u16         port    = 0;
 
         u8 msgIn[256] = {0};
 
-        ssize msgInSize = sizeof(msgIn);
-
-        ssize msgInCount = rnSocketUDPReadHost(
-            listener, msgIn, msgInSize, &address, &port);
+        ssize msgInSize  = sizeof(msgIn);
+        ssize msgInCount = rnSocketUDPReadHost(socket, msgIn, msgInSize, &address, &port);
 
         if (msgInCount > 0) {
             printf("%s\n", msgIn);
@@ -58,14 +55,13 @@ main(int argc, char** argv)
             ssize msgOutSize  = sizeof(msgOut);
             ssize msgOutCount = sizeof(msgOut);
 
-            rnSocketUDPWriteHost(listener,
-                msgOut, msgOutCount, address, port);
+            rnSocketUDPWriteHost(socket, msgOut, msgOutCount, address, port);
 
             conns += 1;
         }
     }
 
-    rnSocketUDPDestroy(listener);
+    rnSocketUDPDestroy(socket);
 
     rnSystemNetworkStop();
     rnSystemMemoryStop();

@@ -15,7 +15,6 @@ struct RnWin32SocketTCP
 {
     SOCKET          handle;
     RnAddressIPKind kind;
-    b32             bound;
 };
 
 RnWin32SocketTCP*
@@ -27,13 +26,11 @@ rnWin32SocketTCPReserve(RnMemoryArena* arena)
 b32
 rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
 {
-    if (self == 0 || self->bound != 0 || kind == RnAddressIP_None)
-        return 0;
+    if (self == 0 || kind == RnAddressIP_None) return 0;
 
-    RnSockAddrStorage storage = rnSockAddrStorageMakeEmpty(kind);
+    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
 
-    SOCKET handle = WSASocket(storage.ss_family,
-        SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = socket(storage.ss_family, SOCK_STREAM, 0);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -46,22 +43,18 @@ rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
 b32
 rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 {
+    if (self == 0 || value == 0) return 0;
+
     int type = sizeof(RnSockAddrStorage);
 
-    if (self == 0 || self->bound == 0 || value == 0 || value->bound != 0)
-        return 0;
-
     RnSockAddrStorage storage = {0};
-    RnWin32SocketTCP  temp    = {0};
 
-    temp.handle = accept(self->handle, ((RnSockAddr*) &storage), &type);
+    SOCKET handle = accept(self->handle, ((RnSockAddr*) &storage), &type);
 
-    if (temp.handle == INVALID_SOCKET) return 0;
+    if (handle == INVALID_SOCKET) return 0;
 
-    temp.kind  = rnSockAddrStorageGetAddress(&storage).kind;
-    temp.bound = 1;
-
-    *value = temp;
+    value->handle = handle;
+    value->kind   = rnSockAddrStorageGetAddress(&storage).kind;
 
     return 1;
 }
@@ -78,30 +71,18 @@ rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
 }
 
 b32
-rnWin32SocketTCPBind(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+rnWin32SocketTCPListen(RnWin32SocketTCP* self, u16 port)
 {
+    if (self == 0 || port <= 0) return 0;
+
     ssize type = 0;
 
-    if (self == 0 || self->bound != 0 || self->kind != address.kind)
-        return 0;
-
-    RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
+    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(self->kind, port, &type);
 
     if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
         return 0;
 
-    self->bound = 1;
-
-    return 1;
-}
-
-b32
-rnWin32SocketTCPListen(RnWin32SocketTCP* self)
-{
-    if (self == 0) return 0;
-
-    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
-        return 0;
+    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR) return 0;
 
     return 1;
 }
@@ -109,10 +90,10 @@ rnWin32SocketTCPListen(RnWin32SocketTCP* self)
 b32
 rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 {
-    ssize type = 0;
-
     if (self == 0 || port == 0 || address.kind == RnAddressIP_None)
         return 0;
+
+    ssize type = 0;
 
     RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
 
@@ -125,16 +106,15 @@ rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 ssize
 rnWin32SocketTCPWrite(RnWin32SocketTCP* self, u8* values, ssize size)
 {
+    if (self == 0 || values == 0 || size <= 0) return 0;
+
     ssize count = 0;
 
-    while (count < size) {
-        ssize temp = send(self->handle, ((char*) values + count),
+    for (ssize temp = 0; count < size; count += temp) {
+        temp = send(self->handle, ((char*) values + count),
             ((int) size - count), 0);
 
-        if (temp <= 0 || temp > size - count)
-            break;
-
-        count += temp;
+        if (temp <= 0 || temp > size - count) break;
     }
 
     return count;
@@ -143,11 +123,12 @@ rnWin32SocketTCPWrite(RnWin32SocketTCP* self, u8* values, ssize size)
 ssize
 rnWin32SocketTCPRead(RnWin32SocketTCP* self, u8* values, ssize size)
 {
+    if (self == 0 || values == 0 || size <= 0) return 0;
+
     ssize count = recv(self->handle,
         ((char*) values), ((int) size), 0);
 
-    if (count < 0 || count >= size)
-        return 0;
+    if (count < 0 || count >= size) return 0;
 
     return count;
 }

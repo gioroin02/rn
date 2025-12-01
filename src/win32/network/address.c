@@ -11,110 +11,82 @@
 #include <ws2tcpip.h>
 
 typedef struct sockaddr_storage RnSockAddrStorage;
+typedef struct sockaddr         RnSockAddr;
+typedef struct sockaddr_in      RnSockAddrIn4;
+typedef struct sockaddr_in6     RnSockAddrIn6;
 
-typedef struct sockaddr     RnSockAddr;
-typedef struct sockaddr_in  RnSockAddrIn4;
-typedef struct sockaddr_in6 RnSockAddrIn6;
-
-#define rnSockAddrIn4Address(expr) ((u8*) &((RnSockAddrIn4*) expr)->sin_addr.s_addr)
-#define rnSockAddrIn4Port(expr)    ((u8*) &((RnSockAddrIn4*) expr)->sin_port)
-#define rnSockAddrIn6Address(expr) ((u8*)  ((RnSockAddrIn6*) expr)->sin6_addr.s6_addr)
-#define rnSockAddrIn6Port(expr)    ((u8*) &((RnSockAddrIn6*) expr)->sin6_port)
-
-static u8*
-rnCopyNetFromHost(u8* dest, u8* values, ssize size, ssize step)
+RnSockAddrStorage
+rnSockAddrStorageMake(RnAddressIP address, u16 port, ssize* size)
 {
-    switch (rnGetHostByteOrder()) {
-        case RnByteOrder_Network: {
-            for (ssize i = 0; i < size * step; i += 1)
-                dest[i] = values[i];
-        } break;
-
-        case RnByteOrder_Reverse: {
-            for (ssize i = 0; i < size * step; i += step) {
-                for (ssize j = 0; j < step; j += 1)
-                    dest[i + step - j - 1] = values[i + j];
-            }
-        } break;
-
-        default: return 0;
-    }
-
-    return dest;
-}
-
-static u8*
-rnCopyHostFromNet(u8* dest, u8* values, ssize size, ssize step)
-{
-    switch (rnGetHostByteOrder()) {
-        case RnByteOrder_Network: {
-            for (ssize i = 0; i < size * step; i += 1)
-                dest[i] = values[i];
-        } break;
-
-        case RnByteOrder_Reverse: {
-            for (ssize i = 0; i < size * step; i += step) {
-                for (ssize j = 0; j < step; j += 1)
-                    dest[i + step - j - 1] = values[i + j];
-            }
-        } break;
-
-        default: return 0;
-    }
-
-    return dest;
-}
-
-b32
-rnSockAddrStorageSetAddress(RnSockAddrStorage* self, RnAddressIP address)
-{
-    u8*   dest   = 0;
-    u8*   values = 0;
-    ssize size   = 0;
-    ssize step   = 0;
+    RnSockAddrStorage result = {0};
 
     switch (address.kind) {
         case RnAddressIP_IPv4: {
-            self->ss_family = AF_INET;
+            RnSockAddrIn4* ipv4 = ((RnSockAddrIn4*) &result);
 
-            dest   = rnSockAddrIn4Address(self);
-            values = address.ipv4.values;
-            size   = sizeof(address.ipv4.values);
-            step   = sizeof(*(address.ipv4.values));
+            ipv4->sin_family = AF_INET;
+            ipv4->sin_port   = htons(port);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV4_SIZE; i += 1)
+                ((u8*) &ipv4->sin_addr.s_addr)[i] = ((u8*) address.ipv4.values)[i];
+
+            if (size != 0) *size = sizeof(RnSockAddrIn4);
         } break;
 
         case RnAddressIP_IPv6: {
-            self->ss_family = AF_INET6;
+            RnSockAddrIn6* ipv6 = ((RnSockAddrIn6*) &result);
 
-            dest   = rnSockAddrIn6Address(self);
-            values = address.ipv6.values;
-            size   = sizeof(address.ipv6.values);
-            step   = sizeof(*(address.ipv6.values));
+            ipv6->sin6_family = AF_INET6;
+            ipv6->sin6_port   = htons(port);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV6_SIZE; i += 1)
+                ((u16*) &ipv6->sin6_addr.s6_addr)[i] = ((u16*) address.ipv6.values)[i];
+
+            if (size != 0) *size = sizeof(RnSockAddrIn6);
         } break;
 
-        default: return 0;
+        default: break;
     }
 
-    rnCopyNetFromHost(dest, values, size, step);
-
-    return 1;
+    return result;
 }
 
-b32
-rnSockAddrStorageSetPort(RnSockAddrStorage* self, u16 port)
+RnSockAddrStorage
+rnSockAddrStorageMakeAny(RnAddressIPKind kind, u16 port, ssize* size)
 {
-    u8* dest = 0;
+    RnSockAddrStorage result = {0};
 
-    switch (self->ss_family) {
-        case AF_INET:  dest = rnSockAddrIn4Port(self); break;
-        case AF_INET6: dest = rnSockAddrIn6Port(self); break;
+    switch (kind) {
+        case RnAddressIP_IPv4: {
+            u32 in4addr_any = INADDR_ANY;
 
-        default: return 0;
+            RnSockAddrIn4* ipv4 = ((RnSockAddrIn4*) &result);
+
+            ipv4->sin_family = AF_INET;
+            ipv4->sin_port   = htons(port);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV4_SIZE; i += 1)
+                ((u8*) &ipv4->sin_addr.s_addr)[i] = ((u8*) &in4addr_any)[i];
+
+            if (size != 0) *size = sizeof(RnSockAddrIn4);
+        } break;
+
+        case RnAddressIP_IPv6: {
+            RnSockAddrIn6* ipv6 = ((RnSockAddrIn6*) &result);
+
+            ipv6->sin6_family = AF_INET6;
+            ipv6->sin6_port   = htons(port);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV6_SIZE; i += 1)
+                ((u16*) &ipv6->sin6_addr.s6_addr)[i] = ((u16*) &in6addr_any)[i];
+
+            if (size != 0) *size = sizeof(RnSockAddrIn6);
+        } break;
+
+        default: break;
     }
 
-    rnCopyNetFromHost(dest, ((u8*) &port), 1, sizeof(port));
-
-    return 1;
+    return result;
 }
 
 RnAddressIP
@@ -122,34 +94,27 @@ rnSockAddrStorageGetAddress(RnSockAddrStorage* self)
 {
     RnAddressIP result = {0};
 
-    u8*   dest   = 0;
-    u8*   values = 0;
-    ssize size   = 0;
-    ssize step   = 0;
-
     switch (self->ss_family) {
         case AF_INET: {
             result.kind = RnAddressIP_IPv4;
 
-            dest   = result.ipv4.values;
-            values = rnSockAddrIn4Address(self);
-            size   = sizeof(result.ipv4.values);
-            step   = sizeof(*(result.ipv4.values));
+            RnSockAddrIn4* ipv4 = ((RnSockAddrIn4*) self);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV4_SIZE; i += 1)
+                ((u8*) result.ipv4.values)[i] = ((u8*) &ipv4->sin_addr.s_addr)[i];
         } break;
 
         case AF_INET6: {
-            result.kind = RnAddressIP_IPv4;
+            result.kind = RnAddressIP_IPv6;
 
-            dest   = result.ipv6.values;
-            values = rnSockAddrIn6Address(self);
-            size   = sizeof(result.ipv6.values);
-            step   = sizeof(*(result.ipv6.values));
+            RnSockAddrIn6* ipv6 = ((RnSockAddrIn6*) self);
+
+            for (ssize i = 0; i < RN_ADDRESS_IPV6_SIZE; i += 1)
+                ((u16*) result.ipv6.values)[i] = ((u16*) &ipv6->sin6_addr.s6_addr)[i];
         } break;
 
         default: return result;
     }
-
-    rnCopyHostFromNet(dest, values, size, step);
 
     return result;
 }
@@ -157,54 +122,17 @@ rnSockAddrStorageGetAddress(RnSockAddrStorage* self)
 u16
 rnSockAddrStorageGetPort(RnSockAddrStorage* self)
 {
-    u16 result = 0;
-    u8* values = 0;
-
     switch (self->ss_family) {
-        case AF_INET:  values = rnSockAddrIn4Port(self); break;
-        case AF_INET6: values = rnSockAddrIn6Port(self); break;
+        case AF_INET:
+            return ntohs(((RnSockAddrIn4*) self)->sin_port);
 
-        default: return 0;
-    }
-
-    rnCopyHostFromNet(((u8*) &result), values, 1, sizeof(result));
-
-    return result;
-}
-
-RnSockAddrStorage
-rnSockAddrStorageMake(RnAddressIP address, u16 port, ssize* size)
-{
-    RnSockAddrStorage result = {0};
-
-    rnSockAddrStorageSetAddress(&result, address);
-    rnSockAddrStorageSetPort(&result, port);
-
-    if (size == 0) return result;
-
-    switch (result.ss_family) {
-        case AF_INET:  *size = sizeof(RnSockAddrIn4); break;
-        case AF_INET6: *size = sizeof(RnSockAddrIn6); break;
+        case AF_INET6:
+            return ntohs(((RnSockAddrIn6*) self)->sin6_port);
 
         default: break;
     }
 
-    return result;
-}
-
-RnSockAddrStorage
-rnSockAddrStorageMakeEmpty(RnAddressIPKind kind)
-{
-    RnSockAddrStorage result = {0};
-
-    switch (kind) {
-        case RnAddressIP_IPv4: result.ss_family = AF_INET;  break;
-        case RnAddressIP_IPv6: result.ss_family = AF_INET6; break;
-
-        default: break;
-    }
-
-    return result;
+    return 0;
 }
 
 #endif // RN_WIN32_NETWORK_ADDRESS_C

@@ -13,26 +13,26 @@ main(int argc, char** argv)
 
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
-    RnSocketTCP* server = rnSocketTCPReserve(&arena);
+    RnSocketTCP* socket = rnSocketTCPReserve(&arena);
 
-    rnSocketTCPCreate(server, RnAddressIP_IPv4);
-    rnSocketTCPConnect(server, rnAddressIPv4Local(), 50000);
+    rnSocketTCPCreate(socket, RnAddressIP_IPv4);
+    rnSocketTCPConnect(socket, rnAddressIPv4Local(), 50000);
 
     u8 msgOut[] = {"Messaggio da client"};
 
     ssize msgOutSize  = sizeof(msgOut);
     ssize msgOutCount = sizeof(msgOut);
 
-    rnSocketTCPWrite(server, msgOut, msgOutCount);
+    rnSocketTCPWrite(socket, msgOut, msgOutCount);
 
     u8 msgIn[256] = {0};
 
     ssize msgInSize  = sizeof(msgIn);
-    ssize msgInCount = rnSocketTCPRead(server, msgIn, msgInSize);
+    ssize msgInCount = rnSocketTCPRead(socket, msgIn, msgInSize);
 
     printf("%s\n", msgIn);
 
-    rnSocketTCPDestroy(server);
+    rnSocketTCPDestroy(socket);
 
     rnSystemNetworkStop();
     rnSystemMemoryStop();

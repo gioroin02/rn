@@ -13,31 +13,26 @@ main(int argc, char** argv)
 
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
-    RnSocketUDP* server = rnSocketUDPReserve(&arena);
+    RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(server, RnAddressIP_IPv4);
+    rnSocketUDPCreate(socket, RnAddressIP_IPv4);
 
     u8 msgOut[] = {"Messaggio da client"};
 
     ssize msgOutSize  = sizeof(msgOut);
     ssize msgOutCount = sizeof(msgOut);
 
-    rnSocketUDPWriteHost(server, msgOut, msgOutCount,
+    rnSocketUDPWriteHost(socket, msgOut, msgOutCount,
         rnAddressIPv4Local(), 50000);
-
-    RnAddressIP address = {0};
-    u16         port    = 0;
 
     u8 msgIn[256] = {0};
 
-    ssize msgInSize = sizeof(msgIn);
+    ssize msgInSize  = sizeof(msgIn);
+    ssize msgInCount = rnSocketUDPReadHost(socket, msgIn, msgInSize, 0, 0);
 
-    ssize msgInCount = rnSocketUDPReadHost(
-        server, msgIn, msgInSize, &address, &port);
+    printf("%s\n", msgIn);
 
-    if (msgInCount > 0) printf("%s\n", msgIn);
-
-    rnSocketUDPDestroy(server);
+    rnSocketUDPDestroy(socket);
 
     rnSystemNetworkStop();
     rnSystemMemoryStop();

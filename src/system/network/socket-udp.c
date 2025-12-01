@@ -9,7 +9,6 @@
 
     #define __rnSocketUDPReserve__   rnWin32SocketUDPReserve
     #define __rnSocketUDPCreate__    rnWin32SocketUDPCreate
-    #define __rnSocketUDPAccept__    rnWin32SocketUDPAccept
     #define __rnSocketUDPDestroy__   rnWin32SocketUDPDestroy
     #define __rnSocketUDPBind__      rnWin32SocketUDPBind
     #define __rnSocketUDPListen__    rnWin32SocketUDPListen
@@ -37,12 +36,6 @@ rnSocketUDPCreate(RnSocketUDP* self, RnAddressIPKind kind)
     return __rnSocketUDPCreate__(self, kind);
 }
 
-b32
-rnSocketUDPAccept(RnSocketUDP* self, RnSocketUDP* value)
-{
-    return __rnSocketUDPAccept__(self, value);
-}
-
 void
 rnSocketUDPDestroy(RnSocketUDP* self)
 {
@@ -56,9 +49,9 @@ rnSocketUDPBind(RnSocketUDP* self, RnAddressIP address, u16 port)
 }
 
 b32
-rnSocketUDPListen(RnSocketUDP* self)
+rnSocketUDPListen(RnSocketUDP* self, u16 port)
 {
-    return __rnSocketUDPListen__(self);
+    return __rnSocketUDPListen__(self, port);
 }
 
 b32
