@@ -1,21 +1,7 @@
 #ifndef RN_WIN32_NETWORK_SOCKET_TCP_C
 #define RN_WIN32_NETWORK_SOCKET_TCP_C
 
-#pragma comment(lib, "Ws2_32.lib")
-
 #include "./socket-tcp.h"
-#include "./address.c"
-
-#define WIN32_LEAN_AND_MEAN
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-struct RnWin32SocketTCP
-{
-    SOCKET          handle;
-    RnAddressIPKind kind;
-};
 
 RnWin32SocketTCP*
 rnWin32SocketTCPReserve(RnMemoryArena* arena)
@@ -30,12 +16,13 @@ rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
 
     RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
 
-    SOCKET handle = socket(storage.ss_family, SOCK_STREAM, 0);
+    SOCKET handle = WSASocketA(storage.ss_family,
+        SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
-    self->handle = handle;
-    self->kind   = kind;
+    self->handle  = handle;
+    self->storage = storage;
 
     return 1;
 }
@@ -53,8 +40,8 @@ rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 
     if (handle == INVALID_SOCKET) return 0;
 
-    value->handle = handle;
-    value->kind   = rnSockAddrStorageGetAddress(&storage).kind;
+    value->handle  = handle;
+    value->storage = storage;
 
     return 1;
 }
@@ -77,7 +64,14 @@ rnWin32SocketTCPListen(RnWin32SocketTCP* self, u16 port)
 
     ssize type = 0;
 
-    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(self->kind, port, &type);
+    RnAddressIPKind kind = RnAddressIP_None;
+
+    if (self->storage.ss_family == AF_INET)  kind = RnAddressIP_IPv4;
+    if (self->storage.ss_family == AF_INET6) kind = RnAddressIP_IPv6;
+
+    if (kind == RnAddressIP_None) return 0;
+
+    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, port, &type);
 
     if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
         return 0;

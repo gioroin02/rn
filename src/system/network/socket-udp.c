@@ -5,7 +5,7 @@
 
 #if RN_SYSTEM == RN_SYSTEM_WINDOWS
 
-    #include "../../win32/network/socket-udp.c"
+    #include "../../win32/network/export.c"
 
     #define __rnSocketUDPReserve__   rnWin32SocketUDPReserve
     #define __rnSocketUDPCreate__    rnWin32SocketUDPCreate

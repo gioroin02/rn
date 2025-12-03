@@ -1,21 +1,7 @@
 #ifndef RN_WIN32_NETWORK_SOCKET_UDP_C
 #define RN_WIN32_NETWORK_SOCKET_UDP_C
 
-#pragma comment(lib, "Ws2_32.lib")
-
 #include "./socket-udp.h"
-#include "./address.c"
-
-#define WIN32_LEAN_AND_MEAN
-
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-struct RnWin32SocketUDP
-{
-    SOCKET          handle;
-    RnAddressIPKind kind;
-};
 
 RnWin32SocketUDP*
 rnWin32SocketUDPReserve(RnMemoryArena* arena)
@@ -30,12 +16,13 @@ rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIPKind kind)
 
     RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
 
-    SOCKET handle = socket(storage.ss_family, SOCK_DGRAM, 0);
+    SOCKET handle = WSASocketA(storage.ss_family,
+        SOCK_DGRAM, IPPROTO_UDP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
-    self->handle = handle;
-    self->kind   = kind;
+    self->handle  = handle;
+    self->storage = storage;
 
     return 1;
 }
@@ -58,7 +45,14 @@ rnWin32SocketUDPBind(RnWin32SocketUDP* self, u16 port)
 
     ssize type = 0;
 
-    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(self->kind, port, &type);
+    RnAddressIPKind kind = RnAddressIP_None;
+
+    if (self->storage.ss_family == AF_INET)  kind = RnAddressIP_IPv4;
+    if (self->storage.ss_family == AF_INET6) kind = RnAddressIP_IPv6;
+
+    if (kind == RnAddressIP_None) return 0;
+
+    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, port, &type);
 
     if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
         return 0;

@@ -5,7 +5,7 @@
 
 #if RN_SYSTEM == RN_SYSTEM_WINDOWS
 
-    #include "../../win32/memory/common.c"
+    #include "../../win32/memory/export.c"
 
     #define __rnSystemMemoryPageSize__ rnWin32MemoryPageSize
     #define __rnSystemMemoryReserve__  rnWin32MemoryReserve
@@ -13,7 +13,7 @@
 
 #elif RN_SYSTEM == RN_SYSTEM_LINUX
 
-    #include "../../linux/memory/common.c"
+    #include "../../linux/memory/export.c"
 
     #define __rnSystemMemoryPageSize__ rnLinuxMemoryPageSize
     #define __rnSystemMemoryReserve__  rnLinuxMemoryReserve

@@ -5,7 +5,7 @@
 
 #if RN_SYSTEM == RN_SYSTEM_WINDOWS
 
-    #include "../../win32/network/common.c"
+    #include "../../win32/network/export.c"
 
     #define __rnSystemNetworkStart__ rnWin32NetworkStart
     #define __rnSystemNetworkStop__  rnWin32NetworkStop

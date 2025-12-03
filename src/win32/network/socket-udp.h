@@ -1,9 +1,21 @@
 #ifndef RN_WIN32_NETWORK_SOCKET_UDP_H
 #define RN_WIN32_NETWORK_SOCKET_UDP_H
 
-#include "./import.h"
+#include "./address.h"
 
-typedef struct RnWin32SocketUDP RnWin32SocketUDP;
+#pragma comment(lib, "ws2_32.lib")
+
+#define WIN32_LEAN_AND_MEAN
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+typedef struct RnWin32SocketUDP
+{
+    SOCKET            handle;
+    RnSockAddrStorage storage;
+}
+RnWin32SocketUDP;
 
 RnWin32SocketUDP*
 rnWin32SocketUDPReserve(RnMemoryArena* arena);

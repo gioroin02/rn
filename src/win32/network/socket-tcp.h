@@ -1,9 +1,21 @@
 #ifndef RN_WIN32_NETWORK_SOCKET_TCP_H
 #define RN_WIN32_NETWORK_SOCKET_TCP_H
 
-#include "./import.h"
+#include "./address.h"
 
-typedef struct RnWin32SocketTCP RnWin32SocketTCP;
+#pragma comment(lib, "ws2_32.lib")
+
+#define WIN32_LEAN_AND_MEAN
+
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+typedef struct RnWin32SocketTCP
+{
+    SOCKET            handle;
+    RnSockAddrStorage storage;
+}
+RnWin32SocketTCP;
 
 RnWin32SocketTCP*
 rnWin32SocketTCPReserve(RnMemoryArena* arena);

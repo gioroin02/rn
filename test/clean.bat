@@ -1,6 +1,5 @@
 @echo off
 
-del .\bin\*.exe
-del .\bin\*.pdb
+del .\bin\*.*
 
 cls

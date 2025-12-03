@@ -5,7 +5,7 @@
 
 #if RN_SYSTEM == RN_SYSTEM_WINDOWS
 
-    #include "../../win32/network/socket-tcp.c"
+    #include "../../win32/network/export.c"
 
     #define __rnSocketTCPReserve__ rnWin32SocketTCPReserve
     #define __rnSocketTCPCreate__  rnWin32SocketTCPCreate
