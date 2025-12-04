@@ -17,12 +17,24 @@ typedef enum RnAsyncIOEventKind
 }
 RnAsyncIOEventKind;
 
+typedef struct RnAsyncIOEventAccept
+{
+    RnSocketTCP* socket;
+}
+RnAsyncIOEventAccept;
+
 typedef struct RnAsyncIOEvent
 {
     RnAsyncIOEventKind kind;
 
-    RnSocketTCP* socket;
+    union
+    {
+        RnAsyncIOEventAccept accept;
+    };
 }
 RnAsyncIOEvent;
+
+RnAsyncIOEvent
+rnAsyncIOEventAccept(RnSocketTCP* socket);
 
 #endif // RN_WIN32_ASYNCIO_EVENT_H

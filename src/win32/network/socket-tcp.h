@@ -30,10 +30,7 @@ void
 rnWin32SocketTCPDestroy(RnWin32SocketTCP* self);
 
 b32
-rnWin32SocketTCPBind(RnWin32SocketTCP* self, u16 port);
-
-b32
-rnWin32SocketTCPListen(RnWin32SocketTCP* self);
+rnWin32SocketTCPBindAndListen(RnWin32SocketTCP* self, u16 port);
 
 b32
 rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port);

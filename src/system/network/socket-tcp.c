@@ -7,15 +7,14 @@
 
     #include "../../win32/network/export.c"
 
-    #define __rnSocketTCPReserve__ rnWin32SocketTCPReserve
-    #define __rnSocketTCPCreate__  rnWin32SocketTCPCreate
-    #define __rnSocketTCPAccept__  rnWin32SocketTCPAccept
-    #define __rnSocketTCPDestroy__ rnWin32SocketTCPDestroy
-    #define __rnSocketTCPBind__    rnWin32SocketTCPBind
-    #define __rnSocketTCPListen__  rnWin32SocketTCPListen
-    #define __rnSocketTCPConnect__ rnWin32SocketTCPConnect
-    #define __rnSocketTCPWrite__   rnWin32SocketTCPWrite
-    #define __rnSocketTCPRead__    rnWin32SocketTCPRead
+    #define __rnSocketTCPReserve__       rnWin32SocketTCPReserve
+    #define __rnSocketTCPCreate__        rnWin32SocketTCPCreate
+    #define __rnSocketTCPAccept__        rnWin32SocketTCPAccept
+    #define __rnSocketTCPDestroy__       rnWin32SocketTCPDestroy
+    #define __rnSocketTCPBindAndListen__ rnWin32SocketTCPBindAndListen
+    #define __rnSocketTCPConnect__       rnWin32SocketTCPConnect
+    #define __rnSocketTCPWrite__         rnWin32SocketTCPWrite
+    #define __rnSocketTCPRead__          rnWin32SocketTCPRead
 
 #else
 
@@ -48,15 +47,9 @@ rnSocketTCPDestroy(RnSocketTCP* self)
 }
 
 b32
-rnSocketTCPBind(RnSocketTCP* self, u16 port)
+rnSocketTCPBindAndListen(RnSocketTCP* self, u16 port)
 {
-    return __rnSocketTCPBind__(self, port);
-}
-
-b32
-rnSocketTCPListen(RnSocketTCP* self)
-{
-    return __rnSocketTCPListen__(self);
+    return __rnSocketTCPBindAndListen__(self, port);
 }
 
 b32

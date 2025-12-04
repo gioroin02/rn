@@ -4,6 +4,7 @@
 #include "../../../src/system/network/export.h"
 
 #include <stdio.h>
+#include <string.h>
 
 int
 main(int argc, char** argv)
@@ -18,19 +19,17 @@ main(int argc, char** argv)
     rnSocketUDPCreate(socket, RnAddressIP_IPv4);
     rnSocketUDPConnect(socket, rnAddressIPv4Local(), 50000);
 
-    u8 msgOut[] = {"Messaggio da client"};
+    u8 buffer[256] = {"Ciao!"};
 
-    ssize msgOutSize  = sizeof(msgOut);
-    ssize msgOutCount = sizeof(msgOut);
+    ssize size = strlen(((char*) buffer));
 
-    rnSocketUDPWrite(socket, msgOut, msgOutCount);
+    rnSocketUDPWrite(socket, buffer, size);
 
-    u8 msgIn[256] = {0};
+    memset(buffer, 0, 256);
 
-    ssize msgInSize  = sizeof(msgIn);
-    ssize msgInCount = rnSocketUDPRead(socket, msgIn, msgInSize);
+    size = rnSocketUDPRead(socket, buffer, 256);
 
-    printf("%s\n", msgIn);
+    printf("%.*s\n", ((int) size), buffer);
 
     rnSocketUDPDestroy(socket);
 

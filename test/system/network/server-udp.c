@@ -25,27 +25,19 @@ main(int argc, char** argv)
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
     rnSocketUDPCreate(socket, RnAddressIP_IPv4);
-
-    if (rnSocketUDPBind(socket, 50000) == 0)
-        return printf("Error during 'bind'\n");
+    rnSocketUDPBind(socket, 50000);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
         RnAddressIP address = {0};
         u16         port    = 0;
 
-        u8 msgIn[256] = {0};
+        u8 buffer[256] = {0};
 
-        ssize msgInSize  = sizeof(msgIn);
-        ssize msgInCount = rnSocketUDPReadHost(socket, msgIn, msgInSize, &address, &port);
+        ssize size = rnSocketUDPReadHost(socket, buffer, 256, &address, &port);
 
-        printf("%s\n", msgIn);
+        printf("%.*s\n", ((int) size), buffer);
 
-        u8 msgOut[] = {"Messaggio da server"};
-
-        ssize msgOutSize  = sizeof(msgOut);
-        ssize msgOutCount = sizeof(msgOut);
-
-        rnSocketUDPWriteHost(socket, msgOut, msgOutCount, address, port);
+        rnSocketUDPWriteHost(socket, buffer, size, address, port);
     }
 
     rnSocketUDPDestroy(socket);

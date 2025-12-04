@@ -16,32 +16,20 @@ main(int argc, char** argv)
     RnSocketTCP* listener = rnSocketTCPReserve(&arena);
 
     rnSocketTCPCreate(listener, RnAddressIP_IPv4);
-
-    if (rnSocketTCPBind(listener, 50000) == 0)
-        return printf("Error during bind\n");
-
-    if (rnSocketTCPListen(listener) == 0)
-        return printf("Error during listen\n");
+    rnSocketTCPBindAndListen(listener, 50000);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
         RnSocketTCP* socket = rnSocketTCPReserve(&arena);
 
         rnSocketTCPAccept(listener, socket);
 
-        u8 msgIn[256] = {0};
+        u8 buffer[256] = {0};
 
-        ssize msgInSize  = sizeof(msgIn);
-        ssize msgInCount = rnSocketTCPRead(socket, msgIn, msgInSize);
+        ssize size = rnSocketTCPRead(socket, buffer, 256);
 
-        printf("%s\n", msgIn);
+        printf("%.*s\n", ((int) size), buffer);
 
-        u8 msgOut[] = {"Messaggio da server"};
-
-        ssize msgOutSize  = sizeof(msgOut);
-        ssize msgOutCount = sizeof(msgOut);
-
-        rnSocketTCPWrite(socket, msgOut, msgOutCount);
-
+        rnSocketTCPWrite(socket, buffer, size);
         rnSocketTCPDestroy(socket);
 
         rnMemoryArenaRelease(&arena, socket);
