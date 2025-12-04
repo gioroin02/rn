@@ -17,7 +17,10 @@ main(int argc, char** argv)
 
     rnSocketTCPCreate(listener, RnAddressIP_IPv4);
 
-    if (rnSocketTCPListen(listener, 50000) == 0)
+    if (rnSocketTCPBind(listener, 50000) == 0)
+        return printf("Error during bind\n");
+
+    if (rnSocketTCPListen(listener) == 0)
         return printf("Error during listen\n");
 
     for (ssize conns = 0; conns < 2; conns += 1) {

@@ -1,13 +1,40 @@
 #ifndef RN_WIN32_ASYNCIO_QUEUE_C
 #define RN_WIN32_ASYNCIO_QUEUE_C
 
-#include "./queue.h"
-
+// TODO(gio): remove
 #include <stdio.h>
+
+#include "./queue.h"
 
 extern LPFN_CONNECTEX            connectEx;
 extern LPFN_ACCEPTEX             acceptEx;
 extern LPFN_GETACCEPTEXSOCKADDRS getAcceptExSockAddrs;
+
+static RnWin32AsyncIOTask*
+rnWin32AsyncIOQueueRemoveTaskByOverlapped(RnWin32AsyncIOQueue* self, OVERLAPPED* overlap)
+{
+    if (self == 0 || overlap == 0) return 0;
+
+    for (RnWin32AsyncIOTask* task = self->head; task != 0; task = task->next) {
+        if (&task->overlap == overlap) {
+            if (task->prev)
+                task->prev->next = task->next;
+            else
+                self->head = task->next;
+
+            if (task->next)
+                task->next->prev = task->prev;
+            else
+                self->tail = task->prev;
+
+            task->prev = task->next = NULL;
+
+            return task;
+        }
+    }
+
+    return 0;
+}
 
 RnWin32AsyncIOQueue*
 rnWin32AsyncIOQueueReserve(RnMemoryArena* arena)
@@ -47,8 +74,6 @@ rnWin32AsyncIOQueueBindSocketTCP(RnWin32AsyncIOQueue* self, RnWin32SocketTCP* va
     if (self == 0 || value == 0 || value->storage.ss_family == 0)
         return 0;
 
-    if (value->handle == INVALID_SOCKET) return 0;
-
     HANDLE handle = ((HANDLE) value->handle);
 
     if (CreateIoCompletionPort(handle, self->handle, 0, 0) == 0)
@@ -60,14 +85,12 @@ rnWin32AsyncIOQueueBindSocketTCP(RnWin32AsyncIOQueue* self, RnWin32SocketTCP* va
 b32
 rnWin32SocketTCPAcceptAsync(RnWin32SocketTCP* self, RnWin32SocketTCP* value, RnMemoryArena* arena, RnWin32AsyncIOQueue* queue)
 {
-    ssize size = 0;
+    ssize size = sizeof(RnSockAddrStorage);
 
     if (self == 0 || value == 0 || queue == 0) return 0;
 
-    if (self->storage.ss_family == AF_INET)  size = sizeof(RnSockAddrIn4) + 16;
-    if (self->storage.ss_family == AF_INET6) size = sizeof(RnSockAddrIn6) + 16;
-
-    if (size == 0 || rnWin32AsyncIOQueueBindSocketTCP(queue, value) == 0) return 0;
+    if (rnWin32AsyncIOQueueBindSocketTCP(queue, value) == 0)
+        return 0;
 
     RnWin32AsyncIOTask* task = rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
 
@@ -75,7 +98,6 @@ rnWin32SocketTCPAcceptAsync(RnWin32SocketTCP* self, RnWin32SocketTCP* value, RnM
 
     task->kind         = RnAsyncIOEvent_Accept;
     task->socket       = self;
-    task->overlap      = (OVERLAPPED) {.hEvent = (HANDLE) task};
     task->acceptSocket = value;
     task->acceptBuffer = rnMemoryArenaReserveManyOf(arena, u8, size * 2);
     task->acceptSize   = size;
@@ -88,10 +110,10 @@ rnWin32SocketTCPAcceptAsync(RnWin32SocketTCP* self, RnWin32SocketTCP* value, RnM
 
     DWORD bytes = 0;
 
-    BOOL status = acceptEx(task->socket->handle, task->acceptSocket->handle,
+    BOOL status = acceptEx(self->handle, value->handle,
         task->acceptBuffer, 0, size, size, &bytes, &task->overlap);
 
-    if (status == 0 && WSAGetLastError() != ERROR_IO_PENDING)
+    if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
         return 0;
 
     return 1;
@@ -122,27 +144,15 @@ rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, RnAsyncIOEvent* event, ssize 
         return 0;
     }
 
-    printf("Task found! %u\n", status);
-
-    RnWin32AsyncIOTask* task = ((RnWin32AsyncIOTask*) overlap->hEvent);
-
-    if (task->prev != 0)
-        task->prev->next = task->next;
-    else
-        self->head = task->next;
-
-    if (task->next != 0)
-        task->next->prev = task->prev;
-    else
-        self->tail = task->prev;
+    RnWin32AsyncIOTask* task = rnWin32AsyncIOQueueRemoveTaskByOverlapped(self, overlap);
 
     switch (task->kind) {
         case RnAsyncIOEvent_Accept: {
-            setsockopt(task->acceptSocket->handle, SOL_SOCKET,
-                SO_UPDATE_ACCEPT_CONTEXT, ((char*) &task->socket->handle), sizeof(SOCKET));
+            setsockopt(task->acceptSocket->handle, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
+                ((char*) &task->socket->handle), sizeof(task->socket->handle));
 
-            RnSockAddrStorage localAddr  = {0};
-            INT               localSize  = task->acceptSize;
+            RnSockAddrStorage localAddr = {0};
+            INT               localSize = task->acceptSize;
             RnSockAddrStorage otherAddr = {0};
             INT               otherSize = task->acceptSize;
 

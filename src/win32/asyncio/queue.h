@@ -13,17 +13,19 @@
 
 typedef struct RnWin32AsyncIOTask
 {
+    /* Inherits */
+    OVERLAPPED overlap;
+
     RnAsyncIOEventKind kind;
-
-    RnWin32SocketTCP* socket;
-    OVERLAPPED        overlap;
-
-    RnWin32SocketTCP* acceptSocket;
-    u8*               acceptBuffer;
-    ssize             acceptSize;
 
     struct RnWin32AsyncIOTask* next;
     struct RnWin32AsyncIOTask* prev;
+
+    RnWin32SocketTCP*  socket;
+    RnWin32SocketTCP*  acceptSocket;
+    u8*                acceptBuffer;
+    ssize              acceptSize;
+
 }
 RnWin32AsyncIOTask;
 

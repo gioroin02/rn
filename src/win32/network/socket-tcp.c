@@ -58,7 +58,7 @@ rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
 }
 
 b32
-rnWin32SocketTCPListen(RnWin32SocketTCP* self, u16 port)
+rnWin32SocketTCPBind(RnWin32SocketTCP* self, u16 port)
 {
     if (self == 0 || port <= 0) return 0;
 
@@ -76,7 +76,16 @@ rnWin32SocketTCPListen(RnWin32SocketTCP* self, u16 port)
     if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
         return 0;
 
-    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR) return 0;
+    return 1;
+}
+
+b32
+rnWin32SocketTCPListen(RnWin32SocketTCP* self)
+{
+    if (self == 0) return 0;
+
+    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
+        return 0;
 
     return 1;
 }

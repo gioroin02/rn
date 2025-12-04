@@ -19,7 +19,8 @@ rnWin32NetworkStart()
 
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) return 0;
 
-    SOCKET handle = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    SOCKET handle = WSASocket(AF_INET,
+        SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
