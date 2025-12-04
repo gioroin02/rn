@@ -3,11 +3,6 @@
 
 #include "./common.h"
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <winsock2.h>
-#include <mswsock.h>
-
 LPFN_CONNECTEX            connectEx            = 0;
 LPFN_ACCEPTEX             acceptEx             = 0;
 LPFN_GETACCEPTEXSOCKADDRS getAcceptExSockAddrs = 0;

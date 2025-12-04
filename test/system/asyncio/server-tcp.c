@@ -25,7 +25,7 @@ main(int argc, char** argv)
 
     RnSocketTCP* socket = rnSocketTCPReserve(&arena);
 
-    rnAsyncIOQueueSubmit(queue, &arena,
+    rnAsyncIOQueueSubmit(queue,
         rnAsyncIOTaskAccept(&arena, listener, socket));
 
     b32   active = 1;
@@ -52,7 +52,7 @@ main(int argc, char** argv)
                 rnSocketTCPWrite(socket, buffer, size);
                 rnSocketTCPDestroy(socket);
 
-                rnAsyncIOQueueSubmit(queue, &arena,
+                rnAsyncIOQueueSubmit(queue,
                     rnAsyncIOTaskAccept(&arena, listener, socket));
             }
         }

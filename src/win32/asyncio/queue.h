@@ -22,7 +22,7 @@ void
 rnWin32AsyncIOQueueDestroy(RnWin32AsyncIOQueue* self);
 
 b32
-rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* self, RnMemoryArena* arena, RnWin32AsyncIOTask* task);
+rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* task);
 
 b32
 rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, RnAsyncIOEvent* event, ssize timeout);

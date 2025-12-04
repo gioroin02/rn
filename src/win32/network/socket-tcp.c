@@ -36,7 +36,8 @@ rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 
     RnSockAddrStorage storage = {0};
 
-    SOCKET handle = accept(self->handle, ((RnSockAddr*) &storage), &type);
+    SOCKET handle = accept(self->handle,
+        ((RnSockAddr*) &storage), &type);
 
     if (handle == INVALID_SOCKET) return 0;
 

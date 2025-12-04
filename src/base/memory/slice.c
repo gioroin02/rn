@@ -6,18 +6,19 @@
 RnMemorySlice
 rnMemorySliceMake(void* memory, ssize start, ssize stop, ssize step)
 {
-	RnMemorySlice result = {0};
+    RnMemorySlice result = {0};
 
-	if (memory == 0 || stop <= start || step <= 0)
-		return result;
+    if (memory == 0 || stop <= start || step <= 0)
+        return result;
 
-    if (stop - start > RN_MAX_SSIZE / step) return result;
+    if (stop - start > RN_MAX_SSIZE / step)
+        return result;
 
-	result.values = ((u8*) memory) + start * step;
-	result.size   = stop - start;
-	result.step   = step;
+    result.values = ((u8*) memory) + start * step;
+    result.size   = stop - start;
+    result.step   = step;
 
-	return result;
+    return result;
 }
 
 ssize

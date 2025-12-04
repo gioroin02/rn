@@ -5,13 +5,19 @@
 
 #define RN_ADDRESS_IPV4_SIZE ((ssize) 4)
 
-#define rnAddressIPv4Empty() ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {0}})
-#define rnAddressIPv4Local() ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {[0] = 127, [3] = 1}})
+#define rnAddressIPv4Empty() \
+    ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {0}})
+
+#define rnAddressIPv4Local() \
+    ((RnAddressIP) {.kind = RnAddressIP_IPv4, .ipv4.values = {[0] = 127, [3] = 1}})
 
 #define RN_ADDRESS_IPV6_SIZE ((ssize) 8)
 
-#define rnAddressIPv6Empty() ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {0}})
-#define rnAddressIPv6Local() ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {[7] = 1}})
+#define rnAddressIPv6Empty() \
+    ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {0}})
+
+#define rnAddressIPv6Local() \
+    ((RnAddressIP) {.kind = RnAddressIP_IPv6, .ipv6.values = {[7] = 1}})
 
 typedef enum RnAddressIPKind
 {

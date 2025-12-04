@@ -80,7 +80,7 @@ rnWin32AsyncIOQueueDestroy(RnWin32AsyncIOQueue* self)
 }
 
 b32
-rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* queue, RnMemoryArena* arena, RnWin32AsyncIOTask* task)
+rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* queue, RnWin32AsyncIOTask* task)
 {
     if (queue == 0 || task == 0) return 0;
 

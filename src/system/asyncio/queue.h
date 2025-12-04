@@ -16,7 +16,7 @@ void
 rnAsyncIOQueueDestroy(RnAsyncIOQueue* self);
 
 b32
-rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnMemoryArena* arena, RnAsyncIOTask* task);
+rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task);
 
 b32
 rnAsyncIOQueuePoll(RnAsyncIOQueue* self, RnAsyncIOEvent* event, ssize timeout);

@@ -38,9 +38,9 @@ rnAsyncIOQueueDestroy(RnAsyncIOQueue* self)
 }
 
 b32
-rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnMemoryArena* arena, RnAsyncIOTask* task)
+rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task)
 {
-    return __rnAsyncIOQueueSubmit__(self, arena, task);
+    return __rnAsyncIOQueueSubmit__(self, task);
 }
 
 b32

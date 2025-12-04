@@ -4,7 +4,7 @@
 #include "./platform.h"
 #include "./defines.h"
 
-/* ssize numbers */
+/* Signed numbers */
 
 typedef char      s8;
 typedef short     s16;

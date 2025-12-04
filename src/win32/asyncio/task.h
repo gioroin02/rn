@@ -3,14 +3,6 @@
 
 #include "./import.h"
 
-#pragma comment(lib, "ws2_32.lib")
-
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-#include <winsock2.h>
-#include <mswsock.h>
-
 typedef struct RnWin32AyncIOTaskAccept
 {
     RnWin32SocketTCP* listener;
