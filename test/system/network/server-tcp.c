@@ -16,7 +16,9 @@ main(int argc, char** argv)
     RnSocketTCP* listener = rnSocketTCPReserve(&arena);
 
     rnSocketTCPCreate(listener, RnAddressIP_IPv4);
-    rnSocketTCPBindAndListen(listener, 50000);
+
+    rnSocketTCPBind(listener, 50000);
+    rnSocketTCPListen(listener);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
         RnSocketTCP* socket = rnSocketTCPReserve(&arena);

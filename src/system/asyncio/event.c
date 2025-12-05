@@ -15,4 +15,16 @@ rnAsyncIOEventAccept(RnSocketTCP* socket)
     };
 }
 
+RnAsyncIOEvent
+rnAsyncIOEventConnect(b32 status)
+{
+    return (RnAsyncIOEvent) {
+        .kind = RnAsyncIOEvent_Connect,
+
+        .connect = {
+            .status = status != 0 ? 1 : 0,
+        },
+    };
+}
+
 #endif // RN_SYSTEM_ASYNCIO_EVENT_C

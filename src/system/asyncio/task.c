@@ -7,7 +7,9 @@
 
     #include "../../win32/asyncio/export.c"
 
-    #define __rnAsyncIOTaskAccept__ rnWin32AsyncIOTaskAccept
+    #define __rnAsyncIOTaskAccept__  rnWin32AsyncIOTaskAccept
+    #define __rnAsyncIOTaskConnect__ rnWin32AsyncIOTaskConnect
+
 
 #else
 
@@ -16,9 +18,15 @@
 #endif
 
 RnAsyncIOTask*
-rnAsyncIOTaskAccept(RnMemoryArena* arena, RnSocketTCP* listener, RnSocketTCP* socket)
+rnAsyncIOTaskAccept(RnMemoryArena* arena, RnSocketTCP* self, RnSocketTCP* value)
 {
-    return __rnAsyncIOTaskAccept__(arena, listener, socket);
+    return __rnAsyncIOTaskAccept__(arena, self, value);
+}
+
+RnAsyncIOTask*
+rnAsyncIOTaskConnect(RnMemoryArena* arena, RnSocketTCP* self, RnAddressIP address, u16 port)
+{
+    return __rnAsyncIOTaskConnect__(arena, self, address, port);
 }
 
 #endif // RN_SYSTEM_ASYNCIO_TASK_C

@@ -3,14 +3,22 @@
 
 #include "./import.h"
 
-typedef struct RnWin32AyncIOTaskAccept
+typedef struct RnWin32AsyncIOTaskAccept
 {
-    RnWin32SocketTCP* listener;
-    RnWin32SocketTCP* socket;
+    RnWin32SocketTCP* self;
+    RnWin32SocketTCP* value;
     u8*               buffer;
     ssize             size;
 }
 RnWin32AsyncIOTaskAccept;
+
+typedef struct RnWin32AsyncIOTaskConnect
+{
+    RnWin32SocketTCP* self;
+    RnAddressIP       address;
+    u16               port;
+}
+RnWin32AsyncIOTaskConnect;
 
 typedef struct RnWin32AsyncIOTask
 {
@@ -23,12 +31,16 @@ typedef struct RnWin32AsyncIOTask
 
     union
     {
-        RnWin32AsyncIOTaskAccept accept;
+        RnWin32AsyncIOTaskAccept  accept;
+        RnWin32AsyncIOTaskConnect connect;
     };
 }
 RnWin32AsyncIOTask;
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* listener, RnWin32SocketTCP* socket);
+rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32SocketTCP* value);
+
+RnWin32AsyncIOTask*
+rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* self, RnAddressIP address, u16 port);
 
 #endif // RN_WIN32_ASYNCIO_TASK_H

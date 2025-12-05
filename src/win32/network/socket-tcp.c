@@ -59,16 +59,19 @@ rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
 }
 
 b32
-rnWin32SocketTCPBindAndListen(RnWin32SocketTCP* self, u16 port)
+rnWin32SocketTCPBind(RnWin32SocketTCP* self, u16 port)
 {
-    if (self == 0 || port <= 0) return 0;
-
-    ssize type = 0;
+    if (self == 0 || port < 0) return 0;
 
     RnAddressIPKind kind = RnAddressIP_None;
+    ssize           type = 0;
 
-    if (self->storage.ss_family == AF_INET)  kind = RnAddressIP_IPv4;
-    if (self->storage.ss_family == AF_INET6) kind = RnAddressIP_IPv6;
+    switch (self->storage.ss_family) {
+        case AF_INET:  kind = RnAddressIP_IPv4; break;
+        case AF_INET6: kind = RnAddressIP_IPv6; break;
+
+        default: break;
+    }
 
     if (kind == RnAddressIP_None) return 0;
 
@@ -77,7 +80,16 @@ rnWin32SocketTCPBindAndListen(RnWin32SocketTCP* self, u16 port)
     if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
         return 0;
 
-    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR) return 0;
+    return 1;
+}
+
+b32
+rnWin32SocketTCPListen(RnWin32SocketTCP* self)
+{
+    if (self == 0) return 0;
+
+    if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
+        return 0;
 
     return 1;
 }

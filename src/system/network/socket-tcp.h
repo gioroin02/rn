@@ -18,7 +18,10 @@ void
 rnSocketTCPDestroy(RnSocketTCP* self);
 
 b32
-rnSocketTCPBindAndListen(RnSocketTCP* self, u16 port);
+rnSocketTCPBind(RnSocketTCP* self, u16 port);
+
+b32
+rnSocketTCPListen(RnSocketTCP* self);
 
 b32
 rnSocketTCPConnect(RnSocketTCP* self, RnAddressIP address, u16 port);

@@ -12,8 +12,10 @@ typedef enum RnAsyncIOEventKind
 
     RnAsyncIOEvent_Error,
 
-    RnAsyncIOEvent_Connect,
     RnAsyncIOEvent_Accept,
+    RnAsyncIOEvent_Connect,
+    RnAsyncIOEvent_Write,
+    RnAsyncIOEvent_Read,
 }
 RnAsyncIOEventKind;
 
@@ -23,18 +25,28 @@ typedef struct RnAsyncIOEventAccept
 }
 RnAsyncIOEventAccept;
 
+typedef struct RnAsyncIOEventConnect
+{
+    b32 status;
+}
+RnAsyncIOEventConnect;
+
 typedef struct RnAsyncIOEvent
 {
     RnAsyncIOEventKind kind;
 
     union
     {
-        RnAsyncIOEventAccept accept;
+        RnAsyncIOEventAccept  accept;
+        RnAsyncIOEventConnect connect;
     };
 }
 RnAsyncIOEvent;
 
 RnAsyncIOEvent
 rnAsyncIOEventAccept(RnSocketTCP* socket);
+
+RnAsyncIOEvent
+rnAsyncIOEventConnect(b32 status);
 
 #endif // RN_WIN32_ASYNCIO_EVENT_H

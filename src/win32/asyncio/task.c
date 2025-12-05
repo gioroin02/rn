@@ -4,7 +4,7 @@
 #include "./task.h"
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* listener, RnWin32SocketTCP* socket)
+rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 {
     ssize size = (sizeof(RnSockAddrStorage) + 16) * 2;
 
@@ -13,24 +13,24 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* listener, RnWin
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
 
-    switch (listener->storage.ss_family) {
+    switch (self->storage.ss_family) {
         case AF_INET:  kind = RnAddressIP_IPv4; break;
         case AF_INET6: kind = RnAddressIP_IPv6; break;
 
         default: break;
     }
 
-    if (result == 0 || rnWin32SocketTCPCreate(socket, kind) == 0)
+    if (result == 0 || rnWin32SocketTCPCreate(value, kind) == 0)
         return 0;
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Accept,
 
         .accept = {
-            .listener = listener,
-            .socket   = socket,
-            .buffer   = rnMemoryArenaReserveManyOf(arena, u8, size),
-            .size     = size,
+            .self   = self,
+            .value  = value,
+            .buffer = rnMemoryArenaReserveManyOf(arena, u8, size),
+            .size   = size,
         },
     };
 
@@ -39,6 +39,36 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* listener, RnWin
     rnMemoryArenaRelease(arena, result);
 
     return 0;
+}
+
+RnWin32AsyncIOTask*
+rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+{
+    RnAddressIPKind kind = RnAddressIP_None;
+
+    RnWin32AsyncIOTask* result =
+        rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
+
+    switch (self->storage.ss_family) {
+        case AF_INET:  kind = RnAddressIP_IPv4; break;
+        case AF_INET6: kind = RnAddressIP_IPv6; break;
+
+        default: break;
+    }
+
+    if (result == 0 || rnWin32SocketTCPBind(self, 0) == 0) return 0;
+
+    *result = (RnWin32AsyncIOTask) {
+        .kind = RnAsyncIOEvent_Connect,
+
+        .connect = {
+            .self    = self,
+            .address = address,
+            .port    = port,
+        },
+    };
+
+    return result;
 }
 
 #endif // RN_WIN32_ASYNCIO_TASK_C

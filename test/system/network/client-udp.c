@@ -17,17 +17,17 @@ main(int argc, char** argv)
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
     rnSocketUDPCreate(socket, RnAddressIP_IPv4);
-    rnSocketUDPConnect(socket, rnAddressIPv4Local(), 50000);
 
     u8 buffer[256] = {"Ciao!"};
 
     ssize size = strlen(((char*) buffer));
 
-    rnSocketUDPWrite(socket, buffer, size);
+    rnSocketUDPWrite(socket, buffer, size,
+        rnAddressIPv4Local(), 50000);
 
     memset(buffer, 0, 256);
 
-    size = rnSocketUDPRead(socket, buffer, 256);
+    size = rnSocketUDPRead(socket, buffer, 256, 0, 0);
 
     printf("%.*s\n", ((int) size), buffer);
 

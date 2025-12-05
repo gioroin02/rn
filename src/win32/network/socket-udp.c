@@ -60,41 +60,8 @@ rnWin32SocketUDPBind(RnWin32SocketUDP* self, u16 port)
     return 1;
 }
 
-b32
-rnWin32SocketUDPConnect(RnWin32SocketUDP* self, RnAddressIP address, u16 port)
-{
-    if (self == 0 || port == 0 || address.kind == RnAddressIP_None)
-        return 0;
-
-    ssize type = 0;
-
-    RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
-
-    if (connect(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
-        return 0;
-
-    return 1;
-}
-
 ssize
-rnWin32SocketUDPWrite(RnWin32SocketUDP* self, u8* values, ssize size)
-{
-    if (self == 0 || values == 0 || size <= 0) return 0;
-
-    ssize count = 0;
-
-    for (ssize temp = 0; count < size; count += temp) {
-        temp = send(self->handle, ((char*) values + count),
-            ((int) size - count), 0);
-
-        if (temp <= 0 || temp > size - count) break;
-    }
-
-    return count;
-}
-
-ssize
-rnWin32SocketUDPWriteHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port)
+rnWin32SocketUDPWrite(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port)
 {
     if (self == 0 || values == 0 || size <= 0) return 0;
 
@@ -114,20 +81,7 @@ rnWin32SocketUDPWriteHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddr
 }
 
 ssize
-rnWin32SocketUDPRead(RnWin32SocketUDP* self, u8* values, ssize size)
-{
-    if (self == 0 || values == 0 || size <= 0) return 0;
-
-    ssize count = recv(self->handle,
-        ((char*) values), ((int) size), 0);
-
-    if (count < 0 || count >= size) return 0;
-
-    return count;
-}
-
-ssize
-rnWin32SocketUDPReadHost(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port)
+rnWin32SocketUDPRead(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port)
 {
     if (self == 0 || values == 0 || size <= 0) return 0;
 

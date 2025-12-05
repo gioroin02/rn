@@ -33,11 +33,11 @@ main(int argc, char** argv)
 
         u8 buffer[256] = {0};
 
-        ssize size = rnSocketUDPReadHost(socket, buffer, 256, &address, &port);
+        ssize size = rnSocketUDPRead(socket, buffer, 256, &address, &port);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        rnSocketUDPWriteHost(socket, buffer, size, address, port);
+        rnSocketUDPWrite(socket, buffer, size, address, port);
     }
 
     rnSocketUDPDestroy(socket);
