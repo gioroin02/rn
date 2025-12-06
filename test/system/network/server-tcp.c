@@ -12,9 +12,8 @@ main(int argc, char** argv)
 
     RnSocketTCP* listener = rnSocketTCPReserve(&arena);
 
-    rnSocketTCPCreate(listener, RnAddressIP_IPv4);
-
-    rnSocketTCPBind(listener, 50000);
+    rnSocketTCPCreate(listener, rnAddressIPv4Empty(), 50000);
+    rnSocketTCPBind(listener);
     rnSocketTCPListen(listener);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
@@ -30,8 +29,6 @@ main(int argc, char** argv)
 
         rnSocketTCPWrite(socket, buffer, size);
         rnSocketTCPDestroy(socket);
-
-        rnMemoryArenaRelease(&arena, socket);
     }
 
     rnSocketTCPDestroy(listener);

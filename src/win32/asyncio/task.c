@@ -6,7 +6,7 @@
 RnWin32AsyncIOTask*
 rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32SocketTCP* value)
 {
-    ssize size = (sizeof(RnSockAddrStorage) + 16) * 2;
+    ssize length = (sizeof(RnSockAddrStorage) + 16) * 2;
 
     RnAddressIPKind kind = RnAddressIP_None;
 
@@ -20,7 +20,7 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32
         default: break;
     }
 
-    if (result == 0 || rnWin32SocketTCPCreate(value, kind) == 0)
+    if (result == 0 || rnSocketTCPCreate(value, rnAddressIPEmpty(kind), 0) == 0)
         return 0;
 
     *result = (RnWin32AsyncIOTask) {
@@ -29,8 +29,8 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32
         .accept = {
             .socket = socket,
             .value  = value,
-            .buffer = rnMemoryArenaReserveManyOf(arena, u8, size),
-            .size   = size,
+            .buffer = rnMemoryArenaReserveManyOf(arena, u8, length),
+            .size   = length,
         },
     };
 
@@ -56,7 +56,7 @@ rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddr
         default: break;
     }
 
-    if (result == 0 || rnWin32SocketTCPBind(socket, 0) == 0) return 0;
+    if (result == 0 || rnSocketTCPBind(socket) == 0) return 0;
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Connect,

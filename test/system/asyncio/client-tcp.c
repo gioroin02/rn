@@ -12,13 +12,13 @@ main(int argc, char** argv)
 {
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
-    RnSocketTCP* socket = rnSocketTCPReserve(&arena);
-
-    rnSocketTCPCreate(socket, RnAddressIP_IPv4);
-
     RnAsyncIOQueue* queue = rnAsyncIOQueueReserve(&arena);
 
     rnAsyncIOQueueCreate(queue);
+
+    RnSocketTCP* socket = rnSocketTCPReserve(&arena);
+
+    rnSocketTCPCreate(socket, rnAddressIPv4Empty(), 0);
 
     rnAsyncIOQueueSubmit(queue,
         rnAsyncIOTaskConnect(&arena, socket, rnAddressIPv4Local(), 50000));

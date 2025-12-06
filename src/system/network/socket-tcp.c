@@ -12,6 +12,7 @@
     #define __rnSocketTCPAccept__  rnWin32SocketTCPAccept
     #define __rnSocketTCPDestroy__ rnWin32SocketTCPDestroy
     #define __rnSocketTCPBind__    rnWin32SocketTCPBind
+    #define __rnSocketTCPBindTo__  rnWin32SocketTCPBindTo
     #define __rnSocketTCPListen__  rnWin32SocketTCPListen
     #define __rnSocketTCPConnect__ rnWin32SocketTCPConnect
     #define __rnSocketTCPWrite__   rnWin32SocketTCPWrite
@@ -30,9 +31,9 @@ rnSocketTCPReserve(RnMemoryArena* arena)
 }
 
 b32
-rnSocketTCPCreate(RnSocketTCP* self, RnAddressIPKind kind)
+rnSocketTCPCreate(RnSocketTCP* self, RnAddressIP address, u16 port)
 {
-    return __rnSocketTCPCreate__(self, kind);
+    return __rnSocketTCPCreate__(self, address, port);
 }
 
 b32
@@ -48,9 +49,15 @@ rnSocketTCPDestroy(RnSocketTCP* self)
 }
 
 b32
-rnSocketTCPBind(RnSocketTCP* self, u16 port)
+rnSocketTCPBind(RnSocketTCP* self)
 {
-    return __rnSocketTCPBind__(self, port);
+    return __rnSocketTCPBind__(self);
+}
+
+b32
+rnSocketTCPBindTo(RnSocketTCP* self, RnAddressIP address, u16 port)
+{
+    return __rnSocketTCPBindTo__(self, address, port);
 }
 
 b32

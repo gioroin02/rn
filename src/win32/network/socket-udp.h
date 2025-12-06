@@ -14,13 +14,16 @@ RnWin32SocketUDP*
 rnWin32SocketUDPReserve(RnMemoryArena* arena);
 
 b32
-rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIPKind kind);
+rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIP address, u16 port);
 
 void
 rnWin32SocketUDPDestroy(RnWin32SocketUDP* self);
 
 b32
-rnWin32SocketUDPBind(RnWin32SocketUDP* self, u16 port);
+rnWin32SocketUDPBind(RnWin32SocketUDP* self);
+
+b32
+rnWin32SocketUDPBindTo(RnWin32SocketUDP* self, RnAddressIP address, u16 port);
 
 ssize
 rnWin32SocketUDPWrite(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port);

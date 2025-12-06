@@ -9,13 +9,16 @@ RnSocketUDP*
 rnSocketUDPReserve(RnMemoryArena* arena);
 
 b32
-rnSocketUDPCreate(RnSocketUDP* self, RnAddressIPKind kind);
+rnSocketUDPCreate(RnSocketUDP* self, RnAddressIP address, u16 port);
 
 void
 rnSocketUDPDestroy(RnSocketUDP* self);
 
 b32
-rnSocketUDPBind(RnSocketUDP* self, u16 port);
+rnSocketUDPBind(RnSocketUDP* self);
+
+b32
+rnSocketUDPBindTo(RnSocketUDP* self, RnAddressIP address, u16 port);
 
 ssize
 rnSocketUDPWrite(RnSocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port);

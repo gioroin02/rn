@@ -9,7 +9,7 @@ RnSocketTCP*
 rnSocketTCPReserve(RnMemoryArena* arena);
 
 b32
-rnSocketTCPCreate(RnSocketTCP* self, RnAddressIPKind kind);
+rnSocketTCPCreate(RnSocketTCP* self, RnAddressIP address, u16 port);
 
 b32
 rnSocketTCPAccept(RnSocketTCP* self, RnSocketTCP* value);
@@ -18,7 +18,10 @@ void
 rnSocketTCPDestroy(RnSocketTCP* self);
 
 b32
-rnSocketTCPBind(RnSocketTCP* self, u16 port);
+rnSocketTCPBind(RnSocketTCP* self);
+
+b32
+rnSocketTCPBindTo(RnSocketTCP* self, RnAddressIP address, u16 port);
 
 b32
 rnSocketTCPListen(RnSocketTCP* self);

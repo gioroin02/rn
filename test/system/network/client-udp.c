@@ -13,7 +13,7 @@ main(int argc, char** argv)
 
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(socket, RnAddressIP_IPv4);
+    rnSocketUDPCreate(socket, rnAddressIPv4Empty(), 0);
 
     u8 buffer[256] = {"Ciao!"};
 

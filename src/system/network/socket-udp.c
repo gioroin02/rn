@@ -7,12 +7,13 @@
 
     #include "../../win32/network/export.c"
 
-    #define __rnSocketUDPReserve__   rnWin32SocketUDPReserve
-    #define __rnSocketUDPCreate__    rnWin32SocketUDPCreate
-    #define __rnSocketUDPDestroy__   rnWin32SocketUDPDestroy
-    #define __rnSocketUDPBind__      rnWin32SocketUDPBind
-    #define __rnSocketUDPWrite__     rnWin32SocketUDPWrite
-    #define __rnSocketUDPRead__      rnWin32SocketUDPRead
+    #define __rnSocketUDPReserve__ rnWin32SocketUDPReserve
+    #define __rnSocketUDPCreate__  rnWin32SocketUDPCreate
+    #define __rnSocketUDPDestroy__ rnWin32SocketUDPDestroy
+    #define __rnSocketUDPBind__    rnWin32SocketUDPBind
+    #define __rnSocketUDPBindTo__  rnWin32SocketUDPBindTo
+    #define __rnSocketUDPWrite__   rnWin32SocketUDPWrite
+    #define __rnSocketUDPRead__    rnWin32SocketUDPRead
 
 #else
 
@@ -27,9 +28,9 @@ rnSocketUDPReserve(RnMemoryArena* arena)
 }
 
 b32
-rnSocketUDPCreate(RnSocketUDP* self, RnAddressIPKind kind)
+rnSocketUDPCreate(RnSocketUDP* self, RnAddressIP address, u16 port)
 {
-    return __rnSocketUDPCreate__(self, kind);
+    return __rnSocketUDPCreate__(self, address, port);
 }
 
 void
@@ -39,9 +40,15 @@ rnSocketUDPDestroy(RnSocketUDP* self)
 }
 
 b32
-rnSocketUDPBind(RnSocketUDP* self, u16 port)
+rnSocketUDPBind(RnSocketUDP* self)
 {
-    return __rnSocketUDPBind__(self, port);
+    return __rnSocketUDPBind__(self);
+}
+
+b32
+rnSocketUDPBindTo(RnSocketUDP* self, RnAddressIP address, u16 port)
+{
+    return __rnSocketUDPBindTo__(self, address, port);
 }
 
 ssize

@@ -13,7 +13,7 @@ main(int argc, char** argv)
 
     RnSocketTCP* socket = rnSocketTCPReserve(&arena);
 
-    rnSocketTCPCreate(socket, RnAddressIP_IPv4);
+    rnSocketTCPCreate(socket, rnAddressIPv4Empty(), 0);
     rnSocketTCPConnect(socket, rnAddressIPv4Local(), 50000);
 
     u8 buffer[256] = {"Ciao!"};

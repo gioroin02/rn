@@ -11,16 +11,15 @@ main(int argc, char** argv)
 {
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
-    RnSocketTCP* listener = rnSocketTCPReserve(&arena);
-
-    rnSocketTCPCreate(listener, RnAddressIP_IPv4);
-
-    rnSocketTCPBind(listener, 50000);
-    rnSocketTCPListen(listener);
-
     RnAsyncIOQueue* queue = rnAsyncIOQueueReserve(&arena);
 
     rnAsyncIOQueueCreate(queue);
+
+    RnSocketTCP* listener = rnSocketTCPReserve(&arena);
+
+    rnSocketTCPCreate(listener, rnAddressIPv4Empty(), 50000);
+    rnSocketTCPBind(listener);
+    rnSocketTCPListen(listener);
 
     RnSocketTCP* socket = rnSocketTCPReserve(&arena);
 

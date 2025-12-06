@@ -21,8 +21,8 @@ main(int argc, char** argv)
 
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(socket, RnAddressIP_IPv4);
-    rnSocketUDPBind(socket, 50000);
+    rnSocketUDPCreate(socket, rnAddressIPv4Empty(), 50000);
+    rnSocketUDPBind(socket);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
         RnAddressIP address = {0};

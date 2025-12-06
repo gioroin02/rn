@@ -10,12 +10,17 @@ rnWin32SocketTCPReserve(RnMemoryArena* arena)
 }
 
 b32
-rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
+rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 {
-    if (self == 0 || kind == RnAddressIP_None || rnWin32NetworkStart() == 0)
+    RnSockAddrStorage storage = {0};
+    ssize             length  = 0;
+
+    if (self == 0 || address.kind == RnAddressIP_None)
         return 0;
 
-    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
+    if (rnWin32NetworkStart() == 0) return 0;
+
+    storage = rnSockAddrStorageMake(address, port, &length);
 
     SOCKET handle = WSASocketA(storage.ss_family,
         SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
@@ -33,12 +38,14 @@ rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value)
 {
     if (self == 0 || value == 0) return 0;
 
-    int type = sizeof(RnSockAddrStorage);
+    if (rnWin32NetworkStart() == 0) return 0;
+
+    int length = sizeof(RnSockAddrStorage);
 
     RnSockAddrStorage storage = {0};
 
     SOCKET handle = accept(self->handle,
-        ((RnSockAddr*) &storage), &type);
+        ((RnSockAddr*) &storage), &length);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -62,26 +69,48 @@ rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
 }
 
 b32
-rnWin32SocketTCPBind(RnWin32SocketTCP* self, u16 port)
+rnWin32SocketTCPBind(RnWin32SocketTCP* self)
 {
-    if (self == 0 || port < 0) return 0;
+    ssize length = 0;
 
-    RnAddressIPKind kind = RnAddressIP_None;
-    ssize           type = 0;
+    if (self == 0) return 0;
 
     switch (self->storage.ss_family) {
-        case AF_INET:  kind = RnAddressIP_IPv4; break;
-        case AF_INET6: kind = RnAddressIP_IPv6; break;
+        case AF_INET:  length = sizeof(RnSockAddrIn4); break;
+        case AF_INET6: length = sizeof(RnSockAddrIn6); break;
 
         default: break;
     }
 
-    if (kind == RnAddressIP_None) return 0;
+    if (length == 0) return 0;
 
-    RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, port, &type);
+    int status = bind(self->handle,
+        ((RnSockAddr*) &self->storage), length);
 
-    if (bind(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
+    if (status == SOCKET_ERROR) return 0;
+
+    return 1;
+}
+
+b32
+rnWin32SocketTCPBindTo(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+{
+    RnSockAddrStorage storage = {0};
+    ssize             length  = 0;
+
+    if (self == 0) return 0;
+
+    storage = rnSockAddrStorageMake(address, port, &length);
+
+    if (storage.ss_family != self->storage.ss_family)
         return 0;
+
+    int status = bind(self->handle,
+        ((RnSockAddr*) &storage), length);
+
+    if (status == SOCKET_ERROR) return 0;
+
+    self->storage = storage;
 
     return 1;
 }
@@ -100,15 +129,18 @@ rnWin32SocketTCPListen(RnWin32SocketTCP* self)
 b32
 rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port)
 {
+    RnSockAddrStorage storage = {0};
+    ssize             length  = 0;
+
     if (self == 0 || port == 0 || address.kind == RnAddressIP_None)
         return 0;
 
-    ssize type = 0;
+    storage = rnSockAddrStorageMake(address, port, &length);
 
-    RnSockAddrStorage storage = rnSockAddrStorageMake(address, port, &type);
+    int status = connect(self->handle,
+        ((RnSockAddr*) &storage), length);
 
-    if (connect(self->handle, ((RnSockAddr*) &storage), type) == SOCKET_ERROR)
-        return 0;
+    if (status == SOCKET_ERROR) return 0;
 
     return 1;
 }
