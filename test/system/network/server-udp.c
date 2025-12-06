@@ -17,9 +17,6 @@ typedef struct sockaddr_in6 RnSockAddrIn6;
 int
 main(int argc, char** argv)
 {
-    rnSystemMemoryStart();
-    rnSystemNetworkStart();
-
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
@@ -41,7 +38,4 @@ main(int argc, char** argv)
     }
 
     rnSocketUDPDestroy(socket);
-
-    rnSystemNetworkStop();
-    rnSystemMemoryStop();
 }

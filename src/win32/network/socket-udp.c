@@ -12,7 +12,8 @@ rnWin32SocketUDPReserve(RnMemoryArena* arena)
 b32
 rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIPKind kind)
 {
-    if (self == 0 || kind == RnAddressIP_None) return 0;
+    if (self == 0 || kind == RnAddressIP_None || rnWin32NetworkStart() == 0)
+        return 0;
 
     RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
 
@@ -36,6 +37,8 @@ rnWin32SocketUDPDestroy(RnWin32SocketUDP* self)
         closesocket(self->handle);
 
     *self = (RnWin32SocketUDP) {0};
+
+    rnWin32NetworkStop();
 }
 
 b32

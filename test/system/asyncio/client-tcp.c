@@ -10,9 +10,6 @@
 int
 main(int argc, char** argv)
 {
-    rnSystemMemoryStart();
-    rnSystemNetworkStart();
-
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
     RnSocketTCP* socket = rnSocketTCPReserve(&arena);
@@ -56,7 +53,4 @@ main(int argc, char** argv)
     }
 
     rnSocketTCPDestroy(socket);
-
-    rnSystemNetworkStop();
-    rnSystemMemoryStop();
 }

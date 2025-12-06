@@ -9,9 +9,6 @@
 int
 main(int argc, char** argv)
 {
-    rnSystemMemoryStart();
-    rnSystemNetworkStart();
-
     RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
 
     RnSocketUDP* socket = rnSocketUDPReserve(&arena);
@@ -32,7 +29,4 @@ main(int argc, char** argv)
     printf("%.*s\n", ((int) size), buffer);
 
     rnSocketUDPDestroy(socket);
-
-    rnSystemNetworkStop();
-    rnSystemMemoryStop();
 }

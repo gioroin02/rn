@@ -12,7 +12,8 @@ rnWin32SocketTCPReserve(RnMemoryArena* arena)
 b32
 rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIPKind kind)
 {
-    if (self == 0 || kind == RnAddressIP_None) return 0;
+    if (self == 0 || kind == RnAddressIP_None || rnWin32NetworkStart() == 0)
+        return 0;
 
     RnSockAddrStorage storage = rnSockAddrStorageMakeAny(kind, 0, 0);
 
@@ -56,6 +57,8 @@ rnWin32SocketTCPDestroy(RnWin32SocketTCP* self)
         closesocket(self->handle);
 
     *self = (RnWin32SocketTCP) {0};
+
+    rnWin32NetworkStop();
 }
 
 b32

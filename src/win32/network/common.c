@@ -3,12 +3,23 @@
 
 #include "./common.h"
 
+static volatile LONG gWinsockRefs = 0;
+
 LPFN_CONNECTEX            connectEx            = 0;
 LPFN_ACCEPTEX             acceptEx             = 0;
 LPFN_GETACCEPTEXSOCKADDRS getAcceptExSockAddrs = 0;
 
-b32
+inline b32
 rnWin32NetworkStart()
+{
+    if (InterlockedIncrement(&gWinsockRefs) == 1)
+        return rnWin32NetworkStartImpl();
+
+    return 1;
+}
+
+b32
+rnWin32NetworkStartImpl()
 {
     WSADATA data = {0};
 
@@ -44,13 +55,20 @@ rnWin32NetworkStart()
     if (connectEx != 0 && acceptEx != 0 && getAcceptExSockAddrs != 0)
         return 1;
 
-    WSACleanup();
+    rnWin32NetworkStop();
 
     return 0;
 }
 
-void
+inline void
 rnWin32NetworkStop()
+{
+    if (InterlockedDecrement(&gWinsockRefs) == 0)
+        rnWin32NetworkStopImpl();
+}
+
+void
+rnWin32NetworkStopImpl()
 {
     WSACleanup();
 }
