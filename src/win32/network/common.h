@@ -16,13 +16,13 @@ typedef struct sockaddr         RnSockAddr;
 typedef struct sockaddr_in      RnSockAddrIn4;
 typedef struct sockaddr_in6     RnSockAddrIn6;
 
-inline b32
+b32
 rnWin32NetworkStart();
 
 b32
 rnWin32NetworkStartImpl();
 
-inline void
+void
 rnWin32NetworkStop();
 
 void

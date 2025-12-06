@@ -4,7 +4,7 @@
 #include "./task.h"
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32SocketTCP* value)
+rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32SocketTCP* value)
 {
     ssize size = (sizeof(RnSockAddrStorage) + 16) * 2;
 
@@ -13,7 +13,7 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32So
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
 
-    switch (self->storage.ss_family) {
+    switch (socket->storage.ss_family) {
         case AF_INET:  kind = RnAddressIP_IPv4; break;
         case AF_INET6: kind = RnAddressIP_IPv6; break;
 
@@ -27,7 +27,7 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32So
         .kind = RnAsyncIOEvent_Accept,
 
         .accept = {
-            .self   = self,
+            .socket = socket,
             .value  = value,
             .buffer = rnMemoryArenaReserveManyOf(arena, u8, size),
             .size   = size,
@@ -42,29 +42,77 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* self, RnWin32So
 }
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* self, RnAddressIP address, u16 port)
+rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddressIP address, u16 port)
 {
     RnAddressIPKind kind = RnAddressIP_None;
 
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
 
-    switch (self->storage.ss_family) {
+    switch (socket->storage.ss_family) {
         case AF_INET:  kind = RnAddressIP_IPv4; break;
         case AF_INET6: kind = RnAddressIP_IPv6; break;
 
         default: break;
     }
 
-    if (result == 0 || rnWin32SocketTCPBind(self, 0) == 0) return 0;
+    if (result == 0 || rnWin32SocketTCPBind(socket, 0) == 0) return 0;
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Connect,
 
         .connect = {
-            .self    = self,
+            .socket  = socket,
             .address = address,
             .port    = port,
+        },
+    };
+
+    return result;
+}
+
+RnWin32AsyncIOTask*
+rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size)
+{
+    RnWin32AsyncIOTask* result =
+        rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
+
+    if (result == 0) return 0;
+
+    *result = (RnWin32AsyncIOTask) {
+        .kind = RnAsyncIOEvent_Write,
+
+        .write = {
+            .socket = socket,
+            .buffer = (WSABUF) {
+                .buf = ((char*) buffer),
+                .len = size
+            },
+            .flags  = 0,
+        },
+    };
+
+    return result;
+}
+
+RnWin32AsyncIOTask*
+rnWin32AsyncIOTaskRead(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size)
+{
+    RnWin32AsyncIOTask* result =
+        rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
+
+    if (result == 0) return 0;
+
+    *result = (RnWin32AsyncIOTask) {
+        .kind = RnAsyncIOEvent_Read,
+
+        .write = {
+            .socket = socket,
+            .buffer = (WSABUF) {
+                .buf = ((char*) buffer),
+                .len = size
+            },
+            .flags  = 0,
         },
     };
 

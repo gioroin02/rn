@@ -4,9 +4,8 @@
 
 Things to add:
 
-1. Add async ReadSocketTCP, WriteSocketTCP tasks
-2. Add strings
-3. Add hashmap
+1. Add strings
+2. Add hashmap
 
 Things to fix:
 

@@ -90,14 +90,14 @@ rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* task)
 
             RnWin32AsyncIOTaskAccept accept = task->accept;
 
-            rnWin32AsyncIOQueueBindSocketTCP(self, accept.self);
+            rnWin32AsyncIOQueueBindSocketTCP(self, accept.socket);
 
             if (rnWin32AsyncIOQueueBindSocketTCP(self, accept.value) == 0)
                 return 0;
 
             DWORD bytes = 0;
 
-            BOOL status = acceptEx(accept.self->handle, accept.value->handle,
+            BOOL status = acceptEx(accept.socket->handle, accept.value->handle,
                 accept.buffer, 0, accept.size, accept.size, &bytes, &task->overlap);
 
             if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
@@ -107,17 +107,37 @@ rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* task)
         case RnAsyncIOEvent_Connect: {
             RnWin32AsyncIOTaskConnect connect = task->connect;
 
-            rnWin32AsyncIOQueueBindSocketTCP(self, connect.self);
+            rnWin32AsyncIOQueueBindSocketTCP(self, connect.socket);
 
             DWORD bytes = 0;
             ssize type  = 0;
 
             RnSockAddrStorage storage = rnSockAddrStorageMake(connect.address, connect.port, &type);
 
-            BOOL status = connectEx(connect.self->handle,
+            BOOL status = connectEx(connect.socket->handle,
                 ((RnSockAddr*) &storage), type, 0, 0, &bytes, &task->overlap);
 
             int error = WSAGetLastError();
+
+            if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
+                return 0;
+        } break;
+
+        case RnAsyncIOEvent_Write: {
+            RnWin32AsyncIOTaskWrite write = task->write;
+
+            int status = WSASend(write.socket->handle,
+                &write.buffer, 1, 0, write.flags, &task->overlap, 0);
+
+            if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
+                return 0;
+        } break;
+
+        case RnAsyncIOEvent_Read: {
+            RnWin32AsyncIOTaskRead read = task->read;
+
+            int status = WSARecv(read.socket->handle,
+                &read.buffer, 1, 0, &read.flags, &task->overlap, 0);
 
             if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
                 return 0;
@@ -163,6 +183,8 @@ rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, RnAsyncIOEvent* event, ssize 
 
     RnWin32AsyncIOTask* task = rnWin32AsyncIOQueueRemoveTaskByOverlapped(self, overlap);
 
+    if (task == 0) return 0;
+
     switch (task->kind) {
         case RnAsyncIOEvent_Accept: {
             RnWin32AsyncIOTaskAccept accept = task->accept;
@@ -173,7 +195,7 @@ rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, RnAsyncIOEvent* event, ssize 
             INT               otherSize = accept.size;
 
             setsockopt(accept.value->handle, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
-                ((char*) &accept.self->handle), sizeof(accept.self->handle));
+                ((char*) &accept.socket->handle), sizeof(accept.socket->handle));
 
             getAcceptExSockAddrs(accept.buffer, 0, accept.size, accept.size,
                 ((RnSockAddr**) &localAddr), &localSize, ((RnSockAddr**) &otherAddr), &otherSize);
@@ -181,23 +203,48 @@ rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, RnAsyncIOEvent* event, ssize 
             accept.value->storage = otherAddr;
 
             if (event != 0)
-                *event = rnAsyncIOEventAccept(accept.value);
+                *event = rnAsyncIOEventAccept(accept.socket, accept.value);
         } break;
 
         case RnAsyncIOEvent_Connect: {
             RnWin32AsyncIOTaskConnect connect = task->connect;
 
-            setsockopt(connect.self->handle,
+            setsockopt(connect.socket->handle,
                 SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, 0, 0);
 
             DWORD bytes = 0;
             DWORD flags = 0;
 
-            BOOL status = WSAGetOverlappedResult(connect.self->handle,
+            BOOL status = WSAGetOverlappedResult(connect.socket->handle,
                 &task->overlap, &bytes, 0, &flags);
 
             if (event != 0)
-                *event = rnAsyncIOEventConnect(status != 0 ? 1 : 0);
+                *event = rnAsyncIOEventConnect(connect.socket, status != 0 ? 1 : 0);
+        } break;
+
+        case RnAsyncIOEvent_Write: {
+            RnWin32AsyncIOTaskWrite write = task->write;
+
+            if (event != 0) {
+                u8*   buffer = ((u8*) write.buffer.buf);
+                ssize size   = write.buffer.len;
+
+                *event = rnAsyncIOEventWrite(write.socket, buffer, size, bytes);
+            }
+        } break;
+
+        case RnAsyncIOEvent_Read: {
+            RnWin32AsyncIOTaskRead read = task->read;
+
+            if (event != 0) {
+                u8*   buffer = ((u8*) read.buffer.buf);
+                ssize size   = read.buffer.len;
+
+                if (bytes != 0)
+                    *event = rnAsyncIOEventRead(read.socket, buffer, size, bytes);
+                else
+                    *event = rnAsyncIOEventClose(read.socket);
+            }
         } break;
 
         default: return 0;

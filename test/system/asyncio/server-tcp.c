@@ -30,30 +30,41 @@ main(int argc, char** argv)
     b32   active = 1;
     ssize conns  = 0;
 
-    for (ssize i = 0; active != 0 && i < 1000; i += 1) {
+    for (ssize i = 0; i < 1000 && active != 0; i += 1) {
         RnAsyncIOEvent event = {0};
 
         while (rnAsyncIOQueuePoll(queue, &event, 10) != 0) {
-            if (event.kind == RnAsyncIOEvent_Error)
-                active = 0;
+            if (event.kind == RnAsyncIOEvent_Error) active = 0;
 
             if (event.kind == RnAsyncIOEvent_Accept) {
-                RnSocketTCP* socket = event.accept.socket;
+                RnSocketTCP* socket = event.accept.value;
 
                 printf("client connected %lli!\n", i);
 
-                u8 buffer[256] = {0};
-
-                ssize size = rnSocketTCPRead(socket, buffer, 256);
-
-                printf("%.*s\n", ((int) size), buffer);
-
-                rnSocketTCPWrite(socket, buffer, size);
-                rnSocketTCPDestroy(socket);
+                u8* buffer = rnMemoryArenaReserveManyOf(&arena, u8, 256);
 
                 rnAsyncIOQueueSubmit(queue,
-                    rnAsyncIOTaskAccept(&arena, listener, socket));
+                    rnAsyncIOTaskRead(&arena, socket, buffer, 256));
+
+                RnSocketTCP* other = rnSocketTCPReserve(&arena);
+
+                rnAsyncIOQueueSubmit(queue,
+                    rnAsyncIOTaskAccept(&arena, listener, other));
             }
+
+            if (event.kind == RnAsyncIOEvent_Read) {
+                RnSocketTCP* socket = event.read.socket;
+                u8*          buffer = event.read.buffer;
+                ssize        count  = event.read.count;
+
+                printf("%.*s\n", ((int) count), buffer);
+
+                rnAsyncIOQueueSubmit(queue,
+                    rnAsyncIOTaskWrite(&arena, socket, buffer, count));
+            }
+
+            if (event.kind == RnAsyncIOEvent_Write)
+                rnSocketTCPDestroy(event.write.socket);
         }
     }
 

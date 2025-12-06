@@ -9,7 +9,7 @@ LPFN_CONNECTEX            connectEx            = 0;
 LPFN_ACCEPTEX             acceptEx             = 0;
 LPFN_GETACCEPTEXSOCKADDRS getAcceptExSockAddrs = 0;
 
-inline b32
+b32
 rnWin32NetworkStart()
 {
     if (InterlockedIncrement(&gWinsockRefs) == 1)
@@ -60,7 +60,7 @@ rnWin32NetworkStartImpl()
     return 0;
 }
 
-inline void
+void
 rnWin32NetworkStop()
 {
     if (InterlockedDecrement(&gWinsockRefs) == 0)

@@ -9,7 +9,8 @@
 
     #define __rnAsyncIOTaskAccept__  rnWin32AsyncIOTaskAccept
     #define __rnAsyncIOTaskConnect__ rnWin32AsyncIOTaskConnect
-
+    #define __rnAsyncIOTaskWrite__   rnWin32AsyncIOTaskWrite
+    #define __rnAsyncIOTaskRead__    rnWin32AsyncIOTaskRead
 
 #else
 
@@ -18,15 +19,27 @@
 #endif
 
 RnAsyncIOTask*
-rnAsyncIOTaskAccept(RnMemoryArena* arena, RnSocketTCP* self, RnSocketTCP* value)
+rnAsyncIOTaskAccept(RnMemoryArena* arena, RnSocketTCP* socket, RnSocketTCP* value)
 {
-    return __rnAsyncIOTaskAccept__(arena, self, value);
+    return __rnAsyncIOTaskAccept__(arena, socket, value);
 }
 
 RnAsyncIOTask*
-rnAsyncIOTaskConnect(RnMemoryArena* arena, RnSocketTCP* self, RnAddressIP address, u16 port)
+rnAsyncIOTaskConnect(RnMemoryArena* arena, RnSocketTCP* socket, RnAddressIP address, u16 port)
 {
-    return __rnAsyncIOTaskConnect__(arena, self, address, port);
+    return __rnAsyncIOTaskConnect__(arena, socket, address, port);
+}
+
+RnAsyncIOTask*
+rnAsyncIOTaskWrite(RnMemoryArena* arena, RnSocketTCP* socket, u8* buffer, ssize size)
+{
+    return __rnAsyncIOTaskWrite__(arena, socket, buffer, size);
+}
+
+RnAsyncIOTask*
+rnAsyncIOTaskRead(RnMemoryArena* arena, RnSocketTCP* socket, u8* buffer, ssize size)
+{
+    return __rnAsyncIOTaskRead__(arena, socket, buffer, size);
 }
 
 #endif // RN_SYSTEM_ASYNCIO_TASK_C
