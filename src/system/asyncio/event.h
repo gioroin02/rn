@@ -22,8 +22,8 @@ RnAsyncIOEventKind;
 
 typedef struct RnAsyncIOEventAccept
 {
+    RnSocketTCP* listener;
     RnSocketTCP* socket;
-    RnSocketTCP* value;
 }
 RnAsyncIOEventAccept;
 
@@ -37,18 +37,18 @@ RnAsyncIOEventConnect;
 typedef struct RnAsyncIOEventWrite
 {
     RnSocketTCP* socket;
-    u8*          buffer;
-    ssize        size;
-    ssize        count;
+    u8*          values;
+    ssize        start;
+    ssize        stop;
 }
 RnAsyncIOEventWrite;
 
 typedef struct RnAsyncIOEventRead
 {
     RnSocketTCP* socket;
-    u8*          buffer;
-    ssize        size;
-    ssize        count;
+    u8*          values;
+    ssize        start;
+    ssize        stop;
 }
 RnAsyncIOEventRead;
 
@@ -61,6 +61,7 @@ RnAsyncIOEventClose;
 typedef struct RnAsyncIOEvent
 {
     RnAsyncIOEventKind kind;
+    void*              ctxt;
 
     union
     {
@@ -74,18 +75,18 @@ typedef struct RnAsyncIOEvent
 RnAsyncIOEvent;
 
 RnAsyncIOEvent
-rnAsyncIOEventAccept(RnSocketTCP* socket, RnSocketTCP* value);
+rnAsyncIOEventAccept(void* ctxt, RnSocketTCP* litener, RnSocketTCP* socket);
 
 RnAsyncIOEvent
-rnAsyncIOEventConnect(RnSocketTCP* socket, b32 status);
+rnAsyncIOEventConnect(void* ctxt, RnSocketTCP* socket, b32 status);
 
 RnAsyncIOEvent
-rnAsyncIOEventWrite(RnSocketTCP* socket, u8* buffer, ssize size, ssize count);
+rnAsyncIOEventWrite(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
 
 RnAsyncIOEvent
-rnAsyncIOEventRead(RnSocketTCP* socket, u8* buffer, ssize size, ssize count);
+rnAsyncIOEventRead(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
 
 RnAsyncIOEvent
-rnAsyncIOEventClose(RnSocketTCP* socket);
+rnAsyncIOEventClose(void* ctxt, RnSocketTCP* socket);
 
 #endif // RN_WIN32_ASYNCIO_EVENT_H

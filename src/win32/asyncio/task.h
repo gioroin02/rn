@@ -5,8 +5,8 @@
 
 typedef struct RnWin32AsyncIOTaskAccept
 {
+    RnWin32SocketTCP* listener;
     RnWin32SocketTCP* socket;
-    RnWin32SocketTCP* value;
     u8*               buffer;
     ssize             size;
 }
@@ -23,6 +23,9 @@ RnWin32AsyncIOTaskConnect;
 typedef struct RnWin32AsyncIOTaskWrite
 {
     RnWin32SocketTCP* socket;
+    u8*               values;
+    ssize             start;
+    ssize             stop;
     WSABUF            buffer;
     DWORD             flags;
 }
@@ -31,6 +34,9 @@ RnWin32AsyncIOTaskWrite;
 typedef struct RnWin32AsyncIOTaskRead
 {
     RnWin32SocketTCP* socket;
+    u8*               values;
+    ssize             start;
+    ssize             stop;
     WSABUF            buffer;
     DWORD             flags;
 }
@@ -42,6 +48,8 @@ typedef struct RnWin32AsyncIOTask
 
     struct RnWin32AsyncIOTask* next;
     struct RnWin32AsyncIOTask* prev;
+
+    void* ctxt;
 
     OVERLAPPED overlap;
 
@@ -56,15 +64,15 @@ typedef struct RnWin32AsyncIOTask
 RnWin32AsyncIOTask;
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32SocketTCP* value);
+rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* listener, RnWin32SocketTCP* socket);
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddressIP address, u16 port);
+rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, RnAddressIP address, u16 port);
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size);
+rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, u8* values, ssize start, ssize stop);
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskRead(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size);
+rnWin32AsyncIOTaskRead(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, u8* values, ssize start, ssize stop);
 
 #endif // RN_WIN32_ASYNCIO_TASK_H

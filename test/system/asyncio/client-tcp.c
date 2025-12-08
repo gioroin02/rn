@@ -21,7 +21,7 @@ main(int argc, char** argv)
     rnSocketTCPCreate(socket, rnAddressIPv4Empty(), 0);
 
     rnAsyncIOQueueSubmit(queue,
-        rnAsyncIOTaskConnect(&arena, socket, rnAddressIPv4Local(), 50000));
+        rnAsyncIOTaskConnect(&arena, 0, socket, rnAddressIPv4Local(), 50000));
 
     b32 active = 1;
 
@@ -34,10 +34,10 @@ main(int argc, char** argv)
             if (event.kind == RnAsyncIOEvent_Connect) {
                 if (event.connect.status != 0) {
                     u8*   buffer = rnMemoryArenaReserveManyOf(&arena, u8, 256);
-                    ssize count  = snprintf(((char*) buffer), 256, "Ciao!");
+                    ssize stop   = snprintf(((char*) buffer), 256, "Ciao!");
 
                     rnAsyncIOQueueSubmit(queue,
-                        rnAsyncIOTaskWrite(&arena, socket, buffer, count));
+                        rnAsyncIOTaskWrite(&arena, 0, socket, buffer, 0, stop));
                 }
                 else active = 0;
             }
@@ -46,14 +46,14 @@ main(int argc, char** argv)
                 u8* buffer = rnMemoryArenaReserveManyOf(&arena, u8, 256);
 
                 rnAsyncIOQueueSubmit(queue,
-                    rnAsyncIOTaskRead(&arena, socket, buffer, 256));
+                    rnAsyncIOTaskRead(&arena, 0, socket, buffer, 0, 256));
             }
 
             if (event.kind == RnAsyncIOEvent_Read) {
-                u8*   buffer = event.read.buffer;
-                ssize count  = event.read.count;
+                u8*   values = event.read.values;
+                ssize stop   = event.read.stop;
 
-                printf("%.*s\n", ((int) count), buffer);
+                printf("%.*s\n", ((int) stop), values);
 
                 rnSocketTCPDestroy(socket);
 

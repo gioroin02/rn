@@ -13,7 +13,7 @@ main(int argc, char** argv)
 
     RnArrayU32 array = {0};
 
-    printf("reserve = %lli\n", rnArrayReserve(&array, &arena, 17));
+    printf("reserve = %lli\n", rnArrayCreate(&array, &arena, 17));
 
     ssize index = 0;
 

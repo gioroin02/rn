@@ -4,7 +4,7 @@
 #include "./task.h"
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32SocketTCP* value)
+rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* listener, RnWin32SocketTCP* socket)
 {
     ssize length = (sizeof(RnSockAddrStorage) + 16) * 2;
 
@@ -13,24 +13,25 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
 
-    switch (socket->storage.ss_family) {
+    switch (listener->storage.ss_family) {
         case AF_INET:  kind = RnAddressIP_IPv4; break;
         case AF_INET6: kind = RnAddressIP_IPv6; break;
 
         default: break;
     }
 
-    if (result == 0 || rnSocketTCPCreate(value, rnAddressIPEmpty(kind), 0) == 0)
+    if (result == 0 || rnSocketTCPCreate(socket, rnAddressIPEmpty(kind), 0) == 0)
         return 0;
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Accept,
+        .ctxt = ctxt,
 
         .accept = {
-            .socket = socket,
-            .value  = value,
-            .buffer = rnMemoryArenaReserveManyOf(arena, u8, length),
-            .size   = length,
+            .listener = listener,
+            .socket   = socket,
+            .buffer   = rnMemoryArenaReserveManyOf(arena, u8, length),
+            .size     = length,
         },
     };
 
@@ -42,7 +43,7 @@ rnWin32AsyncIOTaskAccept(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnWin32
 }
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddressIP address, u16 port)
+rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, RnAddressIP address, u16 port)
 {
     RnAddressIPKind kind = RnAddressIP_None;
 
@@ -60,6 +61,7 @@ rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddr
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Connect,
+        .ctxt = ctxt,
 
         .connect = {
             .socket  = socket,
@@ -72,7 +74,7 @@ rnWin32AsyncIOTaskConnect(RnMemoryArena* arena, RnWin32SocketTCP* socket, RnAddr
 }
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size)
+rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, u8* values, ssize start, ssize stop)
 {
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
@@ -81,12 +83,16 @@ rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buff
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Write,
+        .ctxt = ctxt,
 
         .write = {
             .socket = socket,
+            .values = values,
+            .start  = start,
+            .stop   = stop,
             .buffer = (WSABUF) {
-                .buf = ((char*) buffer),
-                .len = size
+                .buf = ((char*) values) + start,
+                .len = stop - start,
             },
             .flags  = 0,
         },
@@ -96,7 +102,7 @@ rnWin32AsyncIOTaskWrite(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buff
 }
 
 RnWin32AsyncIOTask*
-rnWin32AsyncIOTaskRead(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffer, ssize size)
+rnWin32AsyncIOTaskRead(RnMemoryArena* arena, void* ctxt, RnWin32SocketTCP* socket, u8* values, ssize start, ssize stop)
 {
     RnWin32AsyncIOTask* result =
         rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOTask);
@@ -105,12 +111,16 @@ rnWin32AsyncIOTaskRead(RnMemoryArena* arena, RnWin32SocketTCP* socket, u8* buffe
 
     *result = (RnWin32AsyncIOTask) {
         .kind = RnAsyncIOEvent_Read,
+        .ctxt = ctxt,
 
         .write = {
             .socket = socket,
+            .values = values,
+            .start  = start,
+            .stop   = stop,
             .buffer = (WSABUF) {
-                .buf = ((char*) buffer),
-                .len = size
+                .buf = ((char*) values) + start,
+                .len = stop - start,
             },
             .flags  = 0,
         },

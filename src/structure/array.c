@@ -11,7 +11,7 @@ typedef struct RnArrayTag
 RnArrayTag;
 
 void*
-rnArrayTagReserve(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step)
+__rnArrayTagCreate__(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -28,7 +28,7 @@ rnArrayTagReserve(void* tag, void* values, RnMemoryArena* arena, ssize size, ssi
 }
 
 ssize
-rnArrayTagSize(void* tag)
+__rnArrayTagSize__(void* tag)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -39,7 +39,7 @@ rnArrayTagSize(void* tag)
 }
 
 ssize
-rnArrayTagCount(void* tag)
+__rnArrayTagCount__(void* tag)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -50,13 +50,13 @@ rnArrayTagCount(void* tag)
 }
 
 ssize
-rnArrayTagFront(void* tag)
+__rnArrayTagFront__(void* tag)
 {
     return 0;
 }
 
 ssize
-rnArrayTagBack(void* tag)
+__rnArrayTagBack__(void* tag)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -67,7 +67,7 @@ rnArrayTagBack(void* tag)
 }
 
 b32
-rnArrayTagIsEmpty(void* tag)
+__rnArrayTagIsEmpty__(void* tag)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -78,7 +78,7 @@ rnArrayTagIsEmpty(void* tag)
 }
 
 b32
-rnArrayTagIsFull(void* tag)
+__rnArrayTagIsFull__(void* tag)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -89,7 +89,7 @@ rnArrayTagIsFull(void* tag)
 }
 
 b32
-rnArrayTagIsIndex(void* tag, ssize index)
+__rnArrayTagIsIndex__(void* tag, ssize index)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
@@ -99,13 +99,21 @@ rnArrayTagIsIndex(void* tag, ssize index)
     return 1;
 }
 
+void
+__rnArrayClear__(void* tag)
+{
+    ((RnArrayTag*) tag)->count = 0;
+}
+
 b32
-rnArrayTagExtend(void* tag, void* values, ssize index, ssize step)
+__rnArrayTagExtend__(void* tag, void* values, ssize index, ssize step)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 
     if (self == 0 || values == 0 || step <= 0 || index < 0 || index > self->count)
         return 0;
+
+    if (index == self->count) return 1;
 
     ssize start = step * self->count;
     ssize stop  = step * index;
@@ -113,13 +121,11 @@ rnArrayTagExtend(void* tag, void* values, ssize index, ssize step)
     for (ssize i = start; i > stop; i -= 1)
         ((u8*) values)[i + step - 1] = ((u8*) values)[i - 1];
 
-    self->count += 1;
-
     return 1;
 }
 
 b32
-rnArrayTagShrink(void* tag, void* values, ssize index, void* value, ssize step)
+__rnArrayTagRemove__(void* tag, void* values, ssize index, void* value, ssize step)
 {
     RnArrayTag* self = ((RnArrayTag*) tag);
 

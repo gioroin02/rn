@@ -6,15 +6,15 @@
 typedef void RnAsyncIOTask;
 
 RnAsyncIOTask*
-rnAsyncIOTaskAccept(RnMemoryArena* arena, RnSocketTCP* socket, RnSocketTCP* value);
+rnAsyncIOTaskAccept(RnMemoryArena* arena, void* ctxt, RnSocketTCP* listener, RnSocketTCP* socket);
 
 RnAsyncIOTask*
-rnAsyncIOTaskConnect(RnMemoryArena* arena, RnSocketTCP* socket, RnAddressIP address, u16 port);
+rnAsyncIOTaskConnect(RnMemoryArena* arena, void* ctxt, RnSocketTCP* socket, RnAddressIP address, u16 port);
 
 RnAsyncIOTask*
-rnAsyncIOTaskWrite(RnMemoryArena* arena, RnSocketTCP* socket, u8* buffer, ssize size);
+rnAsyncIOTaskWrite(RnMemoryArena* arena, void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
 
 RnAsyncIOTask*
-rnAsyncIOTaskRead(RnMemoryArena* arena, RnSocketTCP* socket, u8* buffer, ssize size);
+rnAsyncIOTaskRead(RnMemoryArena* arena, void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
 
 #endif // RN_SYSTEM_ASYNCIO_TASK_H

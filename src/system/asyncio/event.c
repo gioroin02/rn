@@ -4,23 +4,25 @@
 #include "./event.h"
 
 RnAsyncIOEvent
-rnAsyncIOEventAccept(RnSocketTCP* socket, RnSocketTCP* value)
+rnAsyncIOEventAccept(void* ctxt, RnSocketTCP* listener, RnSocketTCP* socket)
 {
     return (RnAsyncIOEvent) {
         .kind = RnAsyncIOEvent_Accept,
+        .ctxt = ctxt,
 
         .accept = {
-            .socket = socket,
-            .value  = value,
+            .listener = listener,
+            .socket   = socket,
         },
     };
 }
 
 RnAsyncIOEvent
-rnAsyncIOEventConnect(RnSocketTCP* socket, b32 status)
+rnAsyncIOEventConnect(void* ctxt, RnSocketTCP* socket, b32 status)
 {
     return (RnAsyncIOEvent) {
         .kind = RnAsyncIOEvent_Connect,
+        .ctxt = ctxt,
 
         .connect = {
             .socket = socket,
@@ -30,40 +32,47 @@ rnAsyncIOEventConnect(RnSocketTCP* socket, b32 status)
 }
 
 RnAsyncIOEvent
-rnAsyncIOEventWrite(RnSocketTCP* socket, u8* buffer, ssize size, ssize count)
+rnAsyncIOEventWrite(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
     return (RnAsyncIOEvent) {
         .kind = RnAsyncIOEvent_Write,
+        .ctxt = ctxt,
 
         .write = {
             .socket = socket,
-            .buffer = buffer,
-            .size   = size,
-            .count  = count,
+            .values = values,
+            .start  = start,
+            .stop   = stop,
         },
     };
 }
 
 RnAsyncIOEvent
-rnAsyncIOEventRead(RnSocketTCP* socket, u8* buffer, ssize size, ssize count)
+rnAsyncIOEventRead(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
     return (RnAsyncIOEvent) {
         .kind = RnAsyncIOEvent_Read,
+        .ctxt = ctxt,
 
         .read = {
             .socket = socket,
-            .buffer = buffer,
-            .size   = size,
-            .count  = count,
+            .values = values,
+            .start  = start,
+            .stop   = stop,
         },
     };
 }
 
 RnAsyncIOEvent
-rnAsyncIOEventClose(RnSocketTCP* socket)
+rnAsyncIOEventClose(void* ctxt, RnSocketTCP* socket)
 {
     return (RnAsyncIOEvent) {
         .kind = RnAsyncIOEvent_Close,
+        .ctxt = ctxt,
+
+        .close = {
+            .socket = socket,
+        },
     };
 }
 

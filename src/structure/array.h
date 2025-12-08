@@ -7,47 +7,53 @@
 
 #define RnArray(type) struct { RN_ARRAY_TAG arrayTag; type* values; }
 
-#define rnArrayReserve(self, arena, size) ( \
-    (self)->values = rnArrayTagReserve(     \
-        &(self)->arrayTag,                  \
-        (self)->values,                     \
-        arena,                              \
-        size,                               \
-        sizeof(*(self)->values)),           \
-    rnArraySize(self)                       \
+#define rnArrayCreate(self, arena, size) ( \
+    (self)->values = __rnArrayTagCreate__( \
+        &(self)->arrayTag,                 \
+        (self)->values,                    \
+        arena,                             \
+        size,                              \
+        sizeof(*(self)->values)),          \
+    rnArraySize(self)                      \
 )
 
-#define rnArraySize(self)           rnArrayTagSize(&(self)->arrayTag)
-#define rnArrayCount(self)          rnArrayTagCount(&(self)->arrayTag)
-#define rnArrayFront(self)          rnArrayTagFront(&(self)->arrayTag)
-#define rnArrayBack(self)           rnArrayTagBack(&(self)->arrayTag)
-#define rnArrayIsEmpty(self)        rnArrayTagIsEmpty(&(self)->arrayTag)
-#define rnArrayIsFull(self)         rnArrayTagIsFull(&(self)->arrayTag)
-#define rnArrayIsIndex(self, index) rnArrayTagIsIndex(&(self)->arrayTag, index)
+#define rnArraySize(self)           __rnArrayTagSize__(&(self)->arrayTag)
+#define rnArrayCount(self)          __rnArrayTagCount__(&(self)->arrayTag)
+#define rnArrayFront(self)          __rnArrayTagFront__(&(self)->arrayTag)
+#define rnArrayBack(self)           __rnArrayTagBack__(&(self)->arrayTag)
+#define rnArrayIsEmpty(self)        __rnArrayTagIsEmpty__(&(self)->arrayTag)
+#define rnArrayIsFull(self)         __rnArrayTagIsFull__(&(self)->arrayTag)
+#define rnArrayIsIndex(self, index) __rnArrayTagIsIndex__(&(self)->arrayTag, index)
+#define rnArrayClear(self)          __rnArrayClear__(&(self)->arrayTag)
 
 #define rnArrayInsert(self, index, value) (     \
-    rnArrayTagExtend(                           \
+    __rnArrayTagExtend__(                       \
         &(self)->arrayTag,                      \
         (self)->values,                         \
         rnEval(index),                          \
         sizeof(*(self)->values)                 \
     ) != 0 ? (                                  \
-        (self)->values[rnEval(index)] = value   \
+        (self)->values[rnEval(index)] = value,  \
+        (self)->arrayTag.count        += 1      \
     ), 1                                        \
     :  0                                        \
 )
 
-#define rnArrayRemove(self, index, value) (      \
-    rnArrayIsIndex(self, rnEval(index)) != 0 ? ( \
-        rnArrayTagShrink(                        \
-            &(self)->arrayTag,                   \
-            (self)->values,                      \
-            rnEval(index),                       \
-            value,                               \
-            sizeof(*(self)->values))             \
-    ), 1                                         \
-    :  0                                         \
+#define rnArrayPushFront(self, value) rnArrayInsert(self, 0, value)
+#define rnArrayPushBack(self, value)  rnArrayInsert(self, rnArrayCount(self), value)
+
+#define rnArrayRemove(self, index, value) ( \
+    __rnArrayTagRemove__(                   \
+        &(self)->arrayTag,                  \
+        (self)->values,                     \
+        rnEval(index),                      \
+        value,                              \
+        sizeof(*(self)->values)             \
+    )                                       \
 )
+
+#define rnArrayPopFront(self, value) rnArrayRemove(self, 0,                 value)
+#define rnArrayPopBack(self, value)  rnArrayRemove(self, rnArrayBack(self), value)
 
 #define rnArrayGet(self, index, other) (     \
     rnArrayIsIndex(self, rnEval(index)) != 0 \
@@ -62,33 +68,36 @@
 )
 
 void*
-rnArrayTagReserve(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step);
+__rnArrayTagCreate__(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step);
 
 ssize
-rnArrayTagSize(void* tag);
+__rnArrayTagSize__(void* tag);
 
 ssize
-rnArrayTagCount(void* tag);
+__rnArrayTagCount__(void* tag);
 
 ssize
-rnArrayTagFront(void* tag);
+__rnArrayTagFront__(void* tag);
 
 ssize
-rnArrayTagBack(void* tag);
+__rnArrayTagBack__(void* tag);
 
 b32
-rnArrayTagIsEmpty(void* tag);
+__rnArrayTagIsEmpty__(void* tag);
 
 b32
-rnArrayTagIsFull(void* tag);
+__rnArrayTagIsFull__(void* tag);
 
 b32
-rnArrayTagIsIndex(void* tag, ssize index);
+__rnArrayTagIsIndex__(void* tag, ssize index);
+
+void
+__rnArrayClear__(void* tag);
 
 b32
-rnArrayTagExtend(void* tag, void* values, ssize index, ssize step);
+__rnArrayTagExtend__(void* tag, void* values, ssize index, ssize step);
 
 b32
-rnArrayTagShrink(void* tag, void* values, ssize index, void* value, ssize step);
+__rnArrayTagRemove__(void* tag, void* values, ssize index, void* value, ssize step);
 
 #endif // RN_STRUCTURE_ARRAY_H
