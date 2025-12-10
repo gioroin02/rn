@@ -5,15 +5,6 @@
 
 #include <stdio.h>
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-typedef struct sockaddr_storage RnSockAddrStorage;
-
-typedef struct sockaddr     RnSockAddr;
-typedef struct sockaddr_in  RnSockAddrIn4;
-typedef struct sockaddr_in6 RnSockAddrIn6;
-
 int
 main(int argc, char** argv)
 {
