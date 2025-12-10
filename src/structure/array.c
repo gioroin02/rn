@@ -3,23 +3,15 @@
 
 #include "./array.h"
 
-typedef struct RnArrayTag
-{
-    ssize size;
-    ssize count;
-}
-RnArrayTag;
-
 void*
-__rnArrayTagCreate__(void* tag, void* values, RnMemoryArena* arena, ssize size, ssize step)
+__rnArrayCreate__(RnArrayHeader* self, void* values, RnMemoryArena* arena, ssize size, ssize step)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
     if (self == 0 || values != 0 || step <= 0 || size <= 0)
         return 0;
 
     self->count = 0;
     self->size  = 0;
+    self->step  = step;
 
     u8* memory = rnMemoryArenaReserve(arena, size, step, 0);
 
@@ -29,38 +21,26 @@ __rnArrayTagCreate__(void* tag, void* values, RnMemoryArena* arena, ssize size, 
 }
 
 ssize
-__rnArrayTagSize__(void* tag)
+__rnArraySize__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self != 0)
-        return self->size;
-
-    return 0;
+    return self != 0 ? self->size : 0;
 }
 
 ssize
-__rnArrayTagCount__(void* tag)
+__rnArrayCount__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self != 0)
-        return self->count;
-
-    return 0;
+    return self != 0 ? self->count : 0;
 }
 
 ssize
-__rnArrayTagFront__(void* tag)
+__rnArrayFront__(RnArrayHeader* self)
 {
     return 0;
 }
 
 ssize
-__rnArrayTagBack__(void* tag)
+__rnArrayBack__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
     if (self != 0 && self->count > 0)
         return self->count - 1;
 
@@ -68,10 +48,8 @@ __rnArrayTagBack__(void* tag)
 }
 
 b32
-__rnArrayTagIsEmpty__(void* tag)
+__rnArrayIsEmpty__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
     if (self != 0 && self->count == 0)
         return 1;
 
@@ -79,10 +57,8 @@ __rnArrayTagIsEmpty__(void* tag)
 }
 
 b32
-__rnArrayTagIsFull__(void* tag)
+__rnArrayIsFull__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
     if (self != 0 && self->count == self->size)
         return 1;
 
@@ -90,10 +66,8 @@ __rnArrayTagIsFull__(void* tag)
 }
 
 b32
-__rnArrayTagIsIndex__(void* tag, ssize index)
+__rnArrayIsIndex__(RnArrayHeader* self, ssize index)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
     if (self == 0 || index < 0 || index >= self->count)
         return 0;
 
@@ -101,66 +75,57 @@ __rnArrayTagIsIndex__(void* tag, ssize index)
 }
 
 void
-__rnArrayTagClear__(void* tag)
+__rnArrayClear__(RnArrayHeader* self)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self != 0)
-        self->count = 0;
+    if (self != 0) self->count = 0;
 }
 
 b32
-__rnArrayTagCopy__(void* tag, void* values, ssize index, void* value, ssize step)
+__rnArrayCopy__(RnArrayHeader* self, void* values, ssize index, void* value)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self == 0 || values == 0 || step <= 0 || index < 0 || index >= self->count)
+    if (self == 0 || values == 0 || index < 0 || index >= self->count)
         return 0;
 
     if (value == 0) return 1;
 
-    for (ssize i = 0; i < step; i += 1)
-        ((u8*) value)[i] = ((u8*) values)[i + index * step];
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) value)[i] = ((u8*) values)[i + index * self->step];
 
     return 1;
 }
 
 b32
-__rnArrayTagSlideRight__(void* tag, void* values, ssize index, ssize step)
+__rnArrayShiftRight__(RnArrayHeader* self, void* values, ssize index)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self == 0 || values == 0 || step <= 0 || index < 0 || index > self->count)
+    if (self == 0 || values == 0 || index < 0 || index > self->count)
         return 0;
 
-    ssize start = step * self->count;
-    ssize stop  = step * index;
+    ssize start = self->step * self->count;
+    ssize stop  = self->step * index;
 
     for (ssize i = start; i > stop; i -= 1)
-        ((u8*) values)[i + step - 1] = ((u8*) values)[i - 1];
+        ((u8*) values)[i + self->step - 1] = ((u8*) values)[i - 1];
 
-    for (ssize i = 0; i < step; i += 1)
-        ((u8*) values)[i + index * step] = 0;
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) values)[i + index * self->step] = 0;
 
     return 1;
 }
 
 b32
-__rnArrayTagSlideLeft__(void* tag, void* values, ssize index, ssize step)
+__rnArrayShiftLeft__(RnArrayHeader* self, void* values, ssize index)
 {
-    RnArrayTag* self = ((RnArrayTag*) tag);
-
-    if (self == 0 || values == 0 || step <= 0 || index < 0 || index >= self->count)
+    if (self == 0 || values == 0 || index < 0 || index >= self->count)
         return 0;
 
-    ssize start = step * index;
-    ssize stop  = step * self->count;
+    ssize start = self->step * index;
+    ssize stop  = self->step * self->count;
 
     for (ssize i = start; i < stop; i += 1)
-        ((u8*) values)[i] = ((u8*) values)[i + step];
+        ((u8*) values)[i] = ((u8*) values)[i + self->step];
 
-    for (ssize i = 0; i < step; i += 1)
-        ((u8*) values)[i + self->count * step] = 0;
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) values)[i + self->count * self->step] = 0;
 
     return 1;
 }
