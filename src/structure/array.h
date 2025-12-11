@@ -3,74 +3,71 @@
 
 #include "./import.h"
 
-#define RnArrayTag struct \
-{                         \
-    ssize size;           \
-    ssize count;          \
-    ssize step;           \
+#define __RnArrayTag__ struct \
+{                             \
+    ssize size;               \
+    ssize count;              \
+    ssize vstep;              \
 }
 
-typedef RnArrayTag RnArrayHeader;
+typedef __RnArrayTag__ RnArrayTag;
 
 #define RnArray(type) struct \
 {                            \
-    RnArrayHeader array;     \
+    __RnArrayTag__;          \
                              \
     type* values;            \
 }
 
-#define rnArrayCreate(self, arena, size)                         \
-(                                                                \
-    (self)->values = __rnArrayCreate__(&(self)->array,           \
-        (self)->values, arena, size, sizeof((self)->values[0])), \
-    rnArraySize(self)                                            \
+#define rnArrayCreate(self, arena, size) ( \
+    __rnArrayCreate__(                     \
+        ((RnArrayTag*) self),              \
+        ((void**) &(self)->values),        \
+        sizeof(*(self)->values),           \
+        arena, size                        \
+    )                                      \
 )
 
-#define rnArraySize(self)           __rnArraySize__(&(self)->array)
-#define rnArrayCount(self)          __rnArrayCount__(&(self)->array)
-#define rnArrayFront(self)          __rnArrayFront__(&(self)->array)
-#define rnArrayBack(self)           __rnArrayBack__(&(self)->array)
-#define rnArrayIsEmpty(self)        __rnArrayIsEmpty__(&(self)->array)
-#define rnArrayIsFull(self)         __rnArrayIsFull__(&(self)->array)
-#define rnArrayIsIndex(self, index) __rnArrayIsIndex__(&(self)->array, index)
-#define rnArrayClear(self)          __rnArrayClear__(&(self)->array)
+#define rnArraySize(self)           __rnArraySize__(((RnArrayTag*) self))
+#define rnArrayCount(self)          __rnArrayCount__(((RnArrayTag*) self))
+#define rnArrayFront(self)          __rnArrayFront__(((RnArrayTag*) self))
+#define rnArrayBack(self)           __rnArrayBack__(((RnArrayTag*) self))
+#define rnArrayIsEmpty(self)        __rnArrayIsEmpty__(((RnArrayTag*) self))
+#define rnArrayIsFull(self)         __rnArrayIsFull__(((RnArrayTag*) self))
+#define rnArrayIsIndex(self, index) __rnArrayIsIndex__(((RnArrayTag*) self), index)
+#define rnArrayClear(self)          __rnArrayClear__(((RnArrayTag*) self))
 
-#define rnArrayCopy(self, index, value) \
-(                                       \
-    __rnArrayCopy__(&(self)->array,     \
-        (self)->values, index, value)   \
-)
-
-#define rnArrayShiftRight(self, index)    \
+#define rnArrayCopy(self, index, value)   \
 (                                         \
-    __rnArrayShiftRight__(&(self)->array, \
-        (self)->values, index)            \
+    __rnArrayCopy__(((RnArrayTag*) self), \
+        (self)->values, index, value)     \
 )
 
-#define rnArrayShiftLeft(self, index)    \
-(                                        \
-    __rnArrayShiftLeft__(&(self)->array, \
-        (self)->values, index)           \
+#define rnArrayInsert(self, index, value)   \
+(                                           \
+    __rnArraySlotOpen__(                    \
+        ((RnArrayTag*) self),               \
+        (self)->values,                     \
+        index                               \
+    ) != 0 ? (                              \
+        (self)->values[(index)]  = (value), \
+        (self)->count         += 1          \
+    ), 1                                    \
+    :  0                                    \
 )
 
-#define rnArrayInsert(self, index, value) \
-(                                         \
-    rnArrayShiftRight(self, index) != 0   \
-    ? (                                   \
-        (self)->values[index]  = value,   \
-        (self)->array.count   += 1        \
-    ), 1                                  \
-    :  0                                  \
-)
-
-#define rnArrayRemove(self, index, value) \
-(                                         \
-    rnArrayCopy(self, index, value) != 0  \
-    ? (                                   \
-        rnArrayShiftLeft(self, index),    \
-        (self)->array.count -= 1          \
-    ), 1                                  \
-    :  0                                  \
+#define rnArrayRemove(self, index, value)  \
+(                                          \
+    rnArrayCopy(self, index, value) != 0   \
+    ? (                                    \
+        __rnArraySlotClose__(              \
+            ((RnArrayTag*) self),          \
+            (self)->values,                \
+            index                          \
+        ),                                 \
+        (self)->count -= 1                 \
+    ), 1                                   \
+    :  0                                   \
 )
 
 #define rnArrayPushFront(self, value) rnArrayInsert(self, 0,                  value)
@@ -80,45 +77,45 @@ typedef RnArrayTag RnArrayHeader;
 #define rnArrayPopBack(self, value)  rnArrayRemove(self, rnArrayBack(self), value)
 
 #define rnArrayGet(self, index, other) \
-    (rnArrayIsIndex(self, index) != 0 ? (self)->values[index] : other)
+    (rnArrayIsIndex(self, index) != 0 ? (self)->values[(index)] : (other))
 
-#define rnArrayGetRef(self, index) \
-    (rnArrayIsIndex(self, index) != 0 ? &(self)->values[index] : 0)
-
-void*
-__rnArrayCreate__(RnArrayHeader* self, void* values, RnMemoryArena* arena, ssize size, ssize step);
-
-ssize
-__rnArraySize__(RnArrayHeader* self);
-
-ssize
-__rnArrayCount__(RnArrayHeader* self);
-
-ssize
-__rnArrayFront__(RnArrayHeader* self);
-
-ssize
-__rnArrayBack__(RnArrayHeader* self);
+#define rnArrayGetPtr(self, index) \
+    (rnArrayIsIndex(self, index) != 0 ? &(self)->values[(index)] : 0)
 
 b32
-__rnArrayIsEmpty__(RnArrayHeader* self);
+__rnArrayCreate__(RnArrayTag* self, void** vptr, ssize vstep, RnMemoryArena* arena, ssize size);
+
+ssize
+__rnArraySize__(RnArrayTag* self);
+
+ssize
+__rnArrayCount__(RnArrayTag* self);
+
+ssize
+__rnArrayFront__(RnArrayTag* self);
+
+ssize
+__rnArrayBack__(RnArrayTag* self);
 
 b32
-__rnArrayIsFull__(RnArrayHeader* self);
+__rnArrayIsEmpty__(RnArrayTag* self);
 
 b32
-__rnArrayIsIndex__(RnArrayHeader* self, ssize index);
+__rnArrayIsFull__(RnArrayTag* self);
+
+b32
+__rnArrayIsIndex__(RnArrayTag* self, ssize index);
 
 void
-__rnArrayClear__(RnArrayHeader* self);
+__rnArrayClear__(RnArrayTag* self);
 
 b32
-__rnArrayCopy__(RnArrayHeader* self, void* values, ssize index, void* value);
+__rnArrayCopy__(RnArrayTag* self, void* values, ssize index, void* value);
 
 b32
-__rnArrayShiftRight__(RnArrayHeader* self, void* values, ssize index);
+__rnArraySlotOpen__(RnArrayTag* self, void* values, ssize index);
 
 b32
-__rnArrayShiftLeft__(RnArrayHeader* self, void* values, ssize index);
+__rnArraySlotClose__(RnArrayTag* self, void* values, ssize index);
 
 #endif // RN_STRUCTURE_ARRAY_H

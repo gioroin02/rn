@@ -13,7 +13,7 @@ main(int argc, char** argv)
 
     RnArrayU32 array = {0};
 
-    printf("reserve = %lli\n", rnArrayCreate(&array, &arena, 17));
+    printf("reserve = %lu\n", rnArrayCreate(&array, &arena, 17));
 
     ssize index = 0;
 
@@ -30,5 +30,5 @@ main(int argc, char** argv)
     printf("remove (2)     -> (%s)\n", rnArrayRemove(&array, 2, 0) ? "SUCC" : "FAIL");
 
     for (ssize i = 0; i < rnArrayCount(&array); i += 1)
-        printf("#%03lli %lu\n", i, *rnArrayGetRef(&array, i));
+        printf("#%03lli %lu\n", i, *rnArrayGetPtr(&array, i));
 }
