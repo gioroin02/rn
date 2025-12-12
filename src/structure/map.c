@@ -54,7 +54,7 @@ __rnMapIndexForKey__(RnMapTag* self, void* keys, void* key)
 }
 
 b32
-__rnMapCreate__(RnMapTag* self, void** kptr, ssize kstep, void** vptr, ssize vstep,
+__rnMapCreate__(RnMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize vstep,
     RnMemoryArena* arena, ssize size, void* hash, void* isEqual)
 {
     if (kstep <= 0 || vstep <= 0 || size <= 0) return 0;
@@ -73,8 +73,8 @@ __rnMapCreate__(RnMapTag* self, void** kptr, ssize kstep, void** vptr, ssize vst
         self->procHash    = hash;
         self->procIsEqual = isEqual;
 
-        *kptr = keys;
-        *vptr = values;
+        *kpntr = keys;
+        *vpntr = values;
 
         __rnMapClear__(self);
 
