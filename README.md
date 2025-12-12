@@ -4,8 +4,8 @@
 
 Things to add:
 
-1. Add strings
-2. Add hashmap
+1. Add string operations
+2. Add hashmap put and remove
 
 Things to fix:
 

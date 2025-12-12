@@ -4,19 +4,19 @@
 #include "./array.h"
 
 b32
-__rnArrayCreate__(RnArrayTag* self, void** vptr, ssize vstep, RnMemoryArena* arena, ssize size)
+__rnArrayCreate__(RnArrayTag* self, void** pntr, ssize step, RnMemoryArena* arena, ssize size)
 {
-    if (vstep <= 0 || size <= 0) return 0;
+    if (step <= 0 || size <= 0) return 0;
 
-    u8* values = rnMemoryArenaReserve(arena, size, vstep, 0);
+    u8* values = rnMemoryArenaReserve(arena, size, step, 0);
 
     if (values != 0) {
         *self = (RnArrayTag) {0};
 
-        self->size  = size;
-        self->vstep = vstep;
+        self->size = size;
+        self->step = step;
 
-        *vptr = values;
+        *pntr = values;
 
         return 1;
     }
@@ -34,18 +34,6 @@ ssize
 __rnArrayCount__(RnArrayTag* self)
 {
     return self->count;
-}
-
-ssize
-__rnArrayFront__(RnArrayTag* self)
-{
-    return 0;
-}
-
-ssize
-__rnArrayBack__(RnArrayTag* self)
-{
-    return self->count > 0 ? self->count - 1 : 0;
 }
 
 b32
@@ -69,6 +57,18 @@ __rnArrayIsIndex__(RnArrayTag* self, ssize index)
     return 1;
 }
 
+ssize
+__rnArrayFront__(RnArrayTag* self)
+{
+    return 0;
+}
+
+ssize
+__rnArrayBack__(RnArrayTag* self)
+{
+    return self->count > 0 ? self->count - 1 : 0;
+}
+
 void
 __rnArrayClear__(RnArrayTag* self)
 {
@@ -82,8 +82,8 @@ __rnArrayCopy__(RnArrayTag* self, void* values, ssize index, void* value)
 
     if (value == 0) return 1;
 
-    for (ssize i = 0; i < self->vstep; i += 1)
-        ((u8*) value)[i] = ((u8*) values)[i + index * self->vstep];
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) value)[i] = ((u8*) values)[i + index * self->step];
 
     return 1;
 }
@@ -93,14 +93,14 @@ __rnArraySlotOpen__(RnArrayTag* self, void* values, ssize index)
 {
     if (index < 0 || index > self->count) return 0;
 
-    ssize start = self->vstep * self->count;
-    ssize stop  = self->vstep * index;
+    ssize start = self->step * self->count;
+    ssize stop  = self->step * index;
 
     for (ssize i = start; i > stop; i -= 1)
-        ((u8*) values)[i + self->vstep - 1] = ((u8*) values)[i - 1];
+        ((u8*) values)[i + self->step - 1] = ((u8*) values)[i - 1];
 
-    for (ssize i = 0; i < self->vstep; i += 1)
-        ((u8*) values)[i + index * self->vstep] = 0;
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) values)[i + index * self->step] = 0;
 
     return 1;
 }
@@ -110,14 +110,14 @@ __rnArraySlotClose__(RnArrayTag* self, void* values, ssize index)
 {
     if (index < 0 || index >= self->count) return 0;
 
-    ssize start = self->vstep * index;
-    ssize stop  = self->vstep * self->count;
+    ssize start = self->step * index;
+    ssize stop  = self->step * self->count;
 
     for (ssize i = start; i < stop; i += 1)
-        ((u8*) values)[i] = ((u8*) values)[i + self->vstep];
+        ((u8*) values)[i] = ((u8*) values)[i + self->step];
 
-    for (ssize i = 0; i < self->vstep; i += 1)
-        ((u8*) values)[i + self->count * self->vstep] = 0;
+    for (ssize i = 0; i < self->step; i += 1)
+        ((u8*) values)[i + self->count * self->step] = 0;
 
     return 1;
 }

@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-typedef RnMap(RnString8, u32) RnMapString8U32;
+typedef RnMap(RnString8, u32) RnMapString8ToU32;
 
 ssize
 rnString8Hash(RnString8* key)
@@ -33,10 +33,10 @@ rnString8IsEqual(RnString8* key, RnString8* other)
 }
 
 void
-showPairs(RnMapString8U32* self, RnString8* keys, ssize size)
+showPairs(RnMapString8ToU32* self, RnString8* keys, ssize size)
 {
     for (ssize i = 0; i < size; i += 1) {
-        u32* value = rnMapGetPtr(self, &keys[i]);
+        u32* value = rnMapGetPtr(self, keys[i]);
 
         printf("map(%s) -> ", keys[i].values);
 
@@ -47,6 +47,13 @@ showPairs(RnMapString8U32* self, RnString8* keys, ssize size)
     }
 }
 
+void
+showLists(RnMapString8ToU32* self)
+{
+    for (ssize i = 0; i < rnMapCount(self); i += 1)
+        printf("map(%lli) -> %s, %lu\n", i, self->keys[i].values, self->values[i]);
+}
+
 int
 main(int argc, char** argv)
 {
@@ -54,25 +61,27 @@ main(int argc, char** argv)
 
     RnMemoryArena arena = rnMemoryArenaMake(memory, sizeof(memory));
 
-    RnMapString8U32 map = {0};
+    RnMapString8ToU32 map = {0};
 
     rnMapCreate(&map, &arena, 16, &rnString8Hash, &rnString8IsEqual);
 
     RnString8 keys[] = {
         rnStr8("Filiberto"),
-        rnStr8("Astronzio"),
+        rnStr8("Astronfo"),
         rnStr8("Roboldofo"),
     };
 
-    rnMapInsert(&map, &keys[0], 10);
-    rnMapInsert(&map, &keys[1], 20);
-    rnMapInsert(&map, &keys[2], 30);
+    rnMapInsert(&map, keys[0], 10);
+    rnMapInsert(&map, keys[1], 20);
+    rnMapInsert(&map, keys[2], 30);
 
     showPairs(&map, keys, 3);
+    showLists(&map);
 
     rnMapClear(&map);
 
     printf("\n");
 
     showPairs(&map, keys, 3);
+    showLists(&map);
 }
