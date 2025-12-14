@@ -2,9 +2,9 @@
 
 set "compiler=zig cc"
 
-set "base=src\base\export.c"
-set "base_memory=src\base\memory\export.c"
-set "system_memory=src\system\memory\export.c"
+set "impl=%impl% src\base\export.c"
+set "impl=%impl% src\base\memory\export.c"
+set "impl=%impl% src\system\memory\export.c"
 
 set "impl=%base% %base_memory% %system_memory%"
 

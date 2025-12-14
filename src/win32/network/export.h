@@ -5,5 +5,6 @@
 #include "./address.h"
 #include "./socket-tcp.h"
 #include "./socket-udp.h"
+#include "./async.h"
 
 #endif // RN_WIN32_NETWORK_EXPORT_H

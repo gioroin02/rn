@@ -3,5 +3,8 @@
 
 #include "../../system/network/import.h"
 #include "../../system/network/address-ip.h"
+#include "../../system/network/async.h"
+
+#include "../asyncio/export.h"
 
 #endif // RN_WIN32_NETWORK_IMPORT_H

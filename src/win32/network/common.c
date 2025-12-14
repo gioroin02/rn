@@ -5,9 +5,6 @@
 
 static volatile LONG gWinsockRefs = 0;
 
-LPFN_CONNECTEX connectEx = 0;
-LPFN_ACCEPTEX  acceptEx  = 0;
-
 b32
 rnWin32NetworkStart()
 {
@@ -24,8 +21,7 @@ rnWin32NetworkStartImpl()
 
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) return 0;
 
-    SOCKET handle = WSASocket(AF_INET,
-        SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 

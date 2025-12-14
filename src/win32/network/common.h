@@ -16,6 +16,9 @@ typedef struct sockaddr         RnSockAddr;
 typedef struct sockaddr_in      RnSockAddrIn4;
 typedef struct sockaddr_in6     RnSockAddrIn6;
 
+static LPFN_CONNECTEX connectEx = 0;
+static LPFN_ACCEPTEX  acceptEx  = 0;
+
 b32
 rnWin32NetworkStart();
 

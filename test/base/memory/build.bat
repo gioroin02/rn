@@ -2,10 +2,8 @@
 
 set "compiler=zig cc"
 
-set "base=src\base\export.c"
-set "base_memory=src\base\memory\export.c"
-
-set "impl=%base% %base_memory%"
+set "impl=%impl% src\base\export.c"
+set "impl=%impl% src\base\memory\export.c"
 
 set "test_slice=test\base\memory\slice.c"
 set "test_order=test\base\memory\order.c"

@@ -2,11 +2,9 @@
 
 set "compiler=zig cc"
 
-set "base=src\base\export.c"
-set "base_memory=src\base\memory\export.c"
-set "structure=src\structure\export.c"
-
-set "impl=%base% %base_memory% %structure%"
+set "impl=%impl% src\base\export.c"
+set "impl=%impl% src\base\memory\export.c"
+set "impl=%impl% src\structure\export.c"
 
 set "test_array=test\structure\array.c"
 set "test_map=test\structure\map.c"

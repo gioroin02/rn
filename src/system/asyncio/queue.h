@@ -1,9 +1,9 @@
 #ifndef RN_SYSTEM_ASYNCIO_QUEUE_H
 #define RN_SYSTEM_ASYNCIO_QUEUE_H
 
-#include "./event.h"
-#include "./task.h"
+#include "./import.h"
 
+typedef void RnAsyncIOTask;
 typedef void RnAsyncIOQueue;
 
 RnAsyncIOQueue*
@@ -19,6 +19,6 @@ b32
 rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task);
 
 b32
-rnAsyncIOQueuePoll(RnAsyncIOQueue* self, RnAsyncIOEvent* event, ssize timeout);
+rnAsyncIOQueuePoll(RnAsyncIOQueue* self, ssize timeout);
 
 #endif // RN_SYSTEM_ASYNCIO_QUEUE_H

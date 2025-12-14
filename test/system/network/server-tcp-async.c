@@ -1,8 +1,8 @@
 #include "../../../src/base/memory/export.h"
 
 #include "../../../src/system/memory/export.h"
-#include "../../../src/system/network/export.h"
 #include "../../../src/system/asyncio/export.h"
+#include "../../../src/system/network/export.h"
 
 #include <stdio.h>
 

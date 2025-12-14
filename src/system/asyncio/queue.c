@@ -44,9 +44,9 @@ rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task)
 }
 
 b32
-rnAsyncIOQueuePoll(RnAsyncIOQueue* self, RnAsyncIOEvent* event, ssize timeout)
+rnAsyncIOQueuePoll(RnAsyncIOQueue* self, ssize timeout)
 {
-    return __rnAsyncIOQueuePoll__(self, event, timeout);
+    return __rnAsyncIOQueuePoll__(self, timeout);
 }
 
 #endif // RN_SYSTEM_ASYNCIO_QUEUE_C
