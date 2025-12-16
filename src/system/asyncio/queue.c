@@ -1,17 +1,17 @@
-#ifndef RN_SYSTEM_ASYNCIO_QUEUE_C
-#define RN_SYSTEM_ASYNCIO_QUEUE_C
+#ifndef PX_SYSTEM_ASYNCIO_QUEUE_C
+#define PX_SYSTEM_ASYNCIO_QUEUE_C
 
-#include "./queue.h"
+#include "queue.h"
 
-#if RN_SYSTEM == RN_SYSTEM_WINDOWS
+#if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
     #include "../../win32/asyncio/export.c"
 
-    #define __rnAsyncIOQueueReserve__ rnWin32AsyncIOQueueReserve
-    #define __rnAsyncIOQueueCreate__  rnWin32AsyncIOQueueCreate
-    #define __rnAsyncIOQueueDestroy__ rnWin32AsyncIOQueueDestroy
-    #define __rnAsyncIOQueueSubmit__  rnWin32AsyncIOQueueSubmit
-    #define __rnAsyncIOQueuePoll__    rnWin32AsyncIOQueuePoll
+    #define __pxAsyncIOQueueReserve__ pxWin32AsyncIOQueueReserve
+    #define __pxAsyncIOQueueCreate__  pxWin32AsyncIOQueueCreate
+    #define __pxAsyncIOQueueDestroy__ pxWin32AsyncIOQueueDestroy
+    #define __pxAsyncIOQueueSubmit__  pxWin32AsyncIOQueueSubmit
+    #define __pxAsyncIOQueuePoll__    pxWin32AsyncIOQueuePoll
 
 #else
 
@@ -19,34 +19,34 @@
 
 #endif
 
-RnAsyncIOQueue*
-rnAsyncIOQueueReserve(RnMemoryArena* arena)
+PxAsyncIOQueue*
+pxAsyncIOQueueReserve(PxMemoryArena* arena)
 {
-    return __rnAsyncIOQueueReserve__(arena);
+    return __pxAsyncIOQueueReserve__(arena);
 }
 
 b32
-rnAsyncIOQueueCreate(RnAsyncIOQueue* self)
+pxAsyncIOQueueCreate(PxAsyncIOQueue* self)
 {
-    return __rnAsyncIOQueueCreate__(self);
+    return __pxAsyncIOQueueCreate__(self);
 }
 
 void
-rnAsyncIOQueueDestroy(RnAsyncIOQueue* self)
+pxAsyncIOQueueDestroy(PxAsyncIOQueue* self)
 {
-    return __rnAsyncIOQueueDestroy__(self);
+    return __pxAsyncIOQueueDestroy__(self);
 }
 
 b32
-rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task)
+pxAsyncIOQueueSubmit(PxAsyncIOQueue* self, PxAsyncIOTask* task)
 {
-    return __rnAsyncIOQueueSubmit__(self, task);
+    return __pxAsyncIOQueueSubmit__(self, task);
 }
 
 b32
-rnAsyncIOQueuePoll(RnAsyncIOQueue* self, ssize timeout)
+pxAsyncIOQueuePoll(PxAsyncIOQueue* self, ssize timeout)
 {
-    return __rnAsyncIOQueuePoll__(self, timeout);
+    return __pxAsyncIOQueuePoll__(self, timeout);
 }
 
-#endif // RN_SYSTEM_ASYNCIO_QUEUE_C
+#endif // PX_SYSTEM_ASYNCIO_QUEUE_C

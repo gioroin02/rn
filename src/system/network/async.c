@@ -1,16 +1,16 @@
-#ifndef RN_SYSTEM_NETWORK_ASYNC_C
-#define RN_SYSTEM_NETWORK_ASYNC_C
+#ifndef PX_SYSTEM_NETWORK_ASYNC_C
+#define PX_SYSTEM_NETWORK_ASYNC_C
 
-#include "./async.h"
+#include "async.h"
 
-#if RN_SYSTEM == RN_SYSTEM_WINDOWS
+#if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
     #include "../../win32/network/export.c"
 
-    #define __rnSocketTCPAsyncAccept__  rnWin32SocketTCPAsyncAccept
-    #define __rnSocketTCPAsyncConnect__ rnWin32SocketTCPAsyncConnect
-    #define __rnSocketTCPAsyncWrite__   rnWin32SocketTCPAsyncWrite
-    #define __rnSocketTCPAsyncRead__    rnWin32SocketTCPAsyncRead
+    #define __pxSocketTCPAsyncAccept__  pxWin32SocketTCPAsyncAccept
+    #define __pxSocketTCPAsyncConnect__ pxWin32SocketTCPAsyncConnect
+    #define __pxSocketTCPAsyncWrite__   pxWin32SocketTCPAsyncWrite
+    #define __pxSocketTCPAsyncRead__    pxWin32SocketTCPAsyncRead
 
 #else
 
@@ -18,11 +18,11 @@
 
 #endif
 
-RnSocketTCPEvent
-rnSocketTCPEventAccept(void* ctxt, RnSocketTCP* listener, RnSocketTCP* socket)
+PxSocketTCPEvent
+pxSocketTCPEventAccept(void* ctxt, PxSocketTCP* listener, PxSocketTCP* socket)
 {
-    return (RnSocketTCPEvent) {
-        .kind = RnSocketTCPAsync_Accept,
+    return (PxSocketTCPEvent) {
+        .kind = PxSocketTCPAsync_Accept,
         .ctxt = ctxt,
 
         .accept = {
@@ -32,11 +32,11 @@ rnSocketTCPEventAccept(void* ctxt, RnSocketTCP* listener, RnSocketTCP* socket)
     };
 }
 
-RnSocketTCPEvent
-rnSocketTCPEventConnect(void* ctxt, RnSocketTCP* socket, b32 status)
+PxSocketTCPEvent
+pxSocketTCPEventConnect(void* ctxt, PxSocketTCP* socket, b32 status)
 {
-    return (RnSocketTCPEvent) {
-        .kind = RnSocketTCPAsync_Connect,
+    return (PxSocketTCPEvent) {
+        .kind = PxSocketTCPAsync_Connect,
         .ctxt = ctxt,
 
         .connect = {
@@ -46,11 +46,11 @@ rnSocketTCPEventConnect(void* ctxt, RnSocketTCP* socket, b32 status)
     };
 }
 
-RnSocketTCPEvent
-rnSocketTCPEventWrite(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop)
+PxSocketTCPEvent
+pxSocketTCPEventWrite(void* ctxt, PxSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
-    return (RnSocketTCPEvent) {
-        .kind = RnSocketTCPAsync_Write,
+    return (PxSocketTCPEvent) {
+        .kind = PxSocketTCPAsync_Write,
         .ctxt = ctxt,
 
         .write = {
@@ -62,11 +62,11 @@ rnSocketTCPEventWrite(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, 
     };
 }
 
-RnSocketTCPEvent
-rnSocketTCPEventRead(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop)
+PxSocketTCPEvent
+pxSocketTCPEventRead(void* ctxt, PxSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
-    return (RnSocketTCPEvent) {
-        .kind = RnSocketTCPAsync_Read,
+    return (PxSocketTCPEvent) {
+        .kind = PxSocketTCPAsync_Read,
         .ctxt = ctxt,
 
         .read = {
@@ -78,11 +78,11 @@ rnSocketTCPEventRead(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, s
     };
 }
 
-RnSocketTCPEvent
-rnSocketTCPEventClose(void* ctxt, RnSocketTCP* socket)
+PxSocketTCPEvent
+pxSocketTCPEventClose(void* ctxt, PxSocketTCP* socket)
 {
-    return (RnSocketTCPEvent) {
-        .kind = RnSocketTCPAsync_Close,
+    return (PxSocketTCPEvent) {
+        .kind = PxSocketTCPAsync_Close,
         .ctxt = ctxt,
 
         .close = {
@@ -91,32 +91,32 @@ rnSocketTCPEventClose(void* ctxt, RnSocketTCP* socket)
     };
 }
 
-RnAsyncIOTask*
-rnSocketTCPAsyncAccept(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* listener, RnSocketTCP* socket)
+PxAsyncIOTask*
+pxSocketTCPAsyncAccept(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* listener, PxSocketTCP* socket)
 {
-    return __rnSocketTCPAsyncAccept__(arena, ctxt, proc, listener, socket);
+    return __pxSocketTCPAsyncAccept__(arena, ctxt, proc, listener, socket);
 }
 
-RnAsyncIOTask*
-rnSocketTCPAsyncConnect(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, RnAddressIP address, u16 port)
+PxAsyncIOTask*
+pxSocketTCPAsyncConnect(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, PxAddressIP address, u16 port)
 {
-    return __rnSocketTCPAsyncConnect__(arena, ctxt, proc, socket, address, port);
+    return __pxSocketTCPAsyncConnect__(arena, ctxt, proc, socket, address, port);
 }
 
-RnAsyncIOTask*
-rnSocketTCPAsyncWrite(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, u8* values, ssize start, ssize stop)
+PxAsyncIOTask*
+pxSocketTCPAsyncWrite(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
-    return __rnSocketTCPAsyncWrite__(arena, ctxt, proc, socket, values, start, stop);
+    return __pxSocketTCPAsyncWrite__(arena, ctxt, proc, socket, values, start, stop);
 }
 
-RnAsyncIOTask*
-rnSocketTCPAsyncRead(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, u8* values, ssize start, ssize stop)
+PxAsyncIOTask*
+pxSocketTCPAsyncRead(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, u8* values, ssize start, ssize stop)
 {
-    return __rnSocketTCPAsyncRead__(arena, ctxt, proc, socket, values, start, stop);
+    return __pxSocketTCPAsyncRead__(arena, ctxt, proc, socket, values, start, stop);
 }
 
-#endif // RN_SYSTEM_NETWORK_ASYNC_C
+#endif // PX_SYSTEM_NETWORK_ASYNC_C

@@ -8,28 +8,28 @@
 int
 main(int argc, char** argv)
 {
-    RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    RnSocketTCP* listener = rnSocketTCPReserve(&arena);
+    PxSocketTCP* listener = pxSocketTCPReserve(&arena);
 
-    rnSocketTCPCreate(listener, rnAddressIPv4Empty(), 50000);
-    rnSocketTCPBind(listener);
-    rnSocketTCPListen(listener);
+    pxSocketTCPCreate(listener, pxAddressIPv4Empty(), 50000);
+    pxSocketTCPBind(listener);
+    pxSocketTCPListen(listener);
 
     for (ssize conns = 0; conns < 2; conns += 1) {
-        RnSocketTCP* socket = rnSocketTCPReserve(&arena);
+        PxSocketTCP* socket = pxSocketTCPReserve(&arena);
 
-        rnSocketTCPAccept(listener, socket);
+        pxSocketTCPAccept(listener, socket);
 
         u8 buffer[256] = {0};
 
-        ssize size = rnSocketTCPRead(socket, buffer, 256);
+        ssize size = pxSocketTCPRead(socket, buffer, 256);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        rnSocketTCPWrite(socket, buffer, size);
-        rnSocketTCPDestroy(socket);
+        pxSocketTCPWrite(socket, buffer, size);
+        pxSocketTCPDestroy(socket);
     }
 
-    rnSocketTCPDestroy(listener);
+    pxSocketTCPDestroy(listener);
 }

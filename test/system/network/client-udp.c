@@ -9,24 +9,24 @@
 int
 main(int argc, char** argv)
 {
-    RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    RnSocketUDP* socket = rnSocketUDPReserve(&arena);
+    PxSocketUDP* socket = pxSocketUDPReserve(&arena);
 
-    rnSocketUDPCreate(socket, rnAddressIPv4Empty(), 0);
+    pxSocketUDPCreate(socket, pxAddressIPv4Empty(), 0);
 
     u8 buffer[256] = {"Ciao!"};
 
     ssize size = strlen(((char*) buffer));
 
-    rnSocketUDPWrite(socket, buffer, size,
-        rnAddressIPv4Local(), 50000);
+    pxSocketUDPWrite(socket, buffer, size,
+        pxAddressIPv4Local(), 50000);
 
     memset(buffer, 0, 256);
 
-    size = rnSocketUDPRead(socket, buffer, 256, 0, 0);
+    size = pxSocketUDPRead(socket, buffer, 256, 0, 0);
 
     printf("%.*s\n", ((int) size), buffer);
 
-    rnSocketUDPDestroy(socket);
+    pxSocketUDPDestroy(socket);
 }

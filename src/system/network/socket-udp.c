@@ -1,22 +1,22 @@
-#ifndef RN_SYSTEM_NETWORK_SOCKET_UDP_C
-#define RN_SYSTEM_NETWORK_SOCKET_UDP_C
+#ifndef PX_SYSTEM_NETWORK_SOCKET_UDP_C
+#define PX_SYSTEM_NETWORK_SOCKET_UDP_C
 
-#include "./socket-udp.h"
+#include "socket-udp.h"
 
-#if RN_SYSTEM == RN_SYSTEM_WINDOWS
+#if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
     #include "../../win32/network/export.c"
 
-    #define __rnSocketUDPReserve__ rnWin32SocketUDPReserve
-    #define __rnSocketUDPCreate__  rnWin32SocketUDPCreate
-    #define __rnSocketUDPDestroy__ rnWin32SocketUDPDestroy
-    #define __rnSocketUDPBind__    rnWin32SocketUDPBind
-    #define __rnSocketUDPBindTo__  rnWin32SocketUDPBindTo
-    #define __rnSocketUDPWrite__   rnWin32SocketUDPWrite
-    #define __rnSocketUDPRead__    rnWin32SocketUDPRead
+    #define __pxSocketUDPReserve__ pxWin32SocketUDPReserve
+    #define __pxSocketUDPCreate__  pxWin32SocketUDPCreate
+    #define __pxSocketUDPDestroy__ pxWin32SocketUDPDestroy
+    #define __pxSocketUDPBind__    pxWin32SocketUDPBind
+    #define __pxSocketUDPBindTo__  pxWin32SocketUDPBindTo
+    #define __pxSocketUDPWrite__   pxWin32SocketUDPWrite
+    #define __pxSocketUDPRead__    pxWin32SocketUDPRead
 
-    #define __rnSocketUDPGetAddress__ rnWin32SocketUDPGetAddress
-    #define __rnSocketUDPGetPort__    rnWin32SocketUDPGetPort
+    #define __pxSocketUDPGetAddress__ pxWin32SocketUDPGetAddress
+    #define __pxSocketUDPGetPort__    pxWin32SocketUDPGetPort
 
 #else
 
@@ -24,58 +24,58 @@
 
 #endif
 
-RnSocketUDP*
-rnSocketUDPReserve(RnMemoryArena* arena)
+PxSocketUDP*
+pxSocketUDPReserve(PxMemoryArena* arena)
 {
-    return __rnSocketUDPReserve__(arena);
+    return __pxSocketUDPReserve__(arena);
 }
 
 b32
-rnSocketUDPCreate(RnSocketUDP* self, RnAddressIP address, u16 port)
+pxSocketUDPCreate(PxSocketUDP* self, PxAddressIP address, u16 port)
 {
-    return __rnSocketUDPCreate__(self, address, port);
+    return __pxSocketUDPCreate__(self, address, port);
 }
 
 void
-rnSocketUDPDestroy(RnSocketUDP* self)
+pxSocketUDPDestroy(PxSocketUDP* self)
 {
-    return __rnSocketUDPDestroy__(self);
+    return __pxSocketUDPDestroy__(self);
 }
 
 b32
-rnSocketUDPBind(RnSocketUDP* self)
+pxSocketUDPBind(PxSocketUDP* self)
 {
-    return __rnSocketUDPBind__(self);
+    return __pxSocketUDPBind__(self);
 }
 
 b32
-rnSocketUDPBindTo(RnSocketUDP* self, RnAddressIP address, u16 port)
+pxSocketUDPBindTo(PxSocketUDP* self, PxAddressIP address, u16 port)
 {
-    return __rnSocketUDPBindTo__(self, address, port);
+    return __pxSocketUDPBindTo__(self, address, port);
 }
 
 ssize
-rnSocketUDPWrite(RnSocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port)
+pxSocketUDPWrite(PxSocketUDP* self, u8* values, ssize size, PxAddressIP address, u16 port)
 {
-    return __rnSocketUDPWrite__(self, values, size, address, port);
+    return __pxSocketUDPWrite__(self, values, size, address, port);
 }
 
 ssize
-rnSocketUDPRead(RnSocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port)
+pxSocketUDPRead(PxSocketUDP* self, u8* values, ssize size, PxAddressIP* address, u16* port)
 {
-    return __rnSocketUDPRead__(self, values, size, address, port);
+    return __pxSocketUDPRead__(self, values, size, address, port);
 }
 
-RnAddressIP
-rnSocketUDPGetAddress(RnSocketUDP* self)
+PxAddressIP
+pxSocketUDPGetAddress(PxSocketUDP* self)
 {
-    return __rnSocketUDPGetAddress__(self);
+    return __pxSocketUDPGetAddress__(self);
 }
 
 u16
-rnSocketUDPGetPort(RnSocketUDP* self)
+pxSocketUDPGetPort(PxSocketUDP* self)
 {
-    return __rnSocketUDPGetPort__(self);
+    return __pxSocketUDPGetPort__(self);
 }
 
-#endif // RN_SYSTEM_NETWORK_SOCKET_UDP_C
+#endif // PX_SYSTEM_NETWORK_SOCKET_UDP_C

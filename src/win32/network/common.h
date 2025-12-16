@@ -1,7 +1,7 @@
-#ifndef RN_WIN32_NETWORK_COMMON_H
-#define RN_WIN32_NETWORK_COMMON_H
+#ifndef PX_WIN32_NETWORK_COMMON_H
+#define PX_WIN32_NETWORK_COMMON_H
 
-#include "./import.h"
+#include "import.h"
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -11,24 +11,24 @@
 #include <ws2tcpip.h>
 #include <mswsock.h>
 
-typedef struct sockaddr_storage RnSockAddrStorage;
-typedef struct sockaddr         RnSockAddr;
-typedef struct sockaddr_in      RnSockAddrIn4;
-typedef struct sockaddr_in6     RnSockAddrIn6;
+typedef struct sockaddr_storage PxSockAddrStorage;
+typedef struct sockaddr         PxSockAddr;
+typedef struct sockaddr_in      PxSockAddrIn4;
+typedef struct sockaddr_in6     PxSockAddrIn6;
 
 static LPFN_CONNECTEX connectEx = 0;
 static LPFN_ACCEPTEX  acceptEx  = 0;
 
 b32
-rnWin32NetworkStart();
+pxWin32NetworkStart();
 
 b32
-rnWin32NetworkStartImpl();
+pxWin32NetworkStartImpl();
 
 void
-rnWin32NetworkStop();
+pxWin32NetworkStop();
 
 void
-rnWin32NetworkStopImpl();
+pxWin32NetworkStopImpl();
 
-#endif // RN_WIN32_NETWORK_COMMON_H
+#endif // PX_WIN32_NETWORK_COMMON_H

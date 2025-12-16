@@ -9,24 +9,24 @@
 int
 main(int argc, char** argv)
 {
-    RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    RnSocketTCP* socket = rnSocketTCPReserve(&arena);
+    PxSocketTCP* socket = pxSocketTCPReserve(&arena);
 
-    rnSocketTCPCreate(socket, rnAddressIPv4Empty(), 0);
-    rnSocketTCPConnect(socket, rnAddressIPv4Local(), 50000);
+    pxSocketTCPCreate(socket, pxAddressIPv4Empty(), 0);
+    pxSocketTCPConnect(socket, pxAddressIPv4Local(), 50000);
 
     u8 buffer[256] = {"Ciao!"};
 
     ssize size = strlen(((char*) buffer));
 
-    rnSocketTCPWrite(socket, buffer, size);
+    pxSocketTCPWrite(socket, buffer, size);
 
     memset(buffer, 0, 256);
 
-    size = rnSocketTCPRead(socket, buffer, 256);
+    size = pxSocketTCPRead(socket, buffer, 256);
 
     printf("%.*s\n", ((int) size), buffer);
 
-    rnSocketTCPDestroy(socket);
+    pxSocketTCPDestroy(socket);
 }

@@ -1,35 +1,35 @@
-#ifndef RN_BASE_MEMORY_ARENA_H
-#define RN_BASE_MEMORY_ARENA_H
+#ifndef PX_BASE_MEMORY_ARENA_H
+#define PX_BASE_MEMORY_ARENA_H
 
-#include "./slice.h"
+#include "common.h"
 
-#define rnMemoryArenaReserveOneOf(self, type) \
-    ((type*) rnMemoryArenaReserve(self, 1, sizeof(type), 0))
+#define pxMemoryArenaReserveOneOf(self, type) \
+    (((type)*) pxMemoryArenaReserve(self, 1, sizeof(type)))
 
-#define rnMemoryArenaReserveManyOf(self, type, count) \
-    ((type*) rnMemoryArenaReserve(self, count, sizeof(type), 0))
+#define pxMemoryArenaReserveManyOf(self, type, count) \
+    (((type)*) pxMemoryArenaReserve(self, count, sizeof(type)))
 
-typedef struct RnMemoryArena
+typedef struct PxMemoryArena
 {
-    u8*   values;
+    u8*   base;
+    u8*   next;
     ssize size;
-    ssize count;
 }
-RnMemoryArena;
+PxMemoryArena;
 
-RnMemoryArena
-rnMemoryArenaMake(void* memory, ssize size);
+PxMemoryArena
+pxMemoryArenaMake(void* pntr, ssize size);
 
 void
-rnMemoryArenaClear(RnMemoryArena* self);
+pxMemoryArenaClear(PxMemoryArena* self);
 
 void*
-rnMemoryArenaTell(RnMemoryArena* self);
-
-void*
-rnMemoryArenaReserve(RnMemoryArena* self, ssize size, ssize step, ssize* result);
+pxMemoryArenaReserve(PxMemoryArena* self, ssize count, ssize size);
 
 b32
-rnMemoryArenaRelease(RnMemoryArena* self, void* memory);
+pxMemoryArenaRelease(PxMemoryArena* self, void* pntr);
 
-#endif // RN_BASE_MEMORY_ARENA_H
+void*
+pxMemoryArenaTell(PxMemoryArena* self);
+
+#endif // PX_BASE_MEMORY_ARENA_H

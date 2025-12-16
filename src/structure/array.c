@@ -1,17 +1,17 @@
-#ifndef RN_STRUCTURE_ARRAY_C
-#define RN_STRUCTURE_ARRAY_C
+#ifndef PX_STRUCTURE_ARRAY_C
+#define PX_STRUCTURE_ARRAY_C
 
-#include "./array.h"
+#include "array.h"
 
 b32
-__rnArrayCreate__(RnArrayTag* self, void** pntr, ssize step, RnMemoryArena* arena, ssize size)
+__pxArrayCreate__(PxArrayTag* self, void** pntr, ssize step, PxMemoryArena* arena, ssize size)
 {
     if (step <= 0 || size <= 0) return 0;
 
-    u8* values = rnMemoryArenaReserve(arena, size, step, 0);
+    u8* values = pxMemoryArenaReserve(arena, size, step, 0);
 
     if (values != 0) {
-        *self = (RnArrayTag) {0};
+        *self = (PxArrayTag) {0};
 
         self->size = size;
         self->step = step;
@@ -25,31 +25,31 @@ __rnArrayCreate__(RnArrayTag* self, void** pntr, ssize step, RnMemoryArena* aren
 }
 
 ssize
-__rnArraySize__(RnArrayTag* self)
+__pxArraySize__(PxArrayTag* self)
 {
     return self->size;
 }
 
 ssize
-__rnArrayCount__(RnArrayTag* self)
+__pxArrayCount__(PxArrayTag* self)
 {
     return self->count;
 }
 
 b32
-__rnArrayIsEmpty__(RnArrayTag* self)
+__pxArrayIsEmpty__(PxArrayTag* self)
 {
     return self->count == 0 ? 1 : 0;
 }
 
 b32
-__rnArrayIsFull__(RnArrayTag* self)
+__pxArrayIsFull__(PxArrayTag* self)
 {
     return self->count == self->size ? 1 : 0;
 }
 
 b32
-__rnArrayIsIndex__(RnArrayTag* self, ssize index)
+__pxArrayIsIndex__(PxArrayTag* self, ssize index)
 {
     if (index < 0 || index >= self->count)
         return 0;
@@ -58,25 +58,25 @@ __rnArrayIsIndex__(RnArrayTag* self, ssize index)
 }
 
 ssize
-__rnArrayFront__(RnArrayTag* self)
+__pxArrayFront__(PxArrayTag* self)
 {
     return 0;
 }
 
 ssize
-__rnArrayBack__(RnArrayTag* self)
+__pxArrayBack__(PxArrayTag* self)
 {
     return self->count > 0 ? self->count - 1 : 0;
 }
 
 void
-__rnArrayClear__(RnArrayTag* self)
+__pxArrayClear__(PxArrayTag* self)
 {
     self->count = 0;
 }
 
 b32
-__rnArrayCopy__(RnArrayTag* self, void* values, ssize index, void* value)
+__pxArrayCopy__(PxArrayTag* self, void* values, ssize index, void* value)
 {
     if (index < 0 || index >= self->count) return 0;
 
@@ -89,7 +89,7 @@ __rnArrayCopy__(RnArrayTag* self, void* values, ssize index, void* value)
 }
 
 b32
-__rnArraySlotOpen__(RnArrayTag* self, void* values, ssize index)
+__pxArraySlotOpen__(PxArrayTag* self, void* values, ssize index)
 {
     if (index < 0 || index > self->count) return 0;
 
@@ -106,7 +106,7 @@ __rnArraySlotOpen__(RnArrayTag* self, void* values, ssize index)
 }
 
 b32
-__rnArraySlotClose__(RnArrayTag* self, void* values, ssize index)
+__pxArraySlotClose__(PxArrayTag* self, void* values, ssize index)
 {
     if (index < 0 || index >= self->count) return 0;
 
@@ -122,4 +122,4 @@ __rnArraySlotClose__(RnArrayTag* self, void* values, ssize index)
     return 1;
 }
 
-#endif // RN_STRUCTURE_ARRAY_C
+#endif // PX_STRUCTURE_ARRAY_C

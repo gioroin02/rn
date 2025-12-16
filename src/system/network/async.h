@@ -1,105 +1,105 @@
-#ifndef RN_SYSTEM_NETWORK_ASYNC_H
-#define RN_SYSTEM_NETWORK_ASYNC_H
+#ifndef PX_SYSTEM_NETWORK_ASYNC_H
+#define PX_SYSTEM_NETWORK_ASYNC_H
 
-#include "./socket-tcp.h"
-#include "./socket-udp.h"
+#include "socket-tcp.h"
+#include "socket-udp.h"
 
-typedef enum RnSocketTCPAsyncKind
+typedef enum PxSocketTCPAsyncKind
 {
-    RnSocketTCPAsync_None,
-    RnSocketTCPAsync_Error,
-    RnSocketTCPAsync_Accept,
-    RnSocketTCPAsync_Connect,
-    RnSocketTCPAsync_Write,
-    RnSocketTCPAsync_Read,
-    RnSocketTCPAsync_Close,
+    PxSocketTCPAsync_None,
+    PxSocketTCPAsync_Error,
+    PxSocketTCPAsync_Accept,
+    PxSocketTCPAsync_Connect,
+    PxSocketTCPAsync_Write,
+    PxSocketTCPAsync_Read,
+    PxSocketTCPAsync_Close,
 }
-RnSocketTCPAsyncKind;
+PxSocketTCPAsyncKind;
 
-typedef struct RnSocketTCPEventAccept
+typedef struct PxSocketTCPEventAccept
 {
-    RnSocketTCP* listener;
-    RnSocketTCP* socket;
+    PxSocketTCP* listener;
+    PxSocketTCP* socket;
 }
-RnSocketTCPEventAccept;
+PxSocketTCPEventAccept;
 
-typedef struct RnSocketTCPEventConnect
+typedef struct PxSocketTCPEventConnect
 {
-    RnSocketTCP* socket;
+    PxSocketTCP* socket;
     b32          status;
 }
-RnSocketTCPEventConnect;
+PxSocketTCPEventConnect;
 
-typedef struct RnSocketTCPEventWrite
+typedef struct PxSocketTCPEventWrite
 {
-    RnSocketTCP* socket;
+    PxSocketTCP* socket;
     u8*          values;
     ssize        start;
     ssize        stop;
 }
-RnSocketTCPEventWrite;
+PxSocketTCPEventWrite;
 
-typedef struct RnSocketTCPEventRead
+typedef struct PxSocketTCPEventRead
 {
-    RnSocketTCP* socket;
+    PxSocketTCP* socket;
     u8*          values;
     ssize        start;
     ssize        stop;
 }
-RnSocketTCPEventRead;
+PxSocketTCPEventRead;
 
-typedef struct RnSocketTCPEventClose
+typedef struct PxSocketTCPEventClose
 {
-    RnSocketTCP* socket;
+    PxSocketTCP* socket;
 }
-RnSocketTCPEventClose;
+PxSocketTCPEventClose;
 
-typedef struct RnSocketTCPEvent
+typedef struct PxSocketTCPEvent
 {
-    RnSocketTCPAsyncKind kind;
+    PxSocketTCPAsyncKind kind;
 
     void* ctxt;
 
     union
     {
-        RnSocketTCPEventAccept  accept;
-        RnSocketTCPEventConnect connect;
-        RnSocketTCPEventWrite   write;
-        RnSocketTCPEventRead    read;
-        RnSocketTCPEventClose   close;
+        PxSocketTCPEventAccept  accept;
+        PxSocketTCPEventConnect connect;
+        PxSocketTCPEventWrite   write;
+        PxSocketTCPEventRead    read;
+        PxSocketTCPEventClose   close;
     };
 }
-RnSocketTCPEvent;
+PxSocketTCPEvent;
 
-RnSocketTCPEvent
-rnSocketTCPEventAccept(void* ctxt, RnSocketTCP* listener, RnSocketTCP* socket);
+PxSocketTCPEvent
+pxSocketTCPEventAccept(void* ctxt, PxSocketTCP* listener, PxSocketTCP* socket);
 
-RnSocketTCPEvent
-rnSocketTCPEventConnect(void* ctxt, RnSocketTCP* socket, b32 status);
+PxSocketTCPEvent
+pxSocketTCPEventConnect(void* ctxt, PxSocketTCP* socket, b32 status);
 
-RnSocketTCPEvent
-rnSocketTCPEventWrite(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
+PxSocketTCPEvent
+pxSocketTCPEventWrite(void* ctxt, PxSocketTCP* socket, u8* values, ssize start, ssize stop);
 
-RnSocketTCPEvent
-rnSocketTCPEventRead(void* ctxt, RnSocketTCP* socket, u8* values, ssize start, ssize stop);
+PxSocketTCPEvent
+pxSocketTCPEventRead(void* ctxt, PxSocketTCP* socket, u8* values, ssize start, ssize stop);
 
-RnSocketTCPEvent
-rnSocketTCPEventClose(void* ctxt, RnSocketTCP* socket);
+PxSocketTCPEvent
+pxSocketTCPEventClose(void* ctxt, PxSocketTCP* socket);
 
-RnAsyncIOTask*
-rnSocketTCPAsyncAccept(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* listener, RnSocketTCP* socket);
+PxAsyncIOTask*
+pxSocketTCPAsyncAccept(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* listener, PxSocketTCP* socket);
 
-RnAsyncIOTask*
-rnSocketTCPAsyncConnect(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, RnAddressIP address, u16 port);
+PxAsyncIOTask*
+pxSocketTCPAsyncConnect(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, PxAddressIP address, u16 port);
 
-RnAsyncIOTask*
-rnSocketTCPAsyncWrite(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, u8* values, ssize start, ssize stop);
+PxAsyncIOTask*
+pxSocketTCPAsyncWrite(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, u8* values, ssize start, ssize stop);
 
-RnAsyncIOTask*
-rnSocketTCPAsyncRead(RnMemoryArena* arena, void* ctxt, void* proc,
-    RnSocketTCP* socket, u8* values, ssize start, ssize stop);
+PxAsyncIOTask*
+pxSocketTCPAsyncRead(PxMemoryArena* arena, void* ctxt, void* proc,
+    PxSocketTCP* socket, u8* values, ssize start, ssize stop);
 
-#endif // RN_SYSTEM_NETWORK_ASYNC_H
+#endif // PX_SYSTEM_NETWORK_ASYNC_H

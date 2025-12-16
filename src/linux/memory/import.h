@@ -1,6 +1,6 @@
-#ifndef RN_LINUX_MEMORY_IMPORT_H
-#define RN_LINUX_MEMORY_IMPORT_H
+#ifndef PX_LINUX_MEMORY_IMPORT_H
+#define PX_LINUX_MEMORY_IMPORT_H
 
 #include "../../system/memory/import.h"
 
-#endif // RN_LINUX_MEMORY_IMPORT_H
+#endif // PX_LINUX_MEMORY_IMPORT_H

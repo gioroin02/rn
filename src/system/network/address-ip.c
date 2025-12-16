@@ -1,12 +1,12 @@
-#ifndef RN_SYSTEM_NETWORK_ADDRESS_IP_C
-#define RN_SYSTEM_NETWORK_ADDRESS_IP_C
+#ifndef PX_SYSTEM_NETWORK_ADDRESS_IP_C
+#define PX_SYSTEM_NETWORK_ADDRESS_IP_C
 
-#include "./address-ip.h"
+#include "address-ip.h"
 
 static b32
-rnAddressIPv4IsEqual(RnAddressIPv4 self, RnAddressIPv4 value)
+pxAddressIPv4IsEqual(PxAddressIPv4 self, PxAddressIPv4 value)
 {
-    for (ssize i = 0; i < RN_ADDRESS_IPV4_SIZE; i += 1) {
+    for (ssize i = 0; i < PX_ADDRESS_IPV4_SIZE; i += 1) {
         if (self.values[i] != value.values[i])
             return 0;
     }
@@ -15,9 +15,9 @@ rnAddressIPv4IsEqual(RnAddressIPv4 self, RnAddressIPv4 value)
 }
 
 static b32
-rnAddressIPv6IsEqual(RnAddressIPv6 self, RnAddressIPv6 value)
+pxAddressIPv6IsEqual(PxAddressIPv6 self, PxAddressIPv6 value)
 {
-    for (ssize i = 0; i < RN_ADDRESS_IPV6_SIZE; i += 1) {
+    for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1) {
         if (self.values[i] != value.values[i])
             return 0;
     }
@@ -25,11 +25,11 @@ rnAddressIPv6IsEqual(RnAddressIPv6 self, RnAddressIPv6 value)
     return 1;
 }
 
-RnAddressIP
-rnAddressIPv4Make(u8 v0, u8 v1, u8 v2, u8 v3)
+PxAddressIP
+pxAddressIPv4Make(u8 v0, u8 v1, u8 v2, u8 v3)
 {
-    return (RnAddressIP) {
-        .kind = RnAddressIP_IPv4,
+    return (PxAddressIP) {
+        .kind = PxAddressIP_IPv4,
 
         .ipv4.values = {
             [0] = v0, [1] = v1,
@@ -38,12 +38,12 @@ rnAddressIPv4Make(u8 v0, u8 v1, u8 v2, u8 v3)
     };
 }
 
-RnAddressIP
-rnAddressIPv4FromArray(u8* values, ssize size)
+PxAddressIP
+pxAddressIPv4FromArray(u8* values, ssize size)
 {
-    RnAddressIP result = {.kind = RnAddressIP_IPv4};
+    PxAddressIP result = {.kind = PxAddressIP_IPv4};
 
-    size = rnClamp(size, 0, RN_ADDRESS_IPV4_SIZE);
+    size = pxClamp(size, 0, PX_ADDRESS_IPV4_SIZE);
 
     for (ssize i = 0; i < size; i += 1)
         result.ipv4.values[i] = values[i];
@@ -51,11 +51,11 @@ rnAddressIPv4FromArray(u8* values, ssize size)
     return result;
 }
 
-RnAddressIP
-rnAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7)
+PxAddressIP
+pxAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7)
 {
-    return (RnAddressIP) {
-        .kind = RnAddressIP_IPv6,
+    return (PxAddressIP) {
+        .kind = PxAddressIP_IPv6,
 
         .ipv6.values = {
             [0] = v0, [1] = v1, [2] = v2, [3] = v3,
@@ -64,12 +64,12 @@ rnAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7
     };
 }
 
-RnAddressIP
-rnAddressIPv6FromArray(u16* values, ssize size)
+PxAddressIP
+pxAddressIPv6FromArray(u16* values, ssize size)
 {
-    RnAddressIP result = {.kind = RnAddressIP_IPv6};
+    PxAddressIP result = {.kind = PxAddressIP_IPv6};
 
-    size = rnClamp(size, 0, RN_ADDRESS_IPV6_SIZE);
+    size = pxClamp(size, 0, PX_ADDRESS_IPV6_SIZE);
 
     for (ssize i = 0; i < size; i += 1)
         result.ipv6.values[i] = values[i];
@@ -77,43 +77,43 @@ rnAddressIPv6FromArray(u16* values, ssize size)
     return result;
 }
 
-RnAddressIP
-rnAddressIPEmpty(RnAddressIPKind kind)
+PxAddressIP
+pxAddressIPEmpty(PxAddressIPKind kind)
 {
     switch (kind) {
-        case RnAddressIP_IPv4: return rnAddressIPv4Empty();
-        case RnAddressIP_IPv6: return rnAddressIPv6Empty();
+        case PxAddressIP_IPv4: return pxAddressIPv4Empty();
+        case PxAddressIP_IPv6: return pxAddressIPv6Empty();
 
         default: break;
     }
 
-    return (RnAddressIP) {0};
+    return (PxAddressIP) {0};
 }
 
-RnAddressIP
-rnAddressIPLocal(RnAddressIPKind kind)
+PxAddressIP
+pxAddressIPLocal(PxAddressIPKind kind)
 {
     switch (kind) {
-        case RnAddressIP_IPv4: return rnAddressIPv4Local();
-        case RnAddressIP_IPv6: return rnAddressIPv6Local();
+        case PxAddressIP_IPv4: return pxAddressIPv4Local();
+        case PxAddressIP_IPv6: return pxAddressIPv6Local();
 
         default: break;
     }
 
-    return (RnAddressIP) {0};
+    return (PxAddressIP) {0};
 }
 
 b32
-rnAddressIPIsEqual(RnAddressIP self, RnAddressIP value)
+pxAddressIPIsEqual(PxAddressIP self, PxAddressIP value)
 {
     if (self.kind != value.kind) return 0;
 
     switch (self.kind) {
-        case RnAddressIP_IPv4:
-            return rnAddressIPv4IsEqual(self.ipv4, value.ipv4);
+        case PxAddressIP_IPv4:
+            return pxAddressIPv4IsEqual(self.ipv4, value.ipv4);
 
-        case RnAddressIP_IPv6:
-            return rnAddressIPv6IsEqual(self.ipv6, value.ipv6);
+        case PxAddressIP_IPv6:
+            return pxAddressIPv6IsEqual(self.ipv6, value.ipv6);
 
         default: break;
     }
@@ -121,4 +121,4 @@ rnAddressIPIsEqual(RnAddressIP self, RnAddressIP value)
     return 0;
 }
 
-#endif // RN_SYSTEM_NETWORK_ADDRESS_IP_C
+#endif // PX_SYSTEM_NETWORK_ADDRESS_IP_C

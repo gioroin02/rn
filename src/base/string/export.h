@@ -1,6 +1,6 @@
-#ifndef RN_BASE_STRING_EXPORT_H
-#define RN_BASE_STRING_EXPORT_H
+#ifndef PX_BASE_STRING_EXPORT_H
+#define PX_BASE_STRING_EXPORT_H
 
-#include "./string.h"
+#include "string.h"
 
-#endif // RN_BASE_STRING_EXPORT_H
+#endif // PX_BASE_STRING_EXPORT_H

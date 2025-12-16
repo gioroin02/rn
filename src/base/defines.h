@@ -1,18 +1,20 @@
-#ifndef RN_BASE_DEFINES_H
-#define RN_BASE_DEFINES_H
+#ifndef PX_BASE_DEFINES_H
+#define PX_BASE_DEFINES_H
 
-#define rnMin(a, b) ((a) < (b) ? (a) : (b))
-#define rnMax(a, b) ((a) < (b) ? (b) : (a))
+#define PX_NULL ((void*) 0)
 
-#define rnClampTop(x, max) rnMin(x, max)
-#define rnClampBot(x, min) rnMax(x, min)
+#define pxMin(a, b) ((a) < (b) ? (a) : (b))
+#define pxMax(a, b) ((a) < (b) ? (b) : (a))
 
-#define rnClamp(x, min, max) rnMax(min, rnMin(x, max))
+#define pxClampTop(x, max) pxMin(x, max)
+#define pxClampBot(x, min) pxMax(x, min)
 
-#define __rnText__(expr) # expr
-#define __rnGlue__(a, b) a ## b
+#define pxClamp(x, min, max) pxMax(min, pxMin(x, max))
 
-#define rnText(expr) __rnText__(expr)
-#define rnGlue(a, b) __rnGlue__(a, b)
+#define __pxText__(expr) # expr
+#define __pxGlue__(a, b) a ## b
 
-#endif // RN_BASE_DEFINES_H
+#define pxText(expr) __pxText__(expr)
+#define pxGlue(a, b) __pxGlue__(a, b)
+
+#endif // PX_BASE_DEFINES_H

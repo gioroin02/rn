@@ -1,9 +1,9 @@
-#ifndef RN_STRUCTURE_MAP_H
-#define RN_STRUCTURE_MAP_H
+#ifndef PX_STRUCTURE_MAP_H
+#define PX_STRUCTURE_MAP_H
 
-#include "./import.h"
+#include "import.h"
 
-#define __RnMapTag__(ktype) \
+#define __PxMapTag__(ktype) \
     struct {                \
         ssize  size;        \
         ssize  count;       \
@@ -16,38 +16,38 @@
         ktype  key;         \
     }
 
-typedef __RnMapTag__(void*) RnMapTag;
+typedef __PxMapTag__(void*) PxMapTag;
 
-typedef ssize (rnProcHash)    (void*);
-typedef b32   (rnProcIsEqual) (void*, void*);
+typedef ssize (pxProcHash)    (void*);
+typedef b32   (pxProcIsEqual) (void*, void*);
 
-#define RnMap(ktype, vtype)  \
+#define PxMap(ktype, vtype)  \
     struct {                 \
-        __RnMapTag__(ktype); \
+        __PxMapTag__(ktype); \
                              \
         ktype* keys;         \
         vtype* values;       \
     }
 
-#define rnMapSize(self)       __rnMapSize__(((RnMapTag*) self))
-#define rnMapCount(self)      __rnMapCount__(((RnMapTag*) self))
-#define rnMapIsEmpty(self)    __rnMapIsEmpty__(((RnMapTag*) self))
-#define rnMapIsFull(self)     __rnMapIsFull__(((RnMapTag*) self))
+#define pxMapSize(self)       __pxMapSize__(((PxMapTag*) self))
+#define pxMapCount(self)      __pxMapCount__(((PxMapTag*) self))
+#define pxMapIsEmpty(self)    __pxMapIsEmpty__(((PxMapTag*) self))
+#define pxMapIsFull(self)     __pxMapIsFull__(((PxMapTag*) self))
 
-#define rnMapIsKey(self, key) ( \
+#define pxMapIsKey(self, key) ( \
     (self)->key = (key),        \
-    __rnMapIsKey__(             \
-        ((RnMapTag*) self),     \
+    __pxMapIsKey__(             \
+        ((PxMapTag*) self),     \
         (self)->keys,           \
         &(self)->key            \
     )                           \
 )
 
-#define rnMapClear(self) __rnMapClear__(((RnMapTag*) self))
+#define pxMapClear(self) __pxMapClear__(((PxMapTag*) self))
 
-#define rnMapCreate(self, arena, size, proc, isEqual) ( \
-    __rnMapCreate__(                                    \
-        ((RnMapTag*) self),                             \
+#define pxMapCreate(self, arena, size, proc, isEqual) ( \
+    __pxMapCreate__(                                    \
+        ((PxMapTag*) self),                             \
         ((void**) &(self)->keys),                       \
         sizeof(*(self)->keys),                          \
         ((void**) &(self)->values),                     \
@@ -56,10 +56,10 @@ typedef b32   (rnProcIsEqual) (void*, void*);
     )                                                   \
 )
 
-#define rnMapInsert(self, key, value) (                  \
+#define pxMapInsert(self, key, value) (                  \
     (self)->key = (key),                                 \
-    __rnMapSlotOpen__(                                   \
-        ((RnMapTag*) self),                              \
+    __pxMapSlotOpen__(                                   \
+        ((PxMapTag*) self),                              \
         (self)->keys,                                    \
         &(self)->key                                     \
     ) != 0 ? (                                           \
@@ -71,35 +71,35 @@ typedef b32   (rnProcIsEqual) (void*, void*);
     :  0                                                 \
 )
 
-#define rnMapGet(self, key, other) \
-    (rnMapIsKey(self, key) != 0 ? (self)->values[(self)->index] : (other))
+#define pxMapGet(self, key, other) \
+    (pxMapIsKey(self, key) != 0 ? (self)->values[(self)->index] : (other))
 
-#define rnMapGetPtr(self, key) \
-    (rnMapIsKey(self, key) != 0 ? &(self)->values[(self)->index] : 0)
+#define pxMapGetPtr(self, key) \
+    (pxMapIsKey(self, key) != 0 ? &(self)->values[(self)->index] : 0)
 
 b32
-__rnMapCreate__(RnMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize vstep,
-    RnMemoryArena* arena, ssize size, void* proc, void* isEqual);
+__pxMapCreate__(PxMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize vstep,
+    PxMemoryArena* arena, ssize size, void* proc, void* isEqual);
 
 ssize
-__rnMapSize__(RnMapTag* self);
+__pxMapSize__(PxMapTag* self);
 
 ssize
-__rnMapCount__(RnMapTag* self);
+__pxMapCount__(PxMapTag* self);
 
 b32
-__rnMapIsEmpty__(RnMapTag* self);
+__pxMapIsEmpty__(PxMapTag* self);
 
 b32
-__rnMapIsFull__(RnMapTag* self);
+__pxMapIsFull__(PxMapTag* self);
 
 b32
-__rnMapIsKey__(RnMapTag* self, void* keys, void* key);
+__pxMapIsKey__(PxMapTag* self, void* keys, void* key);
 
 void
-__rnMapClear__(RnMapTag* self);
+__pxMapClear__(PxMapTag* self);
 
 b32
-__rnMapSlotOpen__(RnMapTag* self, void* keys, void* key);
+__pxMapSlotOpen__(PxMapTag* self, void* keys, void* key);
 
-#endif // RN_STRUCTURE_MAP_H
+#endif // PX_STRUCTURE_MAP_H

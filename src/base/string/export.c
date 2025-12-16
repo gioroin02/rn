@@ -1,4 +1,6 @@
-#ifndef RN_BASE_STRING_EXPORT_C
-#define RN_BASE_STRING_EXPORT_C
+#ifndef PX_BASE_STRING_EXPORT_C
+#define PX_BASE_STRING_EXPORT_C
 
-#endif // RN_BASE_STRING_EXPORT_C
+#include "string.c"
+
+#endif // PX_BASE_STRING_EXPORT_C

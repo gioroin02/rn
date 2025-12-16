@@ -1,36 +1,40 @@
-#ifndef RN_BASE_STRING_STRING_H
-#define RN_BASE_STRING_STRING_H
+#ifndef PX_BASE_STRING_STRING_H
+#define PX_BASE_STRING_STRING_H
 
-#include "./import.h"
+#include "import.h"
 
-#define rnStr8(memory) \
-    ((RnString8) {.values = ((u8*) memory), .size = sizeof(memory) / sizeof(memory[0]) - 1})
+#define pxStr8(arr)  pxStr8Make(arr,  sizeof (arr) / sizeof *(arr))
+#define pxStr16(arr) pxStr16Make(arr, sizeof (arr) / sizeof *(arr))
+#define pxStr32(arr) pxStr32Make(arr, sizeof (arr) / sizeof *(arr))
 
-#define rnStr16(memory) \
-    ((RnString16) {.values = ((u16*) memory), .size = sizeof(memory) / sizeof(memory[0]) - 1})
-
-#define rnStr32(memory) \
-    ((RnString32) {.values = ((u32*) memory), .size = sizeof(memory) / sizeof(memory[0]) - 1})
-
-typedef struct RnString8
+typedef struct PxStr8
 {
     u8*   values;
     ssize size;
 }
-RnString8;
+PxStr8;
 
-typedef struct RnString16
+typedef struct PxStr16
 {
     u16*  values;
     ssize size;
 }
-RnString16;
+PxStr16;
 
-typedef struct RnString32
+typedef struct PxStr32
 {
-    u8*   values;
+    u32*  values;
     ssize size;
 }
-RnString32;
+PxStr32;
 
-#endif // RN_BASE_STRING_STRING_H
+PxStr8
+pxStr8Make(u8* values, ssize size);
+
+PxStr16
+pxStr16Make(u16* values, ssize size);
+
+PxStr32
+pxStr32Make(u32* values, ssize size);
+
+#endif // PX_BASE_STRING_STRING_H

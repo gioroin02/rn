@@ -1,44 +1,44 @@
-#ifndef RN_SYSTEM_NETWORK_SOCKET_TCP_H
-#define RN_SYSTEM_NETWORK_SOCKET_TCP_H
+#ifndef PX_SYSTEM_NETWORK_SOCKET_TCP_H
+#define PX_SYSTEM_NETWORK_SOCKET_TCP_H
 
-#include "./address-ip.h"
+#include "address-ip.h"
 
-typedef void RnSocketTCP;
+typedef void PxSocketTCP;
 
-RnSocketTCP*
-rnSocketTCPReserve(RnMemoryArena* arena);
-
-b32
-rnSocketTCPCreate(RnSocketTCP* self, RnAddressIP address, u16 port);
+PxSocketTCP*
+pxSocketTCPReserve(PxMemoryArena* arena);
 
 b32
-rnSocketTCPAccept(RnSocketTCP* self, RnSocketTCP* value);
+pxSocketTCPCreate(PxSocketTCP* self, PxAddressIP address, u16 port);
+
+b32
+pxSocketTCPAccept(PxSocketTCP* self, PxSocketTCP* value);
 
 void
-rnSocketTCPDestroy(RnSocketTCP* self);
+pxSocketTCPDestroy(PxSocketTCP* self);
 
 b32
-rnSocketTCPBind(RnSocketTCP* self);
+pxSocketTCPBind(PxSocketTCP* self);
 
 b32
-rnSocketTCPBindTo(RnSocketTCP* self, RnAddressIP address, u16 port);
+pxSocketTCPBindTo(PxSocketTCP* self, PxAddressIP address, u16 port);
 
 b32
-rnSocketTCPListen(RnSocketTCP* self);
+pxSocketTCPListen(PxSocketTCP* self);
 
 b32
-rnSocketTCPConnect(RnSocketTCP* self, RnAddressIP address, u16 port);
+pxSocketTCPConnect(PxSocketTCP* self, PxAddressIP address, u16 port);
 
 ssize
-rnSocketTCPWrite(RnSocketTCP* self, u8* values, ssize size);
+pxSocketTCPWrite(PxSocketTCP* self, u8* values, ssize size);
 
 ssize
-rnSocketTCPRead(RnSocketTCP* self, u8* values, ssize size);
+pxSocketTCPRead(PxSocketTCP* self, u8* values, ssize size);
 
-RnAddressIP
-rnSocketTCPGetAddress(RnSocketTCP* self);
+PxAddressIP
+pxSocketTCPGetAddress(PxSocketTCP* self);
 
 u16
-rnSocketTCPGetPort(RnSocketTCP* self);
+pxSocketTCPGetPort(PxSocketTCP* self);
 
-#endif // RN_SYSTEM_NETWORK_SOCKET_TCP_H
+#endif // PX_SYSTEM_NETWORK_SOCKET_TCP_H

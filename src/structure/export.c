@@ -1,7 +1,7 @@
-#ifndef RN_STRUCTURE_EXPORT_C
-#define RN_STRUCTURE_EXPORT_C
+#ifndef PX_STRUCTURE_EXPORT_C
+#define PX_STRUCTURE_EXPORT_C
 
-#include "./array.c"
-#include "./map.c"
+#include "array.c"
+#include "map.c"
 
-#endif // RN_STRUCTURE_EXPORT_C
+#endif // PX_STRUCTURE_EXPORT_C

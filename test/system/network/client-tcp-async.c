@@ -9,43 +9,43 @@
 
 typedef struct ClientState
 {
-    RnMemoryArena*  arena;
-    RnAsyncIOQueue* queue;
-    RnSocketTCP*    socket;
+    PxMemoryArena*  arena;
+    PxAsyncIOQueue* queue;
+    PxSocketTCP*    socket;
 
     b32 active;
 }
 ClientState;
 
 void
-clientOnSocketTCPEvent(ClientState* self, RnSocketTCPEvent* event)
+clientOnSocketTCPEvent(ClientState* self, PxSocketTCPEvent* event)
 {
     switch (event->kind) {
-        case RnSocketTCPAsync_Error: self->active = 0; break;
+        case PxSocketTCPAsync_Error: self->active = 0; break;
 
-        case RnSocketTCPAsync_Connect: {
+        case PxSocketTCPAsync_Connect: {
             if (event->connect.status != 0) {
                 printf("[DEBUG] Connected!\n");
 
-                u8*   buffer = rnMemoryArenaReserveManyOf(self->arena, u8, 256);
+                u8*   buffer = pxMemoryArenaReserveManyOf(self->arena, u8, 256);
                 ssize stop   = snprintf(((char*) buffer), 256, "Ciao!");
 
-                rnAsyncIOQueueSubmit(self->queue, rnSocketTCPAsyncWrite(
+                pxAsyncIOQueueSubmit(self->queue, pxSocketTCPAsyncWrite(
                     self->arena, self, &clientOnSocketTCPEvent, self->socket, buffer, 0, stop));
             }
             else self->active = 0;
         } break;
 
-        case RnSocketTCPAsync_Write: {
+        case PxSocketTCPAsync_Write: {
             printf("[DEBUG] Wrote message!\n");
 
-            u8* buffer = rnMemoryArenaReserveManyOf(self->arena, u8, 256);
+            u8* buffer = pxMemoryArenaReserveManyOf(self->arena, u8, 256);
 
-            rnAsyncIOQueueSubmit(self->queue, rnSocketTCPAsyncRead(
+            pxAsyncIOQueueSubmit(self->queue, pxSocketTCPAsyncRead(
                 self->arena, self, &clientOnSocketTCPEvent, self->socket, buffer, 0, 256));
         } break;
 
-        case RnSocketTCPAsync_Read: {
+        case PxSocketTCPAsync_Read: {
             printf("[DEBUG] Read message!\n");
 
             u8*   values = event->read.values;
@@ -53,7 +53,7 @@ clientOnSocketTCPEvent(ClientState* self, RnSocketTCPEvent* event)
 
             printf("%.*s\n", ((int) stop), values);
 
-            rnSocketTCPDestroy(self->socket);
+            pxSocketTCPDestroy(self->socket);
 
             self->active = 0;
         } break;
@@ -65,27 +65,27 @@ clientOnSocketTCPEvent(ClientState* self, RnSocketTCPEvent* event)
 int
 main(int argc, char** argv)
 {
-    RnMemoryArena arena = rnSystemMemoryReserve(rnMemoryMiB(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    RnAddressIP address = rnAddressIPv4Local();
+    PxAddressIP address = pxAddressIPv4Local();
     u16         port    = 50000;
 
     ClientState client = {0};
 
     client.arena  = &arena;
-    client.queue  = rnAsyncIOQueueReserve(&arena);
-    client.socket = rnSocketTCPReserve(&arena);
+    client.queue  = pxAsyncIOQueueReserve(&arena);
+    client.socket = pxSocketTCPReserve(&arena);
 
-    rnAsyncIOQueueCreate(client.queue);
-    rnSocketTCPCreate(client.socket, rnAddressIPv4Empty(), 0);
+    pxAsyncIOQueueCreate(client.queue);
+    pxSocketTCPCreate(client.socket, pxAddressIPv4Empty(), 0);
 
     client.active = 1;
 
-    rnAsyncIOQueueSubmit(client.queue, rnSocketTCPAsyncConnect(
+    pxAsyncIOQueueSubmit(client.queue, pxSocketTCPAsyncConnect(
         &arena, &client, &clientOnSocketTCPEvent, client.socket, address, port));
 
     for (ssize i = 0; i < 1000 && client.active != 0; i += 1)
-        rnAsyncIOQueuePoll(client.queue, 10);
+        pxAsyncIOQueuePoll(client.queue, 10);
 
-    rnSocketTCPDestroy(client.socket);
+    pxSocketTCPDestroy(client.socket);
 }

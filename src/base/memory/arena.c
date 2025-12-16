@@ -1,72 +1,74 @@
-#ifndef RN_BASE_MEMORY_ARENA_C
-#define RN_BASE_MEMORY_ARENA_C
+#ifndef PX_BASE_MEMORY_ARENA_C
+#define PX_BASE_MEMORY_ARENA_C
 
-#include "./arena.h"
+#include "arena.h"
 
-RnMemoryArena
-rnMemoryArenaMake(void* memory, ssize size)
+PxMemoryArena
+pxMemoryArenaMake(void* pntr, ssize size)
 {
-    RnMemoryArena result = {0};
+    PxMemoryArena result;
 
-    if (memory == 0 || size <= 0)
-        return result;
+    pxMemorySet(&result, 0xAB, sizeof result);
 
-    result.values = ((u8*) memory);
-    result.size   = size;
+    if (pntr == 0 || size <= 0) return result;
+
+    result.base = (u8*) pntr;
+    result.next = result.base,
+    result.size = size;
+
+    pxMemorySet(result.base, 0xAB, result.size);
 
     return result;
 }
 
 void
-rnMemoryArenaClear(RnMemoryArena* self)
+pxMemoryArenaClear(PxMemoryArena* self)
 {
-    self->count = 0;
+    pxMemorySet(self->base, 0xAB, self->size);
+
+    self->next = self->base;
 }
 
 void*
-rnMemoryArenaTell(RnMemoryArena* self)
+pxMemoryArenaReserve(PxMemoryArena* self, ssize count, ssize size)
 {
-    return self->values + self->count;
-}
+    ssize bytes  = count * size;
+    u8*   result = self->next;
+    u8*   next   = self->next + bytes;
 
-void*
-rnMemoryArenaReserve(RnMemoryArena* self, ssize size, ssize step, ssize* result)
-{
-    void* memory = rnMemoryArenaTell(self);
-    ssize count  = self->count;
+    if (count <= 0 || size <= 0 || count > PX_MAX_SSIZE / size)
+        return PX_NULL;
 
-    if (size <= 0 || step <= 0 || size > RN_MAX_SSIZE / step)
-        return 0;
+    if (next > self->base + self->size) return PX_NULL;
 
-    ssize bytes = size * step;
+    self->next = pxMemoryAlignForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
 
-    if (self->count < 0 || self->count + bytes > self->size)
-        return 0;
+    pxMemorySet(result, 0xAB, self->next - result);
 
-    self->count = rnMemoryAlignForward(
-        self->count + bytes, RN_MEMORY_DEFAULT_ALIGNMENT);
-
-    for (ssize i = 0; i < self->count - count; i += 1)
-        ((u8*) memory)[i] = 0;
-
-    if (result != 0) *result = self->count - count;
-
-    return memory;
+    return result;
 }
 
 b32
-rnMemoryArenaRelease(RnMemoryArena* self, void* memory)
+pxMemoryArenaRelease(PxMemoryArena* self, void* pntr)
 {
-    ssize diff = ((u8*) memory) - self->values;
+    ssize dist = ((u8*) pntr) - self->base;
 
-    if (diff % RN_MEMORY_DEFAULT_ALIGNMENT != 0)
+    if (pntr == PX_NULL || dist % PX_MEMORY_DEFAULT_ALIGNMENT != 0)
         return 0;
 
-    if (diff < 0 || diff >= self->count) return 0;
+    if (dist < 0 || self->base + dist >= self->next) return 0;
 
-    self->count = diff;
+    self->next = self->base + dist;
+
+    pxMemorySet(self->base + dist, 0xAB, self->size - dist);
 
     return 1;
 }
 
-#endif // RN_BASE_MEMORY_ARENA_C
+void*
+pxMemoryArenaTell(PxMemoryArena* self)
+{
+    return self->next;
+}
+
+#endif // PX_BASE_MEMORY_ARENA_C

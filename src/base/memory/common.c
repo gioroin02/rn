@@ -1,30 +1,70 @@
-#ifndef RN_BASE_MEMORY_COMMON_C
-#define RN_BASE_MEMORY_COMMON_C
+#ifndef PX_BASE_MEMORY_COMMON_C
+#define PX_BASE_MEMORY_COMMON_C
 
-#include "./common.h"
+#include "common.h"
 
-ssize
-rnMemoryAlignForward(ssize value, ssize align)
+void*
+pxMemorySet(void* pntr, u8 value, ssize size)
 {
-    if (value <= 0 || align <= 1) return 0;
+    ssize index = 0;
 
-    ssize temp = value % align;
+    if (pntr == PX_NULL) return PX_NULL;
 
-    if (temp != 0)
-        return value + align - temp;
+    for (index = 0; index < size; index += 1)
+        ((u8*) pntr)[index] = value;
 
-    return value;
+    return pntr;
 }
 
-RnByteOrder
-rnGetHostByteOrder()
+void*
+pxMemoryCopy(void* pntr, void* value, ssize size)
 {
-    u16 value = 0xab;
+    ssize index = 0;
 
-    if (*((u8*) &value) == 0xa)
-        return RnByteOrder_Network;
+    if (pntr == PX_NULL || value == PX_NULL) return PX_NULL;
 
-    return RnByteOrder_Reverse;
+    for (index = 0; index < size; index += 1)
+        ((u8*) pntr)[index] = ((u8*) value)[index];
+
+    return pntr;
 }
 
-#endif // RN_BASE_MEMORY_COMMON_C
+void*
+pxMemoryCopyOrSet(void* pntr, void* value, ssize size, u8 other)
+{
+    if (pntr == PX_NULL) return PX_NULL;
+
+    if (value == PX_NULL)
+        return pxMemorySet(pntr, other, size);
+
+    return pxMemoryCopy(pntr, value, size);
+}
+
+void*
+pxMemoryAlignForward(void* pntr, usize align)
+{
+    usize dist = ((usize) pntr) % align;
+
+    if (pntr == PX_NULL) return PX_NULL;
+
+    if (dist != 0)
+        return ((u8*) pntr) + align - dist;
+
+    return pntr;
+}
+
+PxByteOrder
+pxGetHostByteOrder()
+{
+    u32 value               = 1;
+    u8  bytes[sizeof value] = {0};
+
+    pxMemoryCopy(bytes, &value, sizeof *bytes);
+
+    if (bytes[0] == 1)
+        return PxByteOrder_Reverse;
+
+    return PxByteOrder_Network;
+}
+
+#endif // PX_BASE_MEMORY_COMMON_C

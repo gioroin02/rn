@@ -1,52 +1,52 @@
-#ifndef RN_STRUCTURE_ARRAY_H
-#define RN_STRUCTURE_ARRAY_H
+#ifndef PX_STRUCTURE_ARRAY_H
+#define PX_STRUCTURE_ARRAY_H
 
-#include "./import.h"
+#include "import.h"
 
-#define __RnArrayTag__() \
+#define __PxArrayTag__() \
     struct {             \
         ssize size;      \
         ssize count;     \
         ssize step;      \
     }
 
-typedef __RnArrayTag__() RnArrayTag;
+typedef __PxArrayTag__() PxArrayTag;
 
-#define RnArray(type)     \
+#define PxArray(type)     \
     struct {              \
-        __RnArrayTag__(); \
+        __PxArrayTag__(); \
                           \
         type* values;     \
     }
 
-#define rnArrayCreate(self, arena, size) ( \
-    __rnArrayCreate__(                     \
-        ((RnArrayTag*) self),              \
+#define pxArrayCreate(self, arena, size) ( \
+    __pxArrayCreate__(                     \
+        ((PxArrayTag*) self),              \
         ((void**) &(self)->values),        \
         sizeof(*(self)->values),           \
         arena, size                        \
     )                                      \
 )
 
-#define rnArraySize(self)           __rnArraySize__(((RnArrayTag*) self))
-#define rnArrayCount(self)          __rnArrayCount__(((RnArrayTag*) self))
-#define rnArrayIsEmpty(self)        __rnArrayIsEmpty__(((RnArrayTag*) self))
-#define rnArrayIsFull(self)         __rnArrayIsFull__(((RnArrayTag*) self))
-#define rnArrayIsIndex(self, index) __rnArrayIsIndex__(((RnArrayTag*) self), index)
-#define rnArrayFront(self)          __rnArrayFront__(((RnArrayTag*) self))
-#define rnArrayBack(self)           __rnArrayBack__(((RnArrayTag*) self))
-#define rnArrayClear(self)          __rnArrayClear__(((RnArrayTag*) self))
+#define pxArraySize(self)           __pxArraySize__(((PxArrayTag*) self))
+#define pxArrayCount(self)          __pxArrayCount__(((PxArrayTag*) self))
+#define pxArrayIsEmpty(self)        __pxArrayIsEmpty__(((PxArrayTag*) self))
+#define pxArrayIsFull(self)         __pxArrayIsFull__(((PxArrayTag*) self))
+#define pxArrayIsIndex(self, index) __pxArrayIsIndex__(((PxArrayTag*) self), index)
+#define pxArrayFront(self)          __pxArrayFront__(((PxArrayTag*) self))
+#define pxArrayBack(self)           __pxArrayBack__(((PxArrayTag*) self))
+#define pxArrayClear(self)          __pxArrayClear__(((PxArrayTag*) self))
 
-#define rnArrayCopy(self, index, value)   \
+#define pxArrayCopy(self, index, value)   \
 (                                         \
-    __rnArrayCopy__(((RnArrayTag*) self), \
+    __pxArrayCopy__(((PxArrayTag*) self), \
         (self)->values, index, value)     \
 )
 
-#define rnArrayInsert(self, index, value)   \
+#define pxArrayInsert(self, index, value)   \
 (                                           \
-    __rnArraySlotOpen__(                    \
-        ((RnArrayTag*) self),               \
+    __pxArraySlotOpen__(                    \
+        ((PxArrayTag*) self),               \
         (self)->values,                     \
         index                               \
     ) != 0 ? (                              \
@@ -56,12 +56,12 @@ typedef __RnArrayTag__() RnArrayTag;
     :  0                                    \
 )
 
-#define rnArrayRemove(self, index, value)  \
+#define pxArrayRemove(self, index, value)  \
 (                                          \
-    rnArrayCopy(self, index, value) != 0   \
+    pxArrayCopy(self, index, value) != 0   \
     ? (                                    \
-        __rnArraySlotClose__(              \
-            ((RnArrayTag*) self),          \
+        __pxArraySlotClose__(              \
+            ((PxArrayTag*) self),          \
             (self)->values,                \
             index                          \
         ),                                 \
@@ -70,52 +70,52 @@ typedef __RnArrayTag__() RnArrayTag;
     :  0                                   \
 )
 
-#define rnArrayPushFront(self, value) rnArrayInsert(self, 0,                  value)
-#define rnArrayPushBack(self, value)  rnArrayInsert(self, rnArrayCount(self), value)
+#define pxArrayPushFront(self, value) pxArrayInsert(self, 0,                  value)
+#define pxArrayPushBack(self, value)  pxArrayInsert(self, pxArrayCount(self), value)
 
-#define rnArrayPopFront(self, value) rnArrayRemove(self, 0,                 value)
-#define rnArrayPopBack(self, value)  rnArrayRemove(self, rnArrayBack(self), value)
+#define pxArrayPopFront(self, value) pxArrayRemove(self, 0,                 value)
+#define pxArrayPopBack(self, value)  pxArrayRemove(self, pxArrayBack(self), value)
 
-#define rnArrayGet(self, index, other) \
-    (rnArrayIsIndex(self, index) != 0 ? (self)->values[(index)] : (other))
+#define pxArrayGet(self, index, other) \
+    (pxArrayIsIndex(self, index) != 0 ? (self)->values[(index)] : (other))
 
-#define rnArrayGetPtr(self, index) \
-    (rnArrayIsIndex(self, index) != 0 ? &(self)->values[(index)] : 0)
-
-b32
-__rnArrayCreate__(RnArrayTag* self, void** pntr, ssize step, RnMemoryArena* arena, ssize size);
-
-ssize
-__rnArraySize__(RnArrayTag* self);
-
-ssize
-__rnArrayCount__(RnArrayTag* self);
+#define pxArrayGetPtr(self, index) \
+    (pxArrayIsIndex(self, index) != 0 ? &(self)->values[(index)] : 0)
 
 b32
-__rnArrayIsEmpty__(RnArrayTag* self);
-
-b32
-__rnArrayIsFull__(RnArrayTag* self);
-
-b32
-__rnArrayIsIndex__(RnArrayTag* self, ssize index);
+__pxArrayCreate__(PxArrayTag* self, void** pntr, ssize step, PxMemoryArena* arena, ssize size);
 
 ssize
-__rnArrayFront__(RnArrayTag* self);
+__pxArraySize__(PxArrayTag* self);
 
 ssize
-__rnArrayBack__(RnArrayTag* self);
+__pxArrayCount__(PxArrayTag* self);
+
+b32
+__pxArrayIsEmpty__(PxArrayTag* self);
+
+b32
+__pxArrayIsFull__(PxArrayTag* self);
+
+b32
+__pxArrayIsIndex__(PxArrayTag* self, ssize index);
+
+ssize
+__pxArrayFront__(PxArrayTag* self);
+
+ssize
+__pxArrayBack__(PxArrayTag* self);
 
 void
-__rnArrayClear__(RnArrayTag* self);
+__pxArrayClear__(PxArrayTag* self);
 
 b32
-__rnArrayCopy__(RnArrayTag* self, void* values, ssize index, void* value);
+__pxArrayCopy__(PxArrayTag* self, void* values, ssize index, void* value);
 
 b32
-__rnArraySlotOpen__(RnArrayTag* self, void* values, ssize index);
+__pxArraySlotOpen__(PxArrayTag* self, void* values, ssize index);
 
 b32
-__rnArraySlotClose__(RnArrayTag* self, void* values, ssize index);
+__pxArraySlotClose__(PxArrayTag* self, void* values, ssize index);
 
-#endif // RN_STRUCTURE_ARRAY_H
+#endif // PX_STRUCTURE_ARRAY_H

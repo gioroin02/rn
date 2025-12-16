@@ -1,35 +1,35 @@
-#ifndef RN_SYSTEM_NETWORK_SOCKET_UDP_H
-#define RN_SYSTEM_NETWORK_SOCKET_UDP_H
+#ifndef PX_SYSTEM_NETWORK_SOCKET_UDP_H
+#define PX_SYSTEM_NETWORK_SOCKET_UDP_H
 
-#include "./address-ip.h"
+#include "address-ip.h"
 
-typedef void RnSocketUDP;
+typedef void PxSocketUDP;
 
-RnSocketUDP*
-rnSocketUDPReserve(RnMemoryArena* arena);
+PxSocketUDP*
+pxSocketUDPReserve(PxMemoryArena* arena);
 
 b32
-rnSocketUDPCreate(RnSocketUDP* self, RnAddressIP address, u16 port);
+pxSocketUDPCreate(PxSocketUDP* self, PxAddressIP address, u16 port);
 
 void
-rnSocketUDPDestroy(RnSocketUDP* self);
+pxSocketUDPDestroy(PxSocketUDP* self);
 
 b32
-rnSocketUDPBind(RnSocketUDP* self);
+pxSocketUDPBind(PxSocketUDP* self);
 
 b32
-rnSocketUDPBindTo(RnSocketUDP* self, RnAddressIP address, u16 port);
+pxSocketUDPBindTo(PxSocketUDP* self, PxAddressIP address, u16 port);
 
 ssize
-rnSocketUDPWrite(RnSocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port);
+pxSocketUDPWrite(PxSocketUDP* self, u8* values, ssize size, PxAddressIP address, u16 port);
 
 ssize
-rnSocketUDPRead(RnSocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port);
+pxSocketUDPRead(PxSocketUDP* self, u8* values, ssize size, PxAddressIP* address, u16* port);
 
-RnAddressIP
-rnSocketUDPGetAddress(RnSocketUDP* self);
+PxAddressIP
+pxSocketUDPGetAddress(PxSocketUDP* self);
 
 u16
-rnSocketUDPGetPort(RnSocketUDP* self);
+pxSocketUDPGetPort(PxSocketUDP* self);
 
-#endif // RN_SYSTEM_NETWORK_SOCKET_UDP_H
+#endif // PX_SYSTEM_NETWORK_SOCKET_UDP_H

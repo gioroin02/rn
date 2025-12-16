@@ -1,21 +1,21 @@
-#ifndef RN_WIN32_NETWORK_COMMON_C
-#define RN_WIN32_NETWORK_COMMON_C
+#ifndef PX_WIN32_NETWORK_COMMON_C
+#define PX_WIN32_NETWORK_COMMON_C
 
-#include "./common.h"
+#include "common.h"
 
 static volatile LONG gWinsockRefs = 0;
 
 b32
-rnWin32NetworkStart()
+pxWin32NetworkStart()
 {
     if (InterlockedIncrement(&gWinsockRefs) == 1)
-        return rnWin32NetworkStartImpl();
+        return pxWin32NetworkStartImpl();
 
     return 1;
 }
 
 b32
-rnWin32NetworkStartImpl()
+pxWin32NetworkStartImpl()
 {
     WSADATA data = {0};
 
@@ -40,22 +40,22 @@ rnWin32NetworkStartImpl()
 
     if (connectEx != 0 && acceptEx != 0) return 1;
 
-    rnWin32NetworkStop();
+    pxWin32NetworkStop();
 
     return 0;
 }
 
 void
-rnWin32NetworkStop()
+pxWin32NetworkStop()
 {
     if (InterlockedDecrement(&gWinsockRefs) == 0)
-        rnWin32NetworkStopImpl();
+        pxWin32NetworkStopImpl();
 }
 
 void
-rnWin32NetworkStopImpl()
+pxWin32NetworkStopImpl()
 {
     WSACleanup();
 }
 
-#endif // RN_WIN32_NETWORK_COMMON_C
+#endif // PX_WIN32_NETWORK_COMMON_C

@@ -1,15 +1,15 @@
-#ifndef RN_SYSTEM_MEMORY_COMMON_H
-#define RN_SYSTEM_MEMORY_COMMON_H
+#ifndef PX_SYSTEM_MEMORY_COMMON_H
+#define PX_SYSTEM_MEMORY_COMMON_H
 
-#include "./import.h"
+#include "import.h"
 
 ssize
-rnSystemMemoryPageSize();
+pxSystemMemoryPageSize();
 
-RnMemoryArena
-rnSystemMemoryReserve(ssize size);
+PxMemoryArena
+pxSystemMemoryReserve(ssize size);
 
 void
-rnSystemMemoryRelease(RnMemoryArena value);
+pxSystemMemoryRelease(PxMemoryArena value);
 
-#endif // RN_SYSTEM_MEMORY_COMMON_H
+#endif // PX_SYSTEM_MEMORY_COMMON_H

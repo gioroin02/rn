@@ -1,24 +1,24 @@
-#ifndef RN_SYSTEM_ASYNCIO_QUEUE_H
-#define RN_SYSTEM_ASYNCIO_QUEUE_H
+#ifndef PX_SYSTEM_ASYNCIO_QUEUE_H
+#define PX_SYSTEM_ASYNCIO_QUEUE_H
 
-#include "./import.h"
+#include "import.h"
 
-typedef void RnAsyncIOTask;
-typedef void RnAsyncIOQueue;
+typedef void PxAsyncIOTask;
+typedef void PxAsyncIOQueue;
 
-RnAsyncIOQueue*
-rnAsyncIOQueueReserve(RnMemoryArena* arena);
+PxAsyncIOQueue*
+pxAsyncIOQueueReserve(PxMemoryArena* arena);
 
 b32
-rnAsyncIOQueueCreate(RnAsyncIOQueue* self);
+pxAsyncIOQueueCreate(PxAsyncIOQueue* self);
 
 void
-rnAsyncIOQueueDestroy(RnAsyncIOQueue* self);
+pxAsyncIOQueueDestroy(PxAsyncIOQueue* self);
 
 b32
-rnAsyncIOQueueSubmit(RnAsyncIOQueue* self, RnAsyncIOTask* task);
+pxAsyncIOQueueSubmit(PxAsyncIOQueue* self, PxAsyncIOTask* task);
 
 b32
-rnAsyncIOQueuePoll(RnAsyncIOQueue* self, ssize timeout);
+pxAsyncIOQueuePoll(PxAsyncIOQueue* self, ssize timeout);
 
-#endif // RN_SYSTEM_ASYNCIO_QUEUE_H
+#endif // PX_SYSTEM_ASYNCIO_QUEUE_H

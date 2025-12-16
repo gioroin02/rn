@@ -1,6 +1,6 @@
-#ifndef RN_STRUCTURE_IMPORT_H
-#define RN_STRUCTURE_IMPORT_H
+#ifndef PX_STRUCTURE_IMPORT_H
+#define PX_STRUCTURE_IMPORT_H
 
 #include "../base/memory/export.h"
 
-#endif // RN_STRUCTURE_IMPORT_H
+#endif // PX_STRUCTURE_IMPORT_H

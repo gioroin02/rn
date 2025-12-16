@@ -1,6 +1,6 @@
-#ifndef RN_LINUX_MEMORY_EXPORT_H
-#define RN_LINUX_MEMORY_EXPORT_H
+#ifndef PX_LINUX_MEMORY_EXPORT_H
+#define PX_LINUX_MEMORY_EXPORT_H
 
-#include "./common.h"
+#include "common.h"
 
-#endif // RN_LINUX_MEMORY_EXPORT_H
+#endif // PX_LINUX_MEMORY_EXPORT_H

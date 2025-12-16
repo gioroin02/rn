@@ -1,15 +1,15 @@
-#ifndef RN_WIN32_MEMORY_COMMON_H
-#define RN_WIN32_MEMORY_COMMON_H
+#ifndef PX_WIN32_MEMORY_COMMON_H
+#define PX_WIN32_MEMORY_COMMON_H
 
-#include "./import.h"
+#include "import.h"
 
 ssize
-rnWin32MemoryPageSize();
+pxWin32MemoryPageSize();
 
-RnMemoryArena
-rnWin32MemoryReserve(ssize size);
+PxMemoryArena
+pxWin32MemoryReserve(ssize size);
 
 void
-rnWin32MemoryRelease(RnMemoryArena value);
+pxWin32MemoryRelease(PxMemoryArena value);
 
-#endif // RN_WIN32_MEMORY_COMMON_H
+#endif // PX_WIN32_MEMORY_COMMON_H

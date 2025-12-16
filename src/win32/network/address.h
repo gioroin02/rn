@@ -1,18 +1,18 @@
-#ifndef RN_WIN32_NETWORK_ADDRESS_H
-#define RN_WIN32_NETWORK_ADDRESS_H
+#ifndef PX_WIN32_NETWORK_ADDRESS_H
+#define PX_WIN32_NETWORK_ADDRESS_H
 
-#include "./common.h"
+#include "common.h"
 
-RnSockAddrStorage
-rnSockAddrStorageMake(RnAddressIP address, u16 port, ssize* size);
+PxSockAddrStorage
+pxSockAddrStorageMake(PxAddressIP address, u16 port, ssize* size);
 
-RnSockAddrStorage
-rnSockAddrStorageMakeAny(RnAddressIPKind kind, u16 port, ssize* size);
+PxSockAddrStorage
+pxSockAddrStorageMakeAny(PxAddressIPKind kind, u16 port, ssize* size);
 
-RnAddressIP
-rnSockAddrStorageGetAddress(RnSockAddrStorage* self);
+PxAddressIP
+pxSockAddrStorageGetAddress(PxSockAddrStorage* self);
 
 u16
-rnSockAddrStorageGetPort(RnSockAddrStorage* self);
+pxSockAddrStorageGetPort(PxSockAddrStorage* self);
 
-#endif // RN_WIN32_NETWORK_ADDRESS_H
+#endif // PX_WIN32_NETWORK_ADDRESS_H

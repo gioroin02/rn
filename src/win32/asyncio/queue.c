@@ -1,28 +1,28 @@
-#ifndef RN_WIN32_ASYNCIO_QUEUE_C
-#define RN_WIN32_ASYNCIO_QUEUE_C
+#ifndef PX_WIN32_ASYNCIO_QUEUE_C
+#define PX_WIN32_ASYNCIO_QUEUE_C
 
-#include "./queue.h"
+#include "queue.h"
 
 static b32
-rnWin32AsyncIOTaskPrepare(RnWin32AsyncIOTask* self, RnWin32AsyncIOQueue* queue)
+pxWin32AsyncIOTaskPrepare(PxWin32AsyncIOTask* self, PxWin32AsyncIOQueue* queue)
 {
     if (self->procPrepare != 0)
-        return ((RnWin32AsyncIOProcPrepare*) self->procPrepare)(self, queue);
+        return ((PxWin32AsyncIOProcPrepare*) self->procPrepare)(self, queue);
 
     return 0;
 }
 
 static b32
-rnWin32AsyncIOTaskComplete(RnWin32AsyncIOTask* self, ssize bytes)
+pxWin32AsyncIOTaskComplete(PxWin32AsyncIOTask* self, ssize bytes)
 {
     if (self->procComplete != 0)
-        return ((RnWin32AsyncIOProcComplete*) self->procComplete)(self, bytes);
+        return ((PxWin32AsyncIOProcComplete*) self->procComplete)(self, bytes);
 
     return 0;
 }
 
 static void
-rnWin32AsyncIOQueueInsertTask(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* task)
+pxWin32AsyncIOQueueInsertTask(PxWin32AsyncIOQueue* self, PxWin32AsyncIOTask* task)
 {
     if (self->head == 0 && self->tail == 0) {
         self->head = task;
@@ -42,12 +42,12 @@ rnWin32AsyncIOQueueInsertTask(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* tas
     }
 }
 
-static RnWin32AsyncIOTask*
-rnWin32AsyncIOQueueRemoveTaskByOverlapped(RnWin32AsyncIOQueue* self, OVERLAPPED* overlap)
+static PxWin32AsyncIOTask*
+pxWin32AsyncIOQueueRemoveTaskByOverlapped(PxWin32AsyncIOQueue* self, OVERLAPPED* overlap)
 {
     if (self == 0 || overlap == 0) return 0;
 
-    for (RnWin32AsyncIOTask* task = self->head; task != 0; task = task->next) {
+    for (PxWin32AsyncIOTask* task = self->head; task != 0; task = task->next) {
         if (&task->overlap == overlap) {
             if (task->prev)
                 task->prev->next = task->next;
@@ -68,14 +68,14 @@ rnWin32AsyncIOQueueRemoveTaskByOverlapped(RnWin32AsyncIOQueue* self, OVERLAPPED*
     return 0;
 }
 
-RnWin32AsyncIOQueue*
-rnWin32AsyncIOQueueReserve(RnMemoryArena* arena)
+PxWin32AsyncIOQueue*
+pxWin32AsyncIOQueueReserve(PxMemoryArena* arena)
 {
-    return rnMemoryArenaReserveOneOf(arena, RnWin32AsyncIOQueue);
+    return pxMemoryArenaReserveOneOf(arena, PxWin32AsyncIOQueue);
 }
 
 b32
-rnWin32AsyncIOQueueCreate(RnWin32AsyncIOQueue* self)
+pxWin32AsyncIOQueueCreate(PxWin32AsyncIOQueue* self)
 {
     if (self == 0) return 0;
 
@@ -90,31 +90,31 @@ rnWin32AsyncIOQueueCreate(RnWin32AsyncIOQueue* self)
 }
 
 void
-rnWin32AsyncIOQueueDestroy(RnWin32AsyncIOQueue* self)
+pxWin32AsyncIOQueueDestroy(PxWin32AsyncIOQueue* self)
 {
     if (self == 0) return;
 
     if (self->handle != 0)
         CloseHandle(self->handle);
 
-    *self = (RnWin32AsyncIOQueue) {0};
+    *self = (PxWin32AsyncIOQueue) {0};
 }
 
 b32
-rnWin32AsyncIOQueueSubmit(RnWin32AsyncIOQueue* self, RnWin32AsyncIOTask* task)
+pxWin32AsyncIOQueueSubmit(PxWin32AsyncIOQueue* self, PxWin32AsyncIOTask* task)
 {
     if (self == 0 || task == 0) return 0;
 
-    if (rnWin32AsyncIOTaskPrepare(task, self) == 0)
+    if (pxWin32AsyncIOTaskPrepare(task, self) == 0)
         return 0;
 
-    rnWin32AsyncIOQueueInsertTask(self, task);
+    pxWin32AsyncIOQueueInsertTask(self, task);
 
     return 1;
 }
 
 b32
-rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, ssize timeout)
+pxWin32AsyncIOQueuePoll(PxWin32AsyncIOQueue* self, ssize timeout)
 {
     DWORD time = timeout >= 0 ? timeout : INFINITE;
 
@@ -131,14 +131,14 @@ rnWin32AsyncIOQueuePoll(RnWin32AsyncIOQueue* self, ssize timeout)
         return 0;
 
     if (status != 0) {
-        RnWin32AsyncIOTask* task =
-            rnWin32AsyncIOQueueRemoveTaskByOverlapped(self, overlap);
+        PxWin32AsyncIOTask* task =
+            pxWin32AsyncIOQueueRemoveTaskByOverlapped(self, overlap);
 
-        if (task == 0 || rnWin32AsyncIOTaskComplete(task, bytes) == 0)
+        if (task == 0 || pxWin32AsyncIOTaskComplete(task, bytes) == 0)
             return 0;
     }
 
     return 1;
 }
 
-#endif // RN_WIN32_ASYNCIO_QUEUE_C
+#endif // PX_WIN32_ASYNCIO_QUEUE_C

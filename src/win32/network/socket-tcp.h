@@ -1,49 +1,49 @@
-#ifndef RN_WIN32_NETWORK_SOCKET_TCP_H
-#define RN_WIN32_NETWORK_SOCKET_TCP_H
+#ifndef PX_WIN32_NETWORK_SOCKET_TCP_H
+#define PX_WIN32_NETWORK_SOCKET_TCP_H
 
-#include "./address.h"
+#include "address.h"
 
-typedef struct RnWin32SocketTCP
+typedef struct PxWin32SocketTCP
 {
     SOCKET            handle;
-    RnSockAddrStorage storage;
+    PxSockAddrStorage storage;
 }
-RnWin32SocketTCP;
+PxWin32SocketTCP;
 
-RnWin32SocketTCP*
-rnWin32SocketTCPReserve(RnMemoryArena* arena);
-
-b32
-rnWin32SocketTCPCreate(RnWin32SocketTCP* self, RnAddressIP address, u16 port);
+PxWin32SocketTCP*
+pxWin32SocketTCPReserve(PxMemoryArena* arena);
 
 b32
-rnWin32SocketTCPAccept(RnWin32SocketTCP* self, RnWin32SocketTCP* value);
+pxWin32SocketTCPCreate(PxWin32SocketTCP* self, PxAddressIP address, u16 port);
+
+b32
+pxWin32SocketTCPAccept(PxWin32SocketTCP* self, PxWin32SocketTCP* value);
 
 void
-rnWin32SocketTCPDestroy(RnWin32SocketTCP* self);
+pxWin32SocketTCPDestroy(PxWin32SocketTCP* self);
 
 b32
-rnWin32SocketTCPBind(RnWin32SocketTCP* self);
+pxWin32SocketTCPBind(PxWin32SocketTCP* self);
 
 b32
-rnWin32SocketTCPBindTo(RnWin32SocketTCP* self, RnAddressIP address, u16 port);
+pxWin32SocketTCPBindTo(PxWin32SocketTCP* self, PxAddressIP address, u16 port);
 
 b32
-rnWin32SocketTCPListen(RnWin32SocketTCP* self);
+pxWin32SocketTCPListen(PxWin32SocketTCP* self);
 
 b32
-rnWin32SocketTCPConnect(RnWin32SocketTCP* self, RnAddressIP address, u16 port);
+pxWin32SocketTCPConnect(PxWin32SocketTCP* self, PxAddressIP address, u16 port);
 
 ssize
-rnWin32SocketTCPWrite(RnWin32SocketTCP* self, u8* values, ssize size);
+pxWin32SocketTCPWrite(PxWin32SocketTCP* self, u8* values, ssize size);
 
 ssize
-rnWin32SocketTCPRead(RnWin32SocketTCP* self, u8* values, ssize size);
+pxWin32SocketTCPRead(PxWin32SocketTCP* self, u8* values, ssize size);
 
-RnAddressIP
-rnWin32SocketTCPGetAddress(RnWin32SocketTCP* self);
+PxAddressIP
+pxWin32SocketTCPGetAddress(PxWin32SocketTCP* self);
 
 u16
-rnWin32SocketTCPGetPort(RnWin32SocketTCP* self);
+pxWin32SocketTCPGetPort(PxWin32SocketTCP* self);
 
-#endif // RN_WIN32_NETWORK_SOCKET_TCP_H
+#endif // PX_WIN32_NETWORK_SOCKET_TCP_H

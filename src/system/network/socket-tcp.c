@@ -1,25 +1,25 @@
-#ifndef RN_SYSTEM_NETWORK_SOCKET_TCP_C
-#define RN_SYSTEM_NETWORK_SOCKET_TCP_C
+#ifndef PX_SYSTEM_NETWORK_SOCKET_TCP_C
+#define PX_SYSTEM_NETWORK_SOCKET_TCP_C
 
-#include "./socket-tcp.h"
+#include "socket-tcp.h"
 
-#if RN_SYSTEM == RN_SYSTEM_WINDOWS
+#if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
     #include "../../win32/network/export.c"
 
-    #define __rnSocketTCPReserve__ rnWin32SocketTCPReserve
-    #define __rnSocketTCPCreate__  rnWin32SocketTCPCreate
-    #define __rnSocketTCPAccept__  rnWin32SocketTCPAccept
-    #define __rnSocketTCPDestroy__ rnWin32SocketTCPDestroy
-    #define __rnSocketTCPBind__    rnWin32SocketTCPBind
-    #define __rnSocketTCPBindTo__  rnWin32SocketTCPBindTo
-    #define __rnSocketTCPListen__  rnWin32SocketTCPListen
-    #define __rnSocketTCPConnect__ rnWin32SocketTCPConnect
-    #define __rnSocketTCPWrite__   rnWin32SocketTCPWrite
-    #define __rnSocketTCPRead__    rnWin32SocketTCPRead
+    #define __pxSocketTCPReserve__ pxWin32SocketTCPReserve
+    #define __pxSocketTCPCreate__  pxWin32SocketTCPCreate
+    #define __pxSocketTCPAccept__  pxWin32SocketTCPAccept
+    #define __pxSocketTCPDestroy__ pxWin32SocketTCPDestroy
+    #define __pxSocketTCPBind__    pxWin32SocketTCPBind
+    #define __pxSocketTCPBindTo__  pxWin32SocketTCPBindTo
+    #define __pxSocketTCPListen__  pxWin32SocketTCPListen
+    #define __pxSocketTCPConnect__ pxWin32SocketTCPConnect
+    #define __pxSocketTCPWrite__   pxWin32SocketTCPWrite
+    #define __pxSocketTCPRead__    pxWin32SocketTCPRead
 
-    #define __rnSocketTCPGetAddress__ rnWin32SocketTCPGetAddress
-    #define __rnSocketTCPGetPort__    rnWin32SocketTCPGetPort
+    #define __pxSocketTCPGetAddress__ pxWin32SocketTCPGetAddress
+    #define __pxSocketTCPGetPort__    pxWin32SocketTCPGetPort
 
 #else
 
@@ -27,76 +27,76 @@
 
 #endif
 
-RnSocketTCP*
-rnSocketTCPReserve(RnMemoryArena* arena)
+PxSocketTCP*
+pxSocketTCPReserve(PxMemoryArena* arena)
 {
-    return __rnSocketTCPReserve__(arena);
+    return __pxSocketTCPReserve__(arena);
 }
 
 b32
-rnSocketTCPCreate(RnSocketTCP* self, RnAddressIP address, u16 port)
+pxSocketTCPCreate(PxSocketTCP* self, PxAddressIP address, u16 port)
 {
-    return __rnSocketTCPCreate__(self, address, port);
+    return __pxSocketTCPCreate__(self, address, port);
 }
 
 b32
-rnSocketTCPAccept(RnSocketTCP* self, RnSocketTCP* value)
+pxSocketTCPAccept(PxSocketTCP* self, PxSocketTCP* value)
 {
-    return __rnSocketTCPAccept__(self, value);
+    return __pxSocketTCPAccept__(self, value);
 }
 
 void
-rnSocketTCPDestroy(RnSocketTCP* self)
+pxSocketTCPDestroy(PxSocketTCP* self)
 {
-    return __rnSocketTCPDestroy__(self);
+    return __pxSocketTCPDestroy__(self);
 }
 
 b32
-rnSocketTCPBind(RnSocketTCP* self)
+pxSocketTCPBind(PxSocketTCP* self)
 {
-    return __rnSocketTCPBind__(self);
+    return __pxSocketTCPBind__(self);
 }
 
 b32
-rnSocketTCPBindTo(RnSocketTCP* self, RnAddressIP address, u16 port)
+pxSocketTCPBindTo(PxSocketTCP* self, PxAddressIP address, u16 port)
 {
-    return __rnSocketTCPBindTo__(self, address, port);
+    return __pxSocketTCPBindTo__(self, address, port);
 }
 
 b32
-rnSocketTCPListen(RnSocketTCP* self)
+pxSocketTCPListen(PxSocketTCP* self)
 {
-    return __rnSocketTCPListen__(self);
+    return __pxSocketTCPListen__(self);
 }
 
 b32
-rnSocketTCPConnect(RnSocketTCP* self, RnAddressIP address, u16 port)
+pxSocketTCPConnect(PxSocketTCP* self, PxAddressIP address, u16 port)
 {
-    return __rnSocketTCPConnect__(self, address, port);
+    return __pxSocketTCPConnect__(self, address, port);
 }
 
 ssize
-rnSocketTCPWrite(RnSocketTCP* self, u8* values, ssize size)
+pxSocketTCPWrite(PxSocketTCP* self, u8* values, ssize size)
 {
-    return __rnSocketTCPWrite__(self, values, size);
+    return __pxSocketTCPWrite__(self, values, size);
 }
 
 ssize
-rnSocketTCPRead(RnSocketTCP* self, u8* values, ssize size)
+pxSocketTCPRead(PxSocketTCP* self, u8* values, ssize size)
 {
-    return __rnSocketTCPRead__(self, values, size);
+    return __pxSocketTCPRead__(self, values, size);
 }
 
-RnAddressIP
-rnSocketTCPGetAddress(RnSocketTCP* self)
+PxAddressIP
+pxSocketTCPGetAddress(PxSocketTCP* self)
 {
-    return __rnSocketTCPGetAddress__(self);
+    return __pxSocketTCPGetAddress__(self);
 }
 
 u16
-rnSocketTCPGetPort(RnSocketTCP* self)
+pxSocketTCPGetPort(PxSocketTCP* self)
 {
-    return __rnSocketTCPGetPort__(self);
+    return __pxSocketTCPGetPort__(self);
 }
 
-#endif // RN_SYSTEM_NETWORK_SOCKET_TCP_C
+#endif // PX_SYSTEM_NETWORK_SOCKET_TCP_C

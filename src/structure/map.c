@@ -1,25 +1,25 @@
-#ifndef RN_STRUCTURE_MAP_C
-#define RN_STRUCTURE_MAP_C
+#ifndef PX_STRUCTURE_MAP_C
+#define PX_STRUCTURE_MAP_C
 
-#include "./map.h"
+#include "map.h"
 
 static ssize
-__rnMapHash__(RnMapTag* self, void* key)
+__pxMapHash__(PxMapTag* self, void* key)
 {
-    return ((rnProcHash*) self->procHash)(key);
+    return ((pxProcHash*) self->procHash)(key);
 }
 
 static b32
-__rnMapIsEqual__(RnMapTag* self, void* key, void* other)
+__pxMapIsEqual__(PxMapTag* self, void* key, void* other)
 {
-    return ((rnProcIsEqual*) self->procIsEqual)(key, other);
+    return ((pxProcIsEqual*) self->procIsEqual)(key, other);
 }
 
 static ssize
-__rnMapDistance__(RnMapTag* self, void* key, ssize index)
+__pxMapDistance__(PxMapTag* self, void* key, ssize index)
 {
     ssize size  = self->size;
-    ssize probe = __rnMapHash__(self, key) % size;
+    ssize probe = __pxMapHash__(self, key) % size;
 
     if (index < probe)
         return size + index - probe;
@@ -28,12 +28,12 @@ __rnMapDistance__(RnMapTag* self, void* key, ssize index)
 }
 
 static ssize
-__rnMapIndexForKey__(RnMapTag* self, void* keys, void* key)
+__pxMapIndexForKey__(PxMapTag* self, void* keys, void* key)
 {
     if (key == 0 || self->count == 0) return -1;
 
     ssize size  = self->size;
-    ssize probe = __rnMapHash__(self, key) % size;
+    ssize probe = __pxMapHash__(self, key) % size;
 
     for (ssize dist = 0; dist < size; dist += 1) {
         ssize index = self->indices[probe];
@@ -42,9 +42,9 @@ __rnMapIndexForKey__(RnMapTag* self, void* keys, void* key)
 
         void* otherKey = &((u8*) keys)[index * self->kstep];
 
-        if (__rnMapIsEqual__(self, key, otherKey) != 0) return probe;
+        if (__pxMapIsEqual__(self, key, otherKey) != 0) return probe;
 
-        if (dist > __rnMapDistance__(self, otherKey, index))
+        if (dist > __pxMapDistance__(self, otherKey, index))
             break;
 
         probe = (probe + 1) % size;
@@ -54,17 +54,17 @@ __rnMapIndexForKey__(RnMapTag* self, void* keys, void* key)
 }
 
 b32
-__rnMapCreate__(RnMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize vstep,
-    RnMemoryArena* arena, ssize size, void* hash, void* isEqual)
+__pxMapCreate__(PxMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize vstep,
+    PxMemoryArena* arena, ssize size, void* hash, void* isEqual)
 {
     if (kstep <= 0 || vstep <= 0 || size <= 0) return 0;
 
-    ssize* indices = rnMemoryArenaReserveManyOf(arena, ssize, size);
-    u8*    keys    = rnMemoryArenaReserve(arena, size, kstep, 0);
-    u8*    values  = rnMemoryArenaReserve(arena, size, vstep, 0);
+    ssize* indices = pxMemoryArenaReserveManyOf(arena, ssize, size);
+    u8*    keys    = pxMemoryArenaReserve(arena, size, kstep, 0);
+    u8*    values  = pxMemoryArenaReserve(arena, size, vstep, 0);
 
     if (indices != 0 && keys != 0 && values != 0) {
-        *self = (RnMapTag) {0};
+        *self = (PxMapTag) {0};
 
         self->size        = size;
         self->indices     = indices;
@@ -76,44 +76,44 @@ __rnMapCreate__(RnMapTag* self, void** kpntr, ssize kstep, void** vpntr, ssize v
         *kpntr = keys;
         *vpntr = values;
 
-        __rnMapClear__(self);
+        __pxMapClear__(self);
 
         return 1;
     }
 
-    rnMemoryArenaRelease(arena, indices);
+    pxMemoryArenaRelease(arena, indices);
 
     return 0;
 }
 
 ssize
-__rnMapSize__(RnMapTag* self)
+__pxMapSize__(PxMapTag* self)
 {
     return self->size;
 }
 
 ssize
-__rnMapCount__(RnMapTag* self)
+__pxMapCount__(PxMapTag* self)
 {
     return self->count;
 }
 
 b32
-__rnMapIsEmpty__(RnMapTag* self)
+__pxMapIsEmpty__(PxMapTag* self)
 {
     return self->count == 0 ? 1 : 0;
 }
 
 b32
-__rnMapIsFull__(RnMapTag* self)
+__pxMapIsFull__(PxMapTag* self)
 {
     return self->count == self->size ? 1 : 0;
 }
 
 b32
-__rnMapIsKey__(RnMapTag* self, void* keys, void* key)
+__pxMapIsKey__(PxMapTag* self, void* keys, void* key)
 {
-    ssize index = __rnMapIndexForKey__(self, keys, key);
+    ssize index = __pxMapIndexForKey__(self, keys, key);
 
     if (index < 0) return 0;
 
@@ -123,7 +123,7 @@ __rnMapIsKey__(RnMapTag* self, void* keys, void* key)
 }
 
 void
-__rnMapClear__(RnMapTag* self)
+__pxMapClear__(PxMapTag* self)
 {
     self->count = 0;
 
@@ -132,12 +132,12 @@ __rnMapClear__(RnMapTag* self)
 }
 
 b32
-__rnMapSlotOpen__(RnMapTag* self, void* keys, void* key)
+__pxMapSlotOpen__(PxMapTag* self, void* keys, void* key)
 {
     if (key == 0 || self->count == self->size) return 0;
 
     ssize size  = self->size;
-    ssize probe = __rnMapHash__(self, key) % size;
+    ssize probe = __pxMapHash__(self, key) % size;
 
     for (ssize dist = 0; dist < size; dist += 1) {
         ssize index = self->indices[probe];
@@ -151,9 +151,9 @@ __rnMapSlotOpen__(RnMapTag* self, void* keys, void* key)
 
         void* otherKey = &((u8*) keys)[index * self->kstep];
 
-        if (__rnMapIsEqual__(self, key, otherKey) != 0) break;
+        if (__pxMapIsEqual__(self, key, otherKey) != 0) break;
 
-        ssize otherDist = __rnMapDistance__(self, otherKey, index);
+        ssize otherDist = __pxMapDistance__(self, otherKey, index);
 
         if (dist > otherDist) {
             self->indices[probe] = index;
@@ -166,4 +166,4 @@ __rnMapSlotOpen__(RnMapTag* self, void* keys, void* key)
     return 0;
 }
 
-#endif // RN_STRUCTURE_MAP_C
+#endif // PX_STRUCTURE_MAP_C

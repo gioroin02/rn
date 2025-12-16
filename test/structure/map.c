@@ -6,10 +6,10 @@
 
 #include <stdio.h>
 
-typedef RnMap(RnString8, u32) RnMapString8ToU32;
+typedef PxMap(PxString8, u32) PxMapString8ToU32;
 
 ssize
-rnString8Hash(RnString8* key)
+pxString8Hash(PxString8* key)
 {
     ssize result = 0;
 
@@ -20,7 +20,7 @@ rnString8Hash(RnString8* key)
 }
 
 b32
-rnString8IsEqual(RnString8* key, RnString8* other)
+pxString8IsEqual(PxString8* key, PxString8* other)
 {
     if (key->size != other->size) return 0;
 
@@ -33,10 +33,10 @@ rnString8IsEqual(RnString8* key, RnString8* other)
 }
 
 void
-showPairs(RnMapString8ToU32* self, RnString8* keys, ssize size)
+showPairs(PxMapString8ToU32* self, PxString8* keys, ssize size)
 {
     for (ssize i = 0; i < size; i += 1) {
-        u32* value = rnMapGetPtr(self, keys[i]);
+        u32* value = pxMapGetPtr(self, keys[i]);
 
         printf("map(%s) -> ", keys[i].values);
 
@@ -48,9 +48,9 @@ showPairs(RnMapString8ToU32* self, RnString8* keys, ssize size)
 }
 
 void
-showLists(RnMapString8ToU32* self)
+showLists(PxMapString8ToU32* self)
 {
-    for (ssize i = 0; i < rnMapCount(self); i += 1)
+    for (ssize i = 0; i < pxMapCount(self); i += 1)
         printf("map(%lli) -> %s, %lu\n", i, self->keys[i].values, self->values[i]);
 }
 
@@ -59,26 +59,26 @@ main(int argc, char** argv)
 {
     u8 memory[1024] = {0};
 
-    RnMemoryArena arena = rnMemoryArenaMake(memory, sizeof(memory));
+    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof(memory));
 
-    RnMapString8ToU32 map = {0};
+    PxMapString8ToU32 map = {0};
 
-    rnMapCreate(&map, &arena, 16, &rnString8Hash, &rnString8IsEqual);
+    pxMapCreate(&map, &arena, 16, &pxString8Hash, &pxString8IsEqual);
 
-    RnString8 keys[] = {
-        rnStr8("Filiberto"),
-        rnStr8("Astronfo"),
-        rnStr8("Roboldofo"),
+    PxString8 keys[] = {
+        pxStr8("Filiberto"),
+        pxStr8("Astronfo"),
+        pxStr8("Roboldofo"),
     };
 
-    rnMapInsert(&map, keys[0], 10);
-    rnMapInsert(&map, keys[1], 20);
-    rnMapInsert(&map, keys[2], 30);
+    pxMapInsert(&map, keys[0], 10);
+    pxMapInsert(&map, keys[1], 20);
+    pxMapInsert(&map, keys[2], 30);
 
     showPairs(&map, keys, 3);
     showLists(&map);
 
-    rnMapClear(&map);
+    pxMapClear(&map);
 
     printf("\n");
 

@@ -1,6 +1,6 @@
-#ifndef RN_SYSTEM_MEMORY_EXPORT_C
-#define RN_SYSTEM_MEMORY_EXPORT_C
+#ifndef PX_SYSTEM_MEMORY_EXPORT_C
+#define PX_SYSTEM_MEMORY_EXPORT_C
 
-#include "./common.c"
+#include "common.c"
 
-#endif // RN_SYSTEM_MEMORY_EXPORT_C
+#endif // PX_SYSTEM_MEMORY_EXPORT_C

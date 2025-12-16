@@ -1,15 +1,15 @@
-#ifndef RN_LINUX_MEMORY_COMMON_H
-#define RN_LINUX_MEMORY_COMMON_H
+#ifndef PX_LINUX_MEMORY_COMMON_H
+#define PX_LINUX_MEMORY_COMMON_H
 
-#include "./import.h"
+#include "import.h"
 
 ssize
-rnLinuxMemoryPageSize();
+pxLinuxMemoryPageSize();
 
-RnMemoryArena
-rnLinuxMemoryReserve(ssize size);
+PxMemoryArena
+pxLinuxMemoryReserve(ssize size);
 
 void
-rnLinuxMemoryRelease(RnMemoryArena value);
+pxLinuxMemoryRelease(PxMemoryArena value);
 
-#endif // RN_LINUX_MEMORY_COMMON_H
+#endif // PX_LINUX_MEMORY_COMMON_H

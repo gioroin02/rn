@@ -1,40 +1,40 @@
-#ifndef RN_WIN32_NETWORK_SOCKET_UDP_H
-#define RN_WIN32_NETWORK_SOCKET_UDP_H
+#ifndef PX_WIN32_NETWORK_SOCKET_UDP_H
+#define PX_WIN32_NETWORK_SOCKET_UDP_H
 
-#include "./address.h"
+#include "address.h"
 
-typedef struct RnWin32SocketUDP
+typedef struct PxWin32SocketUDP
 {
     SOCKET            handle;
-    RnSockAddrStorage storage;
+    PxSockAddrStorage storage;
 }
-RnWin32SocketUDP;
+PxWin32SocketUDP;
 
-RnWin32SocketUDP*
-rnWin32SocketUDPReserve(RnMemoryArena* arena);
+PxWin32SocketUDP*
+pxWin32SocketUDPReserve(PxMemoryArena* arena);
 
 b32
-rnWin32SocketUDPCreate(RnWin32SocketUDP* self, RnAddressIP address, u16 port);
+pxWin32SocketUDPCreate(PxWin32SocketUDP* self, PxAddressIP address, u16 port);
 
 void
-rnWin32SocketUDPDestroy(RnWin32SocketUDP* self);
+pxWin32SocketUDPDestroy(PxWin32SocketUDP* self);
 
 b32
-rnWin32SocketUDPBind(RnWin32SocketUDP* self);
+pxWin32SocketUDPBind(PxWin32SocketUDP* self);
 
 b32
-rnWin32SocketUDPBindTo(RnWin32SocketUDP* self, RnAddressIP address, u16 port);
+pxWin32SocketUDPBindTo(PxWin32SocketUDP* self, PxAddressIP address, u16 port);
 
 ssize
-rnWin32SocketUDPWrite(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP address, u16 port);
+pxWin32SocketUDPWrite(PxWin32SocketUDP* self, u8* values, ssize size, PxAddressIP address, u16 port);
 
 ssize
-rnWin32SocketUDPRead(RnWin32SocketUDP* self, u8* values, ssize size, RnAddressIP* address, u16* port);
+pxWin32SocketUDPRead(PxWin32SocketUDP* self, u8* values, ssize size, PxAddressIP* address, u16* port);
 
-RnAddressIP
-rnWin32SocketUDPGetAddress(RnWin32SocketUDP* self);
+PxAddressIP
+pxWin32SocketUDPGetAddress(PxWin32SocketUDP* self);
 
 u16
-rnWin32SocketUDPGetPort(RnWin32SocketUDP* self);
+pxWin32SocketUDPGetPort(PxWin32SocketUDP* self);
 
-#endif // RN_WIN32_NETWORK_SOCKET_UDP_H
+#endif // PX_WIN32_NETWORK_SOCKET_UDP_H

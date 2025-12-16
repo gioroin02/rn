@@ -1,12 +1,12 @@
-#ifndef RN_BASE_PLATFORM_H
-#define RN_BASE_PLATFORM_H
+#ifndef PX_BASE_PLATFORM_H
+#define PX_BASE_PLATFORM_H
 
-#define RN_WORD_NONE  0
-#define RN_WORD_32    1
-#define RN_WORD_64    2
-#define RN_WORD_COUNT 3
+#define PX_WORD_NONE  0
+#define PX_WORD_32    1
+#define PX_WORD_64    2
+#define PX_WORD_COUNT 3
 
-#ifndef RN_WORD
+#ifndef PX_WORD
 
     #if defined(_WIN64)     || \
         defined(__PL64__)   || \
@@ -14,44 +14,44 @@
         defined(__amd64__)  || \
         defined(__aarch64__)
 
-        #define RN_WORD RN_WORD_64
+        #define PX_WORD PX_WORD_64
 
     #elif defined(_WIN32)    || \
           defined(__ILP32__) || \
           defined(_i386_)
 
-        #define RN_WORD RN_WORD_32
+        #define PX_WORD PX_WORD_32
 
     #else
 
-        #define RN_WORD RN_WORD_NONE
+        #define PX_WORD PX_WORD_NONE
 
     #endif
 
 #endif
 
-#define RN_SYSTEM_NONE    0
-#define RN_SYSTEM_WINDOWS 1
-#define RN_SYSTEM_LINUX   2
-#define RN_SYSTEM_MAX     3
+#define PX_SYSTEM_NONE    0
+#define PX_SYSTEM_WINDOWS 1
+#define PX_SYSTEM_LINUX   2
+#define PX_SYSTEM_MAX     3
 
-#ifndef RN_SYSTEM
+#ifndef PX_SYSTEM
 
     #if defined(_WIN32) || \
         defined(_WIN64)
 
-        #define RN_SYSTEM RN_SYSTEM_WINDOWS
+        #define PX_SYSTEM PX_SYSTEM_WINDOWS
 
     #elif defined(__linux__)
 
-        #define RN_SYSTEM RN_SYSTEM_LINUX
+        #define PX_SYSTEM PX_SYSTEM_LINUX
 
     #else
 
-        #define RN_SYSTEM RN_SYSTEM_NONE
+        #define PX_SYSTEM PX_SYSTEM_NONE
 
     #endif
 
 #endif
 
-#endif // RN_BASE_PLATFORM_H
+#endif // PX_BASE_PLATFORM_H
