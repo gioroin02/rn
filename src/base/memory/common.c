@@ -4,7 +4,7 @@
 #include "common.h"
 
 void*
-pxMemorySet(void* pntr, u8 value, ssize size)
+pxMemorySet(void* pntr, ssize size, u8 value)
 {
     ssize index = 0;
 
@@ -17,7 +17,7 @@ pxMemorySet(void* pntr, u8 value, ssize size)
 }
 
 void*
-pxMemoryCopy(void* pntr, void* value, ssize size)
+pxMemoryCopy(void* pntr, ssize size, void* value)
 {
     ssize index = 0;
 
@@ -30,14 +30,48 @@ pxMemoryCopy(void* pntr, void* value, ssize size)
 }
 
 void*
-pxMemoryCopyOrSet(void* pntr, void* value, ssize size, u8 other)
+pxMemoryCopyOrSet(void* pntr, ssize size, void* value, u8 other)
 {
     if (pntr == PX_NULL) return PX_NULL;
 
     if (value == PX_NULL)
-        return pxMemorySet(pntr, other, size);
+        return pxMemorySet(pntr, size, other);
 
-    return pxMemoryCopy(pntr, value, size);
+    return pxMemoryCopy(pntr, size, value);
+}
+
+void*
+pxMemoryShiftForw(void* pntr, ssize size, ssize about, u8 value)
+{
+    ssize index = 0;
+
+    if (pntr == PX_NULL || size < 0 || about < 0 || about >= size)
+        return pntr;
+
+    for (index = size; index > about; index -= 1)
+        ((u8*) pntr)[index - 1] = ((u8*) pntr)[index - about - 1];
+
+    for (index = about; index > 0; index -= 1)
+        ((u8*) pntr)[index - 1] = value;
+
+    return pntr;
+}
+
+void*
+pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value)
+{
+    ssize index = 0;
+
+    if (pntr == PX_NULL || size < 0 || about < 0 || about >= size)
+        return pntr;
+
+    for (index = 0; index < size - about; index += 1)
+        ((u8*) pntr)[index] = ((u8*) pntr)[index + about];
+
+    for (index = size - about; index < size; index += 1)
+        ((u8*) pntr)[index] = value;
+
+    return pntr;
 }
 
 void*
@@ -59,7 +93,7 @@ pxGetHostByteOrder()
     u32 value               = 1;
     u8  bytes[sizeof value] = {0};
 
-    pxMemoryCopy(bytes, &value, sizeof *bytes);
+    pxMemoryCopy(bytes, sizeof bytes, &value);
 
     if (bytes[0] == 1)
         return PxByteOrder_Reverse;

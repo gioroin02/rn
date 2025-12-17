@@ -14,7 +14,7 @@ pxMemoryPoolMake(void* pntr, ssize size, ssize step)
 {
     PxMemoryPool result;
 
-    pxMemorySet(&result, 0xAB, sizeof result);
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     if (pntr == 0 || size <= 0 || step <= 0) return result;
 
@@ -24,7 +24,7 @@ pxMemoryPoolMake(void* pntr, ssize size, ssize step)
     result.size = size;
     result.step = pxMax(step, PX_MEMORY_DEFAULT_ALIGNMENT);
 
-    pxMemorySet(result.base, 0xAB, result.size);
+    pxMemorySet(result.base, result.size, 0xAB);
 
     return result;
 }
@@ -32,7 +32,7 @@ pxMemoryPoolMake(void* pntr, ssize size, ssize step)
 void
 pxMemoryPoolClear(PxMemoryPool* self)
 {
-    pxMemorySet(self->base, 0xAB, self->size);
+    pxMemorySet(self->base, self->size, 0xAB);
 
     self->next = self->base;
     self->head = PX_NULL;
@@ -58,7 +58,7 @@ pxMemoryPoolReserve(PxMemoryPool* self, ssize count, ssize size)
     }
     else self->head = ((PxMemoryPoolNode*) result)->next;
 
-    pxMemorySet(result, 0xAB, self->step);
+    pxMemorySet(result, self->step, 0xAB);
 
     return result;
 }
@@ -73,7 +73,7 @@ pxMemoryPoolRelease(PxMemoryPool* self, void* pntr)
 
     if (dist < 0 || self->base + dist >= self->next) return 0;
 
-    pxMemorySet(pntr, 0x00, self->step);
+    pxMemorySet(pntr, self->step, 0xAB);
 
     PxMemoryPoolNode* node = (PxMemoryPoolNode*) pntr;
 

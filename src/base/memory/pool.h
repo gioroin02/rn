@@ -4,7 +4,7 @@
 #include "common.h"
 
 #define pxMemoryPoolReserveOneOf(self, type) \
-    (((type)*) pxMemoryPoolReserve(self, 1, sizeof(type)))
+    ((type*) pxMemoryPoolReserve(self, 1, sizeof (type)))
 
 typedef struct PxMemoryPool
 {

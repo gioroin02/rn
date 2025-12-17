@@ -8,7 +8,7 @@ pxStr8Make(u8* values, ssize size)
 {
     PxStr8 result;
 
-    pxMemorySet(&result, 0xAB, sizeof result);
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     result.values = values;
     result.size   = size;
@@ -21,7 +21,7 @@ pxStr16Make(u16* values, ssize size)
 {
     PxStr16 result;
 
-    pxMemorySet(&result, 0xAB, sizeof result);
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     result.values = values;
     result.size   = size;
@@ -34,7 +34,7 @@ pxStr32Make(u32* values, ssize size)
 {
     PxStr32 result;
 
-    pxMemorySet(&result, 0xAB, sizeof result);
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     result.values = values;
     result.size   = size;

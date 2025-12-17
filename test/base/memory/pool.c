@@ -5,7 +5,7 @@
 int
 main(int argc, char** argv)
 {
-    u8 buff[256];
+    u8 buff[256] = {0};
 
     PxMemoryPool pool = pxMemoryPoolMake(buff, sizeof buff, 8);
 
@@ -15,8 +15,8 @@ main(int argc, char** argv)
     u8* pntr0 = pxMemoryPoolReserve(&pool, size, sizeof *pntr0);
     u8* pntr1 = pxMemoryPoolReserve(&pool, size, sizeof *pntr1);
 
-    if (pntr0 != PX_NULL) pxMemorySet(pntr0, 0x00, size);
-    if (pntr1 != PX_NULL) pxMemorySet(pntr1, 0x00, size);
+    if (pntr0 != PX_NULL) pxMemorySet(pntr0, size, 0x00);
+    if (pntr1 != PX_NULL) pxMemorySet(pntr1, size, 0x00);
 
     printf("pntr0 = 0x%012llX, ", ((usize) pntr0));
 
@@ -34,7 +34,7 @@ main(int argc, char** argv)
 
     pntr0 = pxMemoryPoolReserve(&pool, size, sizeof *pntr0);
 
-    if (pntr0 != PX_NULL) pxMemorySet(pntr0, 0x00, size);
+    if (pntr0 != PX_NULL) pxMemorySet(pntr0, size, 0x00);
 
     printf("pntr0 = 0x%012llX, ", ((usize) pntr0));
 

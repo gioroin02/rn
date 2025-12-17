@@ -6,12 +6,12 @@
 #define PX_MEMORY_DEFAULT_ALIGNMENT ((ssize) 16)
 
 #define PX_MEMORY_KB ((ssize) 1000ll)
-#define PX_MEMORY_MB ((ssize) 1000ll * 1000ll)
-#define PX_MEMORY_GB ((ssize) 1000ll * 1000ll * 1000ll)
+#define PX_MEMORY_MB (PX_MEMORY_KB * PX_MEMORY_KB)
+#define PX_MEMORY_GB (PX_MEMORY_MB * PX_MEMORY_KB)
 
 #define PX_MEMORY_KIB ((ssize) 1024ll)
-#define PX_MEMORY_MIB ((ssize) 1024ll * 1024ll)
-#define PX_MEMORY_GIB ((ssize) 1024ll * 1024ll * 1024ll)
+#define PX_MEMORY_MIB (PX_MEMORY_KIB * PX_MEMORY_KIB)
+#define PX_MEMORY_GIB (PX_MEMORY_MIB * PX_MEMORY_KIB)
 
 #define pxMemoryKB(expr) (((ssize) expr) * PX_MEMORY_KB)
 #define pxMemoryMB(expr) (((ssize) expr) * PX_MEMORY_MB)
@@ -36,13 +36,19 @@ typedef enum PxByteOrder
 PxByteOrder;
 
 void*
-pxMemorySet(void* pntr, u8 value, ssize size);
+pxMemorySet(void* pntr, ssize size, u8 value);
 
 void*
-pxMemoryCopy(void* pntr, void* value, ssize size);
+pxMemoryCopy(void* pntr, ssize size, void* value);
 
 void*
-pxMemoryCopyOrSet(void* pntr, void* value, ssize size, u8 other);
+pxMemoryCopyOrSet(void* pntr, ssize size, void* value, u8 other);
+
+void*
+pxMemoryShiftForw(void* pntr, ssize size, ssize about, u8 value);
+
+void*
+pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value);
 
 void*
 pxMemoryAlignForward(void* pntr, usize align);

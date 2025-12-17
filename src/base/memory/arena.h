@@ -4,10 +4,10 @@
 #include "common.h"
 
 #define pxMemoryArenaReserveOneOf(self, type) \
-    (((type)*) pxMemoryArenaReserve(self, 1, sizeof(type)))
+    ((type*) pxMemoryArenaReserve(self, 1, sizeof (type)))
 
 #define pxMemoryArenaReserveManyOf(self, type, count) \
-    (((type)*) pxMemoryArenaReserve(self, count, sizeof(type)))
+    ((type*) pxMemoryArenaReserve(self, count, sizeof (type)))
 
 typedef struct PxMemoryArena
 {

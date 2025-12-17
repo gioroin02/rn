@@ -3,9 +3,9 @@
 
 #include "import.h"
 
-#define pxStr8(arr)  pxStr8Make(arr,  sizeof (arr) / sizeof *(arr))
-#define pxStr16(arr) pxStr16Make(arr, sizeof (arr) / sizeof *(arr))
-#define pxStr32(arr) pxStr32Make(arr, sizeof (arr) / sizeof *(arr))
+#define pxStr8(arr)  pxStr8Make(((u8*) arr),   sizeof (arr) / sizeof *(arr))
+#define pxStr16(arr) pxStr16Make(((u16*) arr), sizeof (arr) / sizeof *(arr))
+#define pxStr32(arr) pxStr32Make(((u32*) arr), sizeof (arr) / sizeof *(arr))
 
 typedef struct PxStr8
 {
