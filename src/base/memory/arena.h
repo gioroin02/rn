@@ -11,8 +11,8 @@
 
 typedef struct PxMemoryArena
 {
-    u8*   base;
-    u8*   next;
+    u8*   pntr_base;
+    u8*   pntr_next;
     ssize size;
 }
 PxMemoryArena;

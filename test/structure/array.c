@@ -1,8 +1,9 @@
+#include "../../src/base/export.h"
 #include "../../src/structure/export.h"
 
 #include <stdio.h>
 
-typedef PxArray(u32) PxArrayU32;
+typedef PxArray(u32) PxU32Array;
 
 int
 main(int argc, char** argv)
@@ -11,7 +12,7 @@ main(int argc, char** argv)
 
     PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof(memory));
 
-    PxArrayU32 array = {0};
+    PxU32Array array;
 
     printf("reserve = %lu\n", pxArrayCreate(&array, &arena, 17));
 
@@ -26,9 +27,13 @@ main(int argc, char** argv)
     u32   temp  = 0;
     ssize state = pxArrayRemove(&array, 0, &temp);
 
-    printf("remove (0, &x) -> (x = %lu, %s)\n", temp, state ? "SUCC" : "FAIL");
-    printf("remove (2)     -> (%s)\n", pxArrayRemove(&array, 2, 0) ? "SUCC" : "FAIL");
+    printf("remove (0,   &x) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
 
-    for (ssize i = 0; i < pxArrayCount(&array); i += 1)
-        printf("#%03lli %lu\n", i, *pxArrayGetPtr(&array, i));
+    temp  = 0;
+    state = pxArrayRemove(&array, 2, PX_NULL);
+
+    printf("remove (2, null) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
+
+    for (index = 0; index < pxArrayCount(&array); index += 1)
+        printf("#%03lli %4lu\n", index, *pxArrayGetPtr(&array, index));
 }

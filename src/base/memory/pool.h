@@ -6,11 +6,14 @@
 #define pxMemoryPoolReserveOneOf(self, type) \
     ((type*) pxMemoryPoolReserve(self, 1, sizeof (type)))
 
+#define pxMemoryPoolReserveManyOf(self, type, count) \
+    ((type*) pxMemoryPoolReserve(self, count, sizeof (type)))
+
 typedef struct PxMemoryPool
 {
-    u8*   base;
-    u8*   next;
-    void* head;
+    u8*   pntr_base;
+    u8*   pntr_next;
+    void* list_head;
     ssize size;
     ssize step;
 }

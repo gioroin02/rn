@@ -12,11 +12,11 @@ pxMemoryArenaMake(void* pntr, ssize size)
 
     if (pntr == 0 || size <= 0) return result;
 
-    result.base = (u8*) pntr;
-    result.next = result.base,
-    result.size = size;
+    result.pntr_base = (u8*) pntr;
+    result.pntr_next = result.pntr_base,
+    result.size      = size;
 
-    pxMemorySet(result.base, result.size, 0xAB);
+    pxMemorySet(result.pntr_base, result.size, 0xAB);
 
     return result;
 }
@@ -24,26 +24,27 @@ pxMemoryArenaMake(void* pntr, ssize size)
 void
 pxMemoryArenaClear(PxMemoryArena* self)
 {
-    pxMemorySet(self->base, self->size, 0xAB);
+    pxMemorySet(self->pntr_base, self->size, 0xAB);
 
-    self->next = self->base;
+    self->pntr_next = self->pntr_base;
 }
 
 void*
 pxMemoryArenaReserve(PxMemoryArena* self, ssize count, ssize size)
 {
     ssize bytes  = count * size;
-    u8*   result = self->next;
-    u8*   next   = self->next + bytes;
+    u8*   result = self->pntr_next;
+    u8*   next   = self->pntr_next + bytes;
 
     if (count <= 0 || size <= 0 || count > PX_MAX_SSIZE / size)
         return PX_NULL;
 
-    if (next > self->base + self->size) return PX_NULL;
+    if (next > self->pntr_base + self->size) return PX_NULL;
 
-    self->next = pxMemoryAlignForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
+    self->pntr_next =
+        pxMemoryAlignForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
 
-    pxMemorySet(result, self->next - result, 0xAB);
+    pxMemorySet(result, self->pntr_next - result, 0xAB);
 
     return result;
 }
@@ -51,16 +52,16 @@ pxMemoryArenaReserve(PxMemoryArena* self, ssize count, ssize size)
 b32
 pxMemoryArenaRelease(PxMemoryArena* self, void* pntr)
 {
-    ssize dist = ((u8*) pntr) - self->base;
+    ssize dist = ((u8*) pntr) - self->pntr_base;
 
     if (pntr == PX_NULL || dist % PX_MEMORY_DEFAULT_ALIGNMENT != 0)
         return 0;
 
-    if (dist < 0 || self->base + dist >= self->next) return 0;
+    if (dist < 0 || self->pntr_base + dist >= self->pntr_next) return 0;
 
-    self->next = self->base + dist;
+    self->pntr_next = self->pntr_base + dist;
 
-    pxMemorySet(self->base + dist, self->size - dist, 0xAB);
+    pxMemorySet(self->pntr_base + dist, self->size - dist, 0xAB);
 
     return 1;
 }
@@ -68,7 +69,7 @@ pxMemoryArenaRelease(PxMemoryArena* self, void* pntr)
 void*
 pxMemoryArenaTell(PxMemoryArena* self)
 {
-    return self->next;
+    return self->pntr_next;
 }
 
 #endif // PX_BASE_MEMORY_ARENA_C
