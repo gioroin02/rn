@@ -5,7 +5,7 @@
 
 #define _DEFAULT_SOURCE
 
-#include <erpxo.h>
+#include <errno.h>
 #include <unistd.h>
 
 #include <sys/mman.h>
@@ -19,20 +19,19 @@ pxLinuxMemoryPageSize()
 PxMemoryArena
 pxLinuxMemoryReserve(ssize size)
 {
-    PxMemoryArena result = {0};
-
-    ssize page   = pxLinuxMemoryPageSize();
-    void* memory = 0;
-
-    size = pxMemoryAlignForward(size, page);
+    PxMemoryArena result = pxMemoryArenaMake(0, 0);
+    ssize         page   = pxLinuxMemoryPageSize();
+    void*         memory = PX_NULL;
 
     if (size <= 0) return result;
+
+    size = pxMemoryAlignSizeForward(size, page);
 
     do {
         memory = mmap(0, size, PROT_READ | PROT_WRITE,
             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     }
-    while (memory == MAP_FAILED && erpxo == EINTR);
+    while (memory == MAP_FAILED && errno == EINTR);
 
     if (memory != MAP_FAILED)
         result = pxMemoryArenaMake(memory, size);
@@ -40,17 +39,24 @@ pxLinuxMemoryReserve(ssize size)
     return result;
 }
 
-void
-pxLinuxMemoryRelease(PxMemoryArena value)
+b32
+pxLinuxMemoryRelease(PxMemoryArena* arena)
 {
-    if (value.values == 0) return;
+    int   status = 0;
+    ssize page   = pxLinuxMemoryPageSize();
+    void* memory = pxMemoryArenaPntr(arena);
+    ssize size   = pxMemoryArenaSize(arena);
 
-    int status = 0;
+    if (memory == PX_NULL || size <= 0 || size % page != 0)
+        return 0;
 
-    do {
-        status = munmap(value.values, value.size);
-    }
-    while (status == -1 && erpxo == EINTR);
+    do
+        status = munmap(memory, size);
+    while (status == -1 && errno == EINTR);
+
+    *arena = pxMemoryArenaMake(0, 0);
+
+    return 1;
 }
 
 #endif // PX_LINUX_MEMORY_COMMON_C

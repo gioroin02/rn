@@ -1,4 +1,4 @@
-#include "../../../src/base/memory/export.h"
+#include "../../../src/base/export.h"
 
 #include "../../../src/system/memory/export.h"
 #include "../../../src/system/network/export.h"
@@ -11,22 +11,22 @@ main(int argc, char** argv)
 {
     PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    PxSocketTCP* socket = pxSocketTCPReserve(&arena);
+    PxSocketTcp* socket = pxSocketTcpReserve(&arena);
 
-    pxSocketTCPCreate(socket, pxAddressIPv4Empty(), 0);
-    pxSocketTCPConnect(socket, pxAddressIPv4Local(), 50000);
+    pxSocketTcpCreate(socket, pxAddressIp4Empty(), 0);
+    pxSocketTcpConnect(socket, pxAddressIp4Local(), 50000);
 
     u8 buffer[256] = {"Ciao!"};
 
     ssize size = strlen(((char*) buffer));
 
-    pxSocketTCPWrite(socket, buffer, size);
+    pxSocketTcpWrite(socket, buffer, size);
 
     memset(buffer, 0, 256);
 
-    size = pxSocketTCPRead(socket, buffer, 256);
+    size = pxSocketTcpRead(socket, buffer, 256);
 
     printf("%.*s\n", ((int) size), buffer);
 
-    pxSocketTCPDestroy(socket);
+    pxSocketTcpDestroy(socket);
 }

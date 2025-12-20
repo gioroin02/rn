@@ -8,5 +8,5 @@ main(int argc, char** argv)
     PxMemoryArena arena = pxSystemMemoryReserve(16);
 
     printf("0x%llx, %lli\n",
-        ((usize) arena.values), arena.size);
+        ((usize) pxMemoryArenaPntr(&arena)), pxMemoryArenaSize(&arena));
 }

@@ -16,7 +16,7 @@ pxMemoryPoolMake(void* pntr, ssize size, ssize step)
 
     pxMemorySet(&result, sizeof result, 0xAB);
 
-    if (pntr == 0 || size <= 0 || step <= 0) return result;
+    if (pntr == PX_NULL || size <= 0 || step <= 0) return result;
 
     result.pntr_base = (u8*) pntr;
     result.pntr_next = result.pntr_base;
@@ -27,6 +27,18 @@ pxMemoryPoolMake(void* pntr, ssize size, ssize step)
     pxMemorySet(result.pntr_base, result.size, 0xAB);
 
     return result;
+}
+
+void*
+pxMemoryPoolPntr(PxMemoryPool* self)
+{
+    return self->pntr_base;
+}
+
+ssize
+pxMemoryPoolSize(PxMemoryPool* self)
+{
+    return self->size;
 }
 
 void
@@ -56,7 +68,7 @@ pxMemoryPoolReserve(PxMemoryPool* self, ssize count, ssize size)
         result = self->pntr_next;
 
         self->pntr_next =
-            pxMemoryAlignForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
+            pxMemoryAlignPntrForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
     }
     else self->list_head = ((PxMemoryPoolNode*) result)->next;
 

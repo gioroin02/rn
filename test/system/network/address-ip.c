@@ -5,16 +5,18 @@
 int
 main(int argc, char** argv)
 {
-    PxAddressIP client = pxAddressIPv6Local();
-    PxAddressIP server = pxAddressIPv6Make(192, 168, 0, 0, 0, 0, 1, 2);
+    PxAddressIp client = pxAddressIp6Local();
+    PxAddressIp server = pxAddressIp6Make(192, 168, 0, 0, 0, 0, 1, 2);
 
-    printf("client = (PxAddressIP) {");
-    for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1)
-        printf("%3u%s", client.ipv6.values[i], i + 1 < PX_ADDRESS_IPV6_SIZE ? ", " : "");
+    ssize index = 0;
+
+    printf("client = (PxAddressIp) {");
+    for (index = 0; index < PX_ADDRESS_IP6_SIZE; index += 1)
+        printf("%3u%s", client.ip6.values[index], index + 1 < PX_ADDRESS_IP6_SIZE ? ", " : "");
     printf("}\n");
 
-    printf("server = (PxAddressIP) {");
-    for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1)
-        printf("%3u%s", server.ipv6.values[i], i + 1 < PX_ADDRESS_IPV6_SIZE ? ", " : "");
+    printf("server = (PxAddressIp) {");
+    for (index = 0; index < PX_ADDRESS_IP6_SIZE; index += 1)
+        printf("%3u%s", server.ip6.values[index], index + 1 < PX_ADDRESS_IP6_SIZE ? ", " : "");
     printf("}\n");
 }

@@ -3,42 +3,42 @@
 
 #include "address-ip.h"
 
-typedef void PxSocketTCP;
+typedef void PxSocketTcp;
 
-PxSocketTCP*
-pxSocketTCPReserve(PxMemoryArena* arena);
-
-b32
-pxSocketTCPCreate(PxSocketTCP* self, PxAddressIP address, u16 port);
+PxSocketTcp*
+pxSocketTcpReserve(PxMemoryArena* arena);
 
 b32
-pxSocketTCPAccept(PxSocketTCP* self, PxSocketTCP* value);
+pxSocketTcpCreate(PxSocketTcp* self, PxAddressIp address, u16 port);
+
+b32
+pxSocketTcpAccept(PxSocketTcp* self, PxSocketTcp* value);
 
 void
-pxSocketTCPDestroy(PxSocketTCP* self);
+pxSocketTcpDestroy(PxSocketTcp* self);
 
 b32
-pxSocketTCPBind(PxSocketTCP* self);
+pxSocketTcpBind(PxSocketTcp* self);
 
 b32
-pxSocketTCPBindTo(PxSocketTCP* self, PxAddressIP address, u16 port);
+pxSocketTcpBindTo(PxSocketTcp* self, PxAddressIp address, u16 port);
 
 b32
-pxSocketTCPListen(PxSocketTCP* self);
+pxSocketTcpListen(PxSocketTcp* self);
 
 b32
-pxSocketTCPConnect(PxSocketTCP* self, PxAddressIP address, u16 port);
+pxSocketTcpConnect(PxSocketTcp* self, PxAddressIp address, u16 port);
 
 ssize
-pxSocketTCPWrite(PxSocketTCP* self, u8* values, ssize size);
+pxSocketTcpWrite(PxSocketTcp* self, u8* values, ssize size);
 
 ssize
-pxSocketTCPRead(PxSocketTCP* self, u8* values, ssize size);
+pxSocketTcpRead(PxSocketTcp* self, u8* values, ssize size);
 
-PxAddressIP
-pxSocketTCPGetAddress(PxSocketTCP* self);
+PxAddressIp
+pxSocketTcpGetAddress(PxSocketTcp* self);
 
 u16
-pxSocketTCPGetPort(PxSocketTCP* self);
+pxSocketTcpGetPort(PxSocketTcp* self);
 
 #endif // PX_SYSTEM_NETWORK_SOCKET_TCP_H

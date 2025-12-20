@@ -9,7 +9,7 @@ pxSystemMemoryPageSize();
 PxMemoryArena
 pxSystemMemoryReserve(ssize size);
 
-void
-pxSystemMemoryRelease(PxMemoryArena value);
+b32
+pxSystemMemoryRelease(PxMemoryArena* arena);
 
 #endif // PX_SYSTEM_MEMORY_COMMON_H

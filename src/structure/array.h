@@ -40,7 +40,7 @@ PxArrayTag;
 #define pxArrayCreate(self, arena, size) ( \
     __pxArrayCreate__(                     \
         ((PxArrayTag*) self),              \
-        (void**) &(self)->values,          \
+        ((void**) &(self)->values),        \
         sizeof *(self)->values,            \
         arena, size)                       \
 )
@@ -48,7 +48,7 @@ PxArrayTag;
 #define pxArrayCopy(self, index, value)   \
 (                                         \
     __pxArrayCopy__(((PxArrayTag*) self), \
-        (self)->values, index, value)    \
+        (self)->values, index, value)     \
 )
 
 #define pxArrayInsert(self, index, value)               \
@@ -61,8 +61,7 @@ PxArrayTag;
     (                                                   \
         (self)->values[(self)->array_index]  = (value), \
         (self)->array_count                 += 1        \
-    ), 1                                                \
-    :  0                                                \
+    ), 1 : 0                                            \
 )
 
 #define pxArrayRemove(self, index, value)  \
@@ -74,8 +73,7 @@ PxArrayTag;
             (self)->values,                \
             (self)->array_index),          \
         (self)->array_count -= 1           \
-    ), 1                                   \
-    :  0                                   \
+    ), 1 : 0                               \
 )
 
 #define pxArrayPushFront(self, value) pxArrayInsert(self, 0,                  value)

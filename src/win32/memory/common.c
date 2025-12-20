@@ -20,14 +20,13 @@ pxWin32MemoryPageSize()
 PxMemoryArena
 pxWin32MemoryReserve(ssize size)
 {
-    PxMemoryArena result = {0};
-
-    ssize page   = pxWin32MemoryPageSize();
-    void* memory = 0;
-
-    size = pxMemoryAlignForward(size, page);
+    PxMemoryArena result = pxMemoryArenaMake(0, 0);
+    ssize         page   = pxWin32MemoryPageSize();
+    void*         memory = PX_NULL;
 
     if (size <= 0) return result;
+
+    size = pxMemoryAlignSizeForward(size, page);
 
     memory = VirtualAlloc(0, size,
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
@@ -38,11 +37,21 @@ pxWin32MemoryReserve(ssize size)
     return result;
 }
 
-void
-pxWin32MemoryRelease(PxMemoryArena value)
+b32
+pxWin32MemoryRelease(PxMemoryArena* arena)
 {
-    if (value.values != 0)
-        VirtualFree(value.values, 0, MEM_RELEASE);
+    ssize page   = pxWin32MemoryPageSize();
+    void* memory = pxMemoryArenaPntr(arena);
+    ssize size   = pxMemoryArenaSize(arena);
+
+    if (memory == PX_NULL || size <= 0 || size % page != 0)
+        return 0;
+
+    VirtualFree(arena, 0, MEM_RELEASE);
+
+    *arena = pxMemoryArenaMake(0, 0);
+
+    return 1;
 }
 
 #endif // PX_WIN32_MEMORY_COMMON_C

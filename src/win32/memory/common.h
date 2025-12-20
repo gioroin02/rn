@@ -9,7 +9,7 @@ pxWin32MemoryPageSize();
 PxMemoryArena
 pxWin32MemoryReserve(ssize size);
 
-void
-pxWin32MemoryRelease(PxMemoryArena value);
+b32
+pxWin32MemoryRelease(PxMemoryArena* arena);
 
 #endif // PX_WIN32_MEMORY_COMMON_H

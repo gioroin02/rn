@@ -1,6 +1,0 @@
-#ifndef PX_SYSTEM_ASYNCIO_EXPORT_H
-#define PX_SYSTEM_ASYNCIO_EXPORT_H
-
-#include "queue.h"
-
-#endif // PX_SYSTEM_ASYNCIO_EXPORT_H

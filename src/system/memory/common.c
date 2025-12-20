@@ -37,10 +37,10 @@ pxSystemMemoryReserve(ssize size)
     return __pxSystemMemoryReserve__(size);
 }
 
-void
-pxSystemMemoryRelease(PxMemoryArena value)
+b32
+pxSystemMemoryRelease(PxMemoryArena* arena)
 {
-    __pxSystemMemoryRelease__(value);
+    return __pxSystemMemoryRelease__(arena);
 }
 
 #endif // PX_SYSTEM_MEMORY_COMMON_C

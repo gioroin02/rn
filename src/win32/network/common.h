@@ -11,13 +11,13 @@
 #include <ws2tcpip.h>
 #include <mswsock.h>
 
-typedef struct sockaddr_storage PxSockAddrStorage;
-typedef struct sockaddr         PxSockAddr;
-typedef struct sockaddr_in      PxSockAddrIn4;
-typedef struct sockaddr_in6     PxSockAddrIn6;
+typedef struct sockaddr_storage PxWin32SockAddrStorage;
+typedef struct sockaddr         PxWin32SockAddr;
+typedef struct sockaddr_in      PxWin32SockAddrIn4;
+typedef struct sockaddr_in6     PxWin32SockAddrIn6;
 
-static LPFN_CONNECTEX connectEx = 0;
-static LPFN_ACCEPTEX  acceptEx  = 0;
+static LPFN_CONNECTEX pxWin32ConnectEx = 0;
+static LPFN_ACCEPTEX  pxWin32AcceptEx  = 0;
 
 b32
 pxWin32NetworkStart();

@@ -3,27 +3,28 @@
 
 #include "socket-tcp.h"
 
-PxWin32SocketTCP*
-pxWin32SocketTCPReserve(PxMemoryArena* arena)
+PxWin32SocketTcp*
+pxWin32SocketTcpReserve(PxMemoryArena* arena)
 {
-    return pxMemoryArenaReserveOneOf(arena, PxWin32SocketTCP);
+    return pxMemoryArenaReserveOneOf(arena, PxWin32SocketTcp);
 }
 
 b32
-pxWin32SocketTCPCreate(PxWin32SocketTCP* self, PxAddressIP address, u16 port)
+pxWin32SocketTcpCreate(PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 {
-    PxSockAddrStorage storage = {0};
-    ssize             length  = 0;
+    ssize length = 0;
 
-    if (self == 0 || address.kind == PxAddressIP_None || pxWin32NetworkStart() == 0)
-        return 0;
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    storage = pxSockAddrStorageMake(address, port, &length);
+    if (pxWin32NetworkStart() == 0 || length == 0) return 0;
 
-    SOCKET handle = WSASocketA(storage.ss_family, SOCK_STREAM, IPPROTO_TCP,
-        0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = WSASocketA(storage.ss_family, SOCK_STREAM,
+        IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
+
+    pxMemorySet(self, sizeof *self, 0xAB);
 
     self->handle  = handle;
     self->storage = storage;
@@ -32,17 +33,22 @@ pxWin32SocketTCPCreate(PxWin32SocketTCP* self, PxAddressIP address, u16 port)
 }
 
 b32
-pxWin32SocketTCPAccept(PxWin32SocketTCP* self, PxWin32SocketTCP* value)
+pxWin32SocketTcpAccept(PxWin32SocketTcp* self, PxWin32SocketTcp* value)
 {
-    if (self == 0 || value == 0 || pxWin32NetworkStart() == 0)
-        return 0;
+    PxWin32SockAddrStorage storage;
 
-    PxSockAddrStorage storage = {0};
-    int               length  = sizeof(PxSockAddrStorage);
+    pxMemorySet(&storage, sizeof storage, 0xAB);
 
-    SOCKET handle = accept(self->handle, ((PxSockAddr*) &storage), &length);
+    int length = sizeof (PxWin32SockAddrStorage);
+
+    if (pxWin32NetworkStart() == 0) return 0;
+
+    SOCKET handle = accept(self->handle,
+        (PxWin32SockAddr*) &storage, &length);
 
     if (handle == INVALID_SOCKET) return 0;
+
+    pxMemorySet(value, sizeof *value, 0xAB);
 
     value->handle  = handle;
     value->storage = storage;
@@ -51,51 +57,50 @@ pxWin32SocketTCPAccept(PxWin32SocketTCP* self, PxWin32SocketTCP* value)
 }
 
 void
-pxWin32SocketTCPDestroy(PxWin32SocketTCP* self)
+pxWin32SocketTcpDestroy(PxWin32SocketTcp* self)
 {
-    if (self == 0) return;
-
     if (self->handle != INVALID_SOCKET)
         closesocket(self->handle);
 
-    *self = (PxWin32SocketTCP) {0};
+    pxMemorySet(self, sizeof *self, 0xAB);
 
     pxWin32NetworkStop();
 }
 
 b32
-pxWin32SocketTCPBind(PxWin32SocketTCP* self)
+pxWin32SocketTcpBind(PxWin32SocketTcp* self)
 {
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &self->storage;
+
     ssize length = 0;
 
-    if (self == 0) return 0;
-
     switch (self->storage.ss_family) {
-        case AF_INET:  length = sizeof(PxSockAddrIn4); break;
-        case AF_INET6: length = sizeof(PxSockAddrIn6); break;
+        case AF_INET:  length = sizeof (PxWin32SockAddrIn4); break;
+        case AF_INET6: length = sizeof (PxWin32SockAddrIn6); break;
 
         default: break;
     }
 
     if (length == 0) return 0;
 
-    if (bind(self->handle, ((PxSockAddr*) &self->storage), length) == SOCKET_ERROR)
+    if (bind(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
 
     return 1;
 }
 
 b32
-pxWin32SocketTCPBindTo(PxWin32SocketTCP* self, PxAddressIP address, u16 port)
+pxWin32SocketTcpBindTo(PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 {
-    PxSockAddrStorage storage = {0};
-    ssize             length  = 0;
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &self->storage;
+    ssize            length   = 0;
 
-    storage = pxSockAddrStorageMake(address, port, &length);
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    if (self == 0 || storage.ss_family != self->storage.ss_family) return 0;
+    if (storage.ss_family != self->storage.ss_family) return 0;
 
-    if (bind(self->handle, ((PxSockAddr*) &storage), length) == SOCKET_ERROR)
+    if (bind(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
 
     self->storage = storage;
@@ -104,10 +109,8 @@ pxWin32SocketTCPBindTo(PxWin32SocketTCP* self, PxAddressIP address, u16 port)
 }
 
 b32
-pxWin32SocketTCPListen(PxWin32SocketTCP* self)
+pxWin32SocketTcpListen(PxWin32SocketTcp* self)
 {
-    if (self == 0) return 0;
-
     if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
         return 0;
 
@@ -115,29 +118,32 @@ pxWin32SocketTCPListen(PxWin32SocketTCP* self)
 }
 
 b32
-pxWin32SocketTCPConnect(PxWin32SocketTCP* self, PxAddressIP address, u16 port)
+pxWin32SocketTcpConnect(PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 {
-    PxSockAddrStorage storage = {0};
-    ssize             length  = 0;
+    ssize length = 0;
 
-    if (self == 0 || port == 0 || address.kind == PxAddressIP_None) return 0;
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    storage = pxSockAddrStorageMake(address, port, &length);
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
 
-    if (connect(self->handle, ((PxSockAddr*) &storage), length) == SOCKET_ERROR)
+    if (port == 0 || length == 0) return 0;
+
+    if (connect(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
 
     return 1;
 }
 
 ssize
-pxWin32SocketTCPWrite(PxWin32SocketTCP* self, u8* values, ssize size)
+pxWin32SocketTcpWrite(PxWin32SocketTcp* self, u8* values, ssize size)
 {
-    if (self == 0 || values == 0 || size <= 0) return 0;
-
     ssize count = 0;
+    ssize temp  = 0;
 
-    for (ssize temp = 0; count < size; count += temp) {
+    if (values == PX_NULL || size <= 0) return 0;
+
+    for (temp = 0; count < size; count += temp) {
         temp = send(self->handle, ((char*) values + count),
             ((int) size - count), 0);
 
@@ -148,9 +154,9 @@ pxWin32SocketTCPWrite(PxWin32SocketTCP* self, u8* values, ssize size)
 }
 
 ssize
-pxWin32SocketTCPRead(PxWin32SocketTCP* self, u8* values, ssize size)
+pxWin32SocketTcpRead(PxWin32SocketTcp* self, u8* values, ssize size)
 {
-    if (self == 0 || values == 0 || size <= 0) return 0;
+    if (values == PX_NULL || size <= 0) return 0;
 
     ssize count = recv(self->handle,
         ((char*) values), ((int) size), 0);
@@ -160,16 +166,16 @@ pxWin32SocketTCPRead(PxWin32SocketTCP* self, u8* values, ssize size)
     return count;
 }
 
-PxAddressIP
-pxWin32SocketTCPGetAddress(PxWin32SocketTCP* self)
+PxAddressIp
+pxWin32SocketTcpGetAddress(PxWin32SocketTcp* self)
 {
-    return pxSockAddrStorageGetAddress(&self->storage);
+    return pxWin32SockAddrStorageGetAddress(&self->storage);
 }
 
 u16
-pxWin32SocketTCPGetPort(PxWin32SocketTCP* self)
+pxWin32SocketTcpGetPort(PxWin32SocketTcp* self)
 {
-    return pxSockAddrStorageGetPort(&self->storage);
+    return pxWin32SockAddrStorageGetPort(&self->storage);
 }
 
 #endif // PX_WIN32_NETWORK_SOCKET_TCP_C

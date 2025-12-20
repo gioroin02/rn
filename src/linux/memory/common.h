@@ -9,7 +9,7 @@ pxLinuxMemoryPageSize();
 PxMemoryArena
 pxLinuxMemoryReserve(ssize size);
 
-void
-pxLinuxMemoryRelease(PxMemoryArena value);
+b32
+pxLinuxMemoryRelease(PxMemoryArena* arena);
 
 #endif // PX_LINUX_MEMORY_COMMON_H

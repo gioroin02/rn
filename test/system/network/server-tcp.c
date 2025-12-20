@@ -10,26 +10,28 @@ main(int argc, char** argv)
 {
     PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    PxSocketTCP* listener = pxSocketTCPReserve(&arena);
+    PxSocketTcp* listener = pxSocketTcpReserve(&arena);
 
-    pxSocketTCPCreate(listener, pxAddressIPv4Empty(), 50000);
-    pxSocketTCPBind(listener);
-    pxSocketTCPListen(listener);
+    pxSocketTcpCreate(listener, pxAddressIp4Empty(), 50000);
+    pxSocketTcpBind(listener);
+    pxSocketTcpListen(listener);
 
-    for (ssize conns = 0; conns < 2; conns += 1) {
-        PxSocketTCP* socket = pxSocketTCPReserve(&arena);
+    ssize conns = 0;
 
-        pxSocketTCPAccept(listener, socket);
+    for (conns = 0; conns < 2; conns += 1) {
+        PxSocketTcp* socket = pxSocketTcpReserve(&arena);
+
+        pxSocketTcpAccept(listener, socket);
 
         u8 buffer[256] = {0};
 
-        ssize size = pxSocketTCPRead(socket, buffer, 256);
+        ssize size = pxSocketTcpRead(socket, buffer, 256);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pxSocketTCPWrite(socket, buffer, size);
-        pxSocketTCPDestroy(socket);
+        pxSocketTcpWrite(socket, buffer, size);
+        pxSocketTcpDestroy(socket);
     }
 
-    pxSocketTCPDestroy(listener);
+    pxSocketTcpDestroy(listener);
 }

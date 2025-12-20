@@ -75,7 +75,7 @@ pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value)
 }
 
 void*
-pxMemoryAlignForward(void* pntr, usize align)
+pxMemoryAlignPntrForward(void* pntr, usize align)
 {
     usize dist = ((usize) pntr) % align;
 
@@ -85,6 +85,19 @@ pxMemoryAlignForward(void* pntr, usize align)
         return ((u8*) pntr) + align - dist;
 
     return pntr;
+}
+
+ssize
+pxMemoryAlignSizeForward(ssize size, usize align)
+{
+    usize dist = ((usize) size) % align;
+
+    if (size <= 0) return 0;
+
+    if (dist != 0)
+        return size + align - dist;
+
+    return size;
 }
 
 PxByteOrder

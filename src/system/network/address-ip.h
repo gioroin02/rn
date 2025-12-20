@@ -3,33 +3,26 @@
 
 #include "import.h"
 
-#define PX_ADDRESS_IPV4_SIZE ((ssize) 4)
+#define PX_ADDRESS_IP4_SIZE ((ssize) 4)
+#define PX_ADDRESS_IP6_SIZE ((ssize) 8)
 
-#define pxAddressIPv4Empty() \
-    ((PxAddressIP) {.kind = PxAddressIP_IPv4, .ipv4.values = {0}})
+#define pxAddressIp4Empty() pxAddressIp4Make(  0, 0, 0, 0)
+#define pxAddressIp4Local() pxAddressIp4Make(127, 0, 0, 1)
 
-#define pxAddressIPv4Local() \
-    ((PxAddressIP) {.kind = PxAddressIP_IPv4, .ipv4.values = {[0] = 127, [3] = 1}})
+#define pxAddressIp6Empty() pxAddressIp6Make(0, 0, 0, 0, 0, 0, 0, 0)
+#define pxAddressIp6Local() pxAddressIp6Make(0, 0, 0, 0, 0, 0, 0, 1)
 
-#define PX_ADDRESS_IPV6_SIZE ((ssize) 8)
-
-#define pxAddressIPv6Empty() \
-    ((PxAddressIP) {.kind = PxAddressIP_IPv6, .ipv6.values = {0}})
-
-#define pxAddressIPv6Local() \
-    ((PxAddressIP) {.kind = PxAddressIP_IPv6, .ipv6.values = {[7] = 1}})
-
-typedef enum PxAddressIPKind
+typedef enum PxAddressIpKind
 {
-    PxAddressIP_None,
-    PxAddressIP_IPv4,
-    PxAddressIP_IPv6,
+    PxAddressIp_None,
+    PxAddressIp_Ver4,
+    PxAddressIp_Ver6,
 }
-PxAddressIPKind;
+PxAddressIpKind;
 
-typedef union PxAddressIPv4
+typedef union PxAddressIp4
 {
-    u8 values[PX_ADDRESS_IPV4_SIZE];
+    u8 values[PX_ADDRESS_IP4_SIZE];
 
     struct
     {
@@ -37,11 +30,11 @@ typedef union PxAddressIPv4
         u8 v2, v3;
     };
 }
-PxAddressIPv4;
+PxAddressIp4;
 
-typedef union PxAddressIPv6
+typedef union PxAddressIp6
 {
-    u8 values[PX_ADDRESS_IPV6_SIZE];
+    u16 values[PX_ADDRESS_IP6_SIZE];
 
     struct
     {
@@ -49,39 +42,36 @@ typedef union PxAddressIPv6
         u16 v4, v5, v6, v7;
     };
 }
-PxAddressIPv6;
+PxAddressIp6;
 
-typedef struct PxAddressIP
+typedef struct PxAddressIp
 {
-    PxAddressIPKind kind;
+    PxAddressIpKind kind;
 
     union
     {
-        PxAddressIPv4 ipv4;
-        PxAddressIPv6 ipv6;
+        PxAddressIp4 ip4;
+        PxAddressIp6 ip6;
     };
 }
-PxAddressIP;
+PxAddressIp;
 
-PxAddressIP
-pxAddressIPv4Make(u8 v0, u8 v1, u8 v2, u8 v3);
+PxAddressIp
+pxAddressIp4Make(u8 v0, u8 v1, u8 v2, u8 v3);
 
-PxAddressIP
-pxAddressIPv4FromArray(u8* values, ssize size);
+PxAddressIp
+pxAddressIp6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7);
 
-PxAddressIP
-pxAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7);
+PxAddressIp
+pxAddressIpNone();
 
-PxAddressIP
-pxAddressIPv6FromArray(u16* values, ssize size);
+PxAddressIp
+pxAddressIpEmpty(PxAddressIpKind kind);
 
-PxAddressIP
-pxAddressIPEmpty(PxAddressIPKind kind);
-
-PxAddressIP
-pxAddressIPLocal(PxAddressIPKind kind);
+PxAddressIp
+pxAddressIpLocal(PxAddressIpKind kind);
 
 b32
-pxAddressIPIsEqual(PxAddressIP self, PxAddressIP value);
+pxAddressIpIsEqual(PxAddressIp self, PxAddressIp value);
 
 #endif // PX_SYSTEM_NETWORK_ADDRESS_IP_H

@@ -22,6 +22,12 @@ PxMemoryPool;
 PxMemoryPool
 pxMemoryPoolMake(void* pntr, ssize size, ssize step);
 
+void*
+pxMemoryPoolPntr(PxMemoryPool* self);
+
+ssize
+pxMemoryPoolSize(PxMemoryPool* self);
+
 void
 pxMemoryPoolClear(PxMemoryPool* self);
 

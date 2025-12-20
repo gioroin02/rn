@@ -3,12 +3,12 @@
 
 #include "common.h"
 
-static volatile LONG gWinsockRefs = 0;
+static volatile LONG px_win32_winsock_refs = 0;
 
 b32
 pxWin32NetworkStart()
 {
-    if (InterlockedIncrement(&gWinsockRefs) == 1)
+    if (InterlockedIncrement(&px_win32_winsock_refs) == 1)
         return pxWin32NetworkStartImpl();
 
     return 1;
@@ -27,18 +27,18 @@ pxWin32NetworkStartImpl()
 
     DWORD bytes = 0;
 
-    GUID guidConnectEx = WSAID_CONNECTEX;
-    GUID guidAcceptEx  = WSAID_ACCEPTEX;
+    GUID guid_connect_ex = WSAID_CONNECTEX;
+    GUID guid_accept_ex  = WSAID_ACCEPTEX;
 
-    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER,
-        &guidConnectEx, sizeof(guidConnectEx), &connectEx, sizeof(connectEx), &bytes, 0, 0);
+    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid_connect_ex, sizeof guid_connect_ex,
+        &pxWin32ConnectEx, sizeof pxWin32ConnectEx, &bytes, 0, 0);
 
-    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER,
-        &guidAcceptEx, sizeof(guidAcceptEx), &acceptEx, sizeof(acceptEx), &bytes, 0, 0);
+    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid_accept_ex, sizeof guid_accept_ex,
+        &pxWin32AcceptEx, sizeof pxWin32AcceptEx, &bytes, 0, 0);
 
     closesocket(handle);
 
-    if (connectEx != 0 && acceptEx != 0) return 1;
+    if (pxWin32ConnectEx != 0 && pxWin32AcceptEx != 0) return 1;
 
     pxWin32NetworkStop();
 
@@ -48,7 +48,7 @@ pxWin32NetworkStartImpl()
 void
 pxWin32NetworkStop()
 {
-    if (InterlockedDecrement(&gWinsockRefs) == 0)
+    if (InterlockedDecrement(&px_win32_winsock_refs) == 0)
         pxWin32NetworkStopImpl();
 }
 

@@ -3,34 +3,36 @@
 
 #include "address.h"
 
-PxSockAddrStorage
-pxSockAddrStorageMake(PxAddressIP address, u16 port, ssize* size)
+PxWin32SockAddrStorage
+pxWin32SockAddrStorageMake(PxAddressIp address, u16 port, ssize* size)
 {
-    PxSockAddrStorage result = {0};
+    PxWin32SockAddrStorage result;
+
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     switch (address.kind) {
-        case PxAddressIP_IPv4: {
-            PxSockAddrIn4* ipv4 = ((PxSockAddrIn4*) &result);
+        case PxAddressIp_Ver4: {
+            PxWin32SockAddrIn4* ip4 = ((PxWin32SockAddrIn4*) &result);
 
-            ipv4->sin_family = AF_INET;
-            ipv4->sin_port   = htons(port);
+            ip4->sin_family = AF_INET;
+            ip4->sin_port   = htons(port);
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV4_SIZE; i += 1)
-                ((u8*) &ipv4->sin_addr.s_addr)[i] = ((u8*) address.ipv4.values)[i];
+            pxMemoryCopy(&ip4->sin_addr.s_addr,
+                PX_ADDRESS_IP4_SIZE, address.ip4.values);
 
-            if (size != 0) *size = sizeof(PxSockAddrIn4);
+            if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PxAddressIP_IPv6: {
-            PxSockAddrIn6* ipv6 = ((PxSockAddrIn6*) &result);
+        case PxAddressIp_Ver6: {
+            PxWin32SockAddrIn6* ip6 = ((PxWin32SockAddrIn6*) &result);
 
-            ipv6->sin6_family = AF_INET6;
-            ipv6->sin6_port   = htons(port);
+            ip6->sin6_family = AF_INET6;
+            ip6->sin6_port   = htons(port);
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1)
-                ((u16*) &ipv6->sin6_addr.s6_addr)[i] = ((u16*) address.ipv6.values)[i];
+            pxMemoryCopy(ip6->sin6_addr.s6_addr,
+                PX_ADDRESS_IP6_SIZE, address.ip6.values);
 
-            if (size != 0) *size = sizeof(PxSockAddrIn6);
+            if (size != 0) *size = sizeof *ip6;
         } break;
 
         default: break;
@@ -39,36 +41,38 @@ pxSockAddrStorageMake(PxAddressIP address, u16 port, ssize* size)
     return result;
 }
 
-PxSockAddrStorage
-pxSockAddrStorageMakeAny(PxAddressIPKind kind, u16 port, ssize* size)
+PxWin32SockAddrStorage
+pxWin32SockAddrStorageMakeAny(PxAddressIpKind kind, u16 port, ssize* size)
 {
-    PxSockAddrStorage result = {0};
+    PxWin32SockAddrStorage result;
+
+    pxMemorySet(&result, sizeof result, 0xAB);
 
     switch (kind) {
-        case PxAddressIP_IPv4: {
+        case PxAddressIp_Ver4: {
             u32 in4addr_any = INADDR_ANY;
 
-            PxSockAddrIn4* ipv4 = ((PxSockAddrIn4*) &result);
+            PxWin32SockAddrIn4* ip4 = ((PxWin32SockAddrIn4*) &result);
 
-            ipv4->sin_family = AF_INET;
-            ipv4->sin_port   = htons(port);
+            ip4->sin_family = AF_INET;
+            ip4->sin_port   = htons(port);
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV4_SIZE; i += 1)
-                ((u8*) &ipv4->sin_addr.s_addr)[i] = ((u8*) &in4addr_any)[i];
+            pxMemoryCopy(&ip4->sin_addr.s_addr,
+                PX_ADDRESS_IP4_SIZE, &in4addr_any);
 
-            if (size != 0) *size = sizeof(PxSockAddrIn4);
+            if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PxAddressIP_IPv6: {
-            PxSockAddrIn6* ipv6 = ((PxSockAddrIn6*) &result);
+        case PxAddressIp_Ver6: {
+            PxWin32SockAddrIn6* ip6 = ((PxWin32SockAddrIn6*) &result);
 
-            ipv6->sin6_family = AF_INET6;
-            ipv6->sin6_port   = htons(port);
+            ip6->sin6_family = AF_INET6;
+            ip6->sin6_port   = htons(port);
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1)
-                ((u16*) &ipv6->sin6_addr.s6_addr)[i] = ((u16*) &in6addr_any)[i];
+            pxMemoryCopy(ip6->sin6_addr.s6_addr,
+                PX_ADDRESS_IP6_SIZE, (void*) &in6addr_any);
 
-            if (size != 0) *size = sizeof(PxSockAddrIn6);
+            if (size != 0) *size = sizeof *ip6;
         } break;
 
         default: break;
@@ -77,28 +81,28 @@ pxSockAddrStorageMakeAny(PxAddressIPKind kind, u16 port, ssize* size)
     return result;
 }
 
-PxAddressIP
-pxSockAddrStorageGetAddress(PxSockAddrStorage* self)
+PxAddressIp
+pxWin32SockAddrStorageGetAddress(PxWin32SockAddrStorage* self)
 {
-    PxAddressIP result = {0};
+    PxAddressIp result = pxAddressIpNone();
 
     switch (self->ss_family) {
         case AF_INET: {
-            result.kind = PxAddressIP_IPv4;
+            PxWin32SockAddrIn4* ip4 = ((PxWin32SockAddrIn4*) self);
 
-            PxSockAddrIn4* ipv4 = ((PxSockAddrIn4*) self);
+            result.kind = PxAddressIp_Ver4;
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV4_SIZE; i += 1)
-                ((u8*) result.ipv4.values)[i] = ((u8*) &ipv4->sin_addr.s_addr)[i];
+            pxMemoryCopy(result.ip4.values,
+                PX_ADDRESS_IP4_SIZE, &ip4->sin_addr.s_addr);
         } break;
 
         case AF_INET6: {
-            result.kind = PxAddressIP_IPv6;
+            PxWin32SockAddrIn6* ip6 = ((PxWin32SockAddrIn6*) self);
 
-            PxSockAddrIn6* ipv6 = ((PxSockAddrIn6*) self);
+            result.kind = PxAddressIp_Ver6;
 
-            for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1)
-                ((u16*) result.ipv6.values)[i] = ((u16*) &ipv6->sin6_addr.s6_addr)[i];
+            pxMemoryCopy(result.ip6.values,
+                PX_ADDRESS_IP6_SIZE, &ip6->sin6_addr.s6_addr);
         } break;
 
         default: return result;
@@ -108,14 +112,14 @@ pxSockAddrStorageGetAddress(PxSockAddrStorage* self)
 }
 
 u16
-pxSockAddrStorageGetPort(PxSockAddrStorage* self)
+pxWin32SockAddrStorageGetPort(PxWin32SockAddrStorage* self)
 {
     switch (self->ss_family) {
         case AF_INET:
-            return ntohs(((PxSockAddrIn4*) self)->sin_port);
+            return ntohs(((PxWin32SockAddrIn4*) self)->sin_port);
 
         case AF_INET6:
-            return ntohs(((PxSockAddrIn6*) self)->sin6_port);
+            return ntohs(((PxWin32SockAddrIn6*) self)->sin6_port);
 
         default: break;
     }

@@ -20,6 +20,12 @@ PxMemoryArena;
 PxMemoryArena
 pxMemoryArenaMake(void* pntr, ssize size);
 
+void*
+pxMemoryArenaPntr(PxMemoryArena* self);
+
+ssize
+pxMemoryArenaSize(PxMemoryArena* self);
+
 void
 pxMemoryArenaClear(PxMemoryArena* self);
 

@@ -3,25 +3,24 @@
 
 #include "socket-udp.h"
 
-PxWin32SocketUDP*
-pxWin32SocketUDPReserve(PxMemoryArena* arena)
+PxWin32SocketUdp*
+pxWin32SocketUdpReserve(PxMemoryArena* arena)
 {
-    return pxMemoryArenaReserveOneOf(arena, PxWin32SocketUDP);
+    return pxMemoryArenaReserveOneOf(arena, PxWin32SocketUdp);
 }
 
 b32
-pxWin32SocketUDPCreate(PxWin32SocketUDP* self, PxAddressIP address, u16 port)
+pxWin32SocketUdpCreate(PxWin32SocketUdp* self, PxAddressIp address, u16 port)
 {
-    PxSockAddrStorage storage = {0};
-    ssize             length  = 0;
+    ssize length = 0;
 
-    if (self == 0 || address.kind == PxAddressIP_None || pxWin32NetworkStart() == 0)
-        return 0;
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    storage = pxSockAddrStorageMake(address, port, &length);
+    if (pxWin32NetworkStart() == 0 || length == 0) return 0;
 
-    SOCKET handle = WSASocketA(storage.ss_family, SOCK_DGRAM, IPPROTO_UDP,
-        0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = WSASocketA(storage.ss_family, SOCK_DGRAM,
+        IPPROTO_UDP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -32,51 +31,51 @@ pxWin32SocketUDPCreate(PxWin32SocketUDP* self, PxAddressIP address, u16 port)
 }
 
 void
-pxWin32SocketUDPDestroy(PxWin32SocketUDP* self)
+pxWin32SocketUdpDestroy(PxWin32SocketUdp* self)
 {
-    if (self == 0) return;
-
     if (self->handle != INVALID_SOCKET)
         closesocket(self->handle);
 
-    *self = (PxWin32SocketUDP) {0};
+    pxMemorySet(self, sizeof *self, 0xAB);
 
     pxWin32NetworkStop();
 }
 
 b32
-pxWin32SocketUDPBind(PxWin32SocketUDP* self)
+pxWin32SocketUdpBind(PxWin32SocketUdp* self)
 {
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &self->storage;
+
     ssize length = 0;
 
-    if (self == 0) return 0;
-
     switch (self->storage.ss_family) {
-        case AF_INET:  length = sizeof(PxSockAddrIn4); break;
-        case AF_INET6: length = sizeof(PxSockAddrIn6); break;
+        case AF_INET:  length = sizeof (PxWin32SockAddrIn4); break;
+        case AF_INET6: length = sizeof (PxWin32SockAddrIn6); break;
 
         default: break;
     }
 
     if (length == 0) return 0;
 
-    if (bind(self->handle, ((PxSockAddr*) &self->storage), length) == SOCKET_ERROR)
+    if (bind(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
 
     return 1;
 }
 
 b32
-pxWin32SocketUDPBindTo(PxWin32SocketUDP* self, PxAddressIP address, u16 port)
+pxWin32SocketUdpBindTo(PxWin32SocketUdp* self, PxAddressIp address, u16 port)
 {
-    PxSockAddrStorage storage = {0};
-    ssize             length  = 0;
+    ssize length = 0;
 
-    storage = pxSockAddrStorageMake(address, port, &length);
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    if (self == 0 || storage.ss_family != self->storage.ss_family) return 0;
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
 
-    if (bind(self->handle, ((PxSockAddr*) &storage), length) == SOCKET_ERROR)
+    if (storage.ss_family != self->storage.ss_family) return 0;
+
+    if (bind(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
 
     self->storage = storage;
@@ -85,18 +84,22 @@ pxWin32SocketUDPBindTo(PxWin32SocketUDP* self, PxAddressIP address, u16 port)
 }
 
 ssize
-pxWin32SocketUDPWrite(PxWin32SocketUDP* self, u8* values, ssize size, PxAddressIP address, u16 port)
+pxWin32SocketUdpWrite(PxWin32SocketUdp* self, u8* values, ssize size, PxAddressIp address, u16 port)
 {
-    if (self == 0 || values == 0 || size <= 0) return 0;
-
     ssize length = 0;
     ssize count  = 0;
+    ssize temp   = 0;
 
-    PxSockAddrStorage storage = pxSockAddrStorageMake(address, port, &length);
+    PxWin32SockAddrStorage storage =
+        pxWin32SockAddrStorageMake(address, port, &length);
 
-    for (ssize temp = 0; count < size; count += temp) {
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
+
+    if (values == PX_NULL || size <= 0 || length == 0) return 0;
+
+    for (temp = 0; count < size; count += temp) {
         temp = sendto(self->handle, ((char*) values + count),
-            ((int) size - count), 0, ((PxSockAddr*) &storage), length);
+            ((int) size - count), 0, sockaddr, length);
 
         if (temp <= 0 || temp > size - count) break;
     }
@@ -105,36 +108,41 @@ pxWin32SocketUDPWrite(PxWin32SocketUDP* self, u8* values, ssize size, PxAddressI
 }
 
 ssize
-pxWin32SocketUDPRead(PxWin32SocketUDP* self, u8* values, ssize size, PxAddressIP* address, u16* port)
+pxWin32SocketUdpRead(PxWin32SocketUdp* self, u8* values, ssize size, PxAddressIp* address, u16* port)
 {
-    if (self == 0 || values == 0 || size <= 0) return 0;
+    PxWin32SockAddrStorage storage;
 
-    int   length = sizeof(PxSockAddrStorage);
-    ssize count  = 0;
+    pxMemorySet(&storage, sizeof storage, 0xAB);
 
-    PxSockAddrStorage storage = {0};
+    PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
+    int              length   = sizeof (PxWin32SockAddrStorage);
+    ssize            count    = 0;
 
-    count = recvfrom(self->handle, ((char*) values), ((int) size),
-        0, ((PxSockAddr*) &storage), &length);
+    if (values == PX_NULL || size <= 0) return 0;
 
-    if (count <= 0 || count > size) return 0;
+    count = recvfrom(self->handle, ((char*) values),
+        ((int) size), 0, sockaddr, &length);
 
-    if (address != 0) *address = pxSockAddrStorageGetAddress(&storage);
-    if (port != 0)    *port    = pxSockAddrStorageGetPort(&storage);
+    if (count <= 0 || count > size || length == 0) return 0;
+
+    if (address != PX_NULL)
+        *address = pxWin32SockAddrStorageGetAddress(&storage);
+
+    if (port != PX_NULL) *port = pxWin32SockAddrStorageGetPort(&storage);
 
     return count;
 }
 
-PxAddressIP
-pxWin32SocketUDPGetAddress(PxWin32SocketUDP* self)
+PxAddressIp
+pxWin32SocketUdpGetAddress(PxWin32SocketUdp* self)
 {
-    return pxSockAddrStorageGetAddress(&self->storage);
+    return pxWin32SockAddrStorageGetAddress(&self->storage);
 }
 
 u16
-pxWin32SocketUDPGetPort(PxWin32SocketUDP* self)
+pxWin32SocketUdpGetPort(PxWin32SocketUdp* self)
 {
-    return pxSockAddrStorageGetPort(&self->storage);
+    return pxWin32SockAddrStorageGetPort(&self->storage);
 }
 
 #endif // PX_WIN32_NETWORK_SOCKET_UDP_C

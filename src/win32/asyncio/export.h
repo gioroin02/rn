@@ -1,6 +1,0 @@
-#ifndef PX_WIN32_ASYNCIO_EXPORT_H
-#define PX_WIN32_ASYNCIO_EXPORT_H
-
-#include "queue.h"
-
-#endif // PX_WIN32_ASYNCIO_EXPORT_H

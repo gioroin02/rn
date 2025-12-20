@@ -6,21 +6,19 @@
 b32
 __pxArrayCreate__(PxArrayTag* self, void** pntr, ssize step, PxMemoryArena* arena, ssize size)
 {
+    pxMemorySet(self, sizeof *self, 0xAB);
+
     u8* values = pxMemoryArenaReserve(arena, size, step);
 
-    if (values != PX_NULL) {
-        pxMemorySet(self, sizeof *self, 0xAB);
+    if (values == PX_NULL) return 0;
 
-        *pntr = values;
+    *pntr = values;
 
-        self->array_size  = size;
-        self->array_count = 0;
-        self->array_step  = step;
+    self->array_size  = size;
+    self->array_count = 0;
+    self->array_step  = step;
 
-        return 1;
-    }
-
-    return 0;
+    return 1;
 }
 
 ssize

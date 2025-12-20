@@ -10,7 +10,7 @@ main(int argc, char** argv)
 {
     u8 memory[256] = {0};
 
-    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof(memory));
+    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof memory);
 
     PxU32Array array;
 

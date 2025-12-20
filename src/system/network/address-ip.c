@@ -4,10 +4,13 @@
 #include "address-ip.h"
 
 static b32
-pxAddressIPv4IsEqual(PxAddressIPv4 self, PxAddressIPv4 value)
+pxAddressIp4IsEqual(PxAddressIp4 self, PxAddressIp4 value)
 {
-    for (ssize i = 0; i < PX_ADDRESS_IPV4_SIZE; i += 1) {
-        if (self.values[i] != value.values[i])
+    ssize index = 0;
+    ssize size  = PX_ADDRESS_IP4_SIZE;
+
+    for (index = 0; index < size; index += 1) {
+        if (self.values[index] != value.values[index])
             return 0;
     }
 
@@ -15,105 +18,112 @@ pxAddressIPv4IsEqual(PxAddressIPv4 self, PxAddressIPv4 value)
 }
 
 static b32
-pxAddressIPv6IsEqual(PxAddressIPv6 self, PxAddressIPv6 value)
+pxAddressIp6IsEqual(PxAddressIp6 self, PxAddressIp6 value)
 {
-    for (ssize i = 0; i < PX_ADDRESS_IPV6_SIZE; i += 1) {
-        if (self.values[i] != value.values[i])
+    ssize index = 0;
+    ssize size  = PX_ADDRESS_IP6_SIZE;
+
+    for (index = 0; index < size; index += 1) {
+        if (self.values[index] != value.values[index])
             return 0;
     }
 
     return 1;
 }
 
-PxAddressIP
-pxAddressIPv4Make(u8 v0, u8 v1, u8 v2, u8 v3)
+PxAddressIp
+pxAddressIp4Make(u8 v0, u8 v1, u8 v2, u8 v3)
 {
-    return (PxAddressIP) {
-        .kind = PxAddressIP_IPv4,
+    PxAddressIp result;
 
-        .ipv4.values = {
-            [0] = v0, [1] = v1,
-            [2] = v2, [3] = v3,
-        },
-    };
-}
+    pxMemorySet(&result, sizeof result, 0xAB);
 
-PxAddressIP
-pxAddressIPv4FromArray(u8* values, ssize size)
-{
-    PxAddressIP result = {.kind = PxAddressIP_IPv4};
-
-    size = pxClamp(size, 0, PX_ADDRESS_IPV4_SIZE);
-
-    for (ssize i = 0; i < size; i += 1)
-        result.ipv4.values[i] = values[i];
+    result.kind   = PxAddressIp_Ver4;
+    result.ip4.v0 = v0;
+    result.ip4.v1 = v1;
+    result.ip4.v2 = v2;
+    result.ip4.v3 = v3;
 
     return result;
 }
 
-PxAddressIP
-pxAddressIPv6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7)
+PxAddressIp
+pxAddressIp6Make(u16 v0, u16 v1, u16 v2, u16 v3, u16 v4, u16 v5, u16 v6, u16 v7)
 {
-    return (PxAddressIP) {
-        .kind = PxAddressIP_IPv6,
+    PxAddressIp result;
 
-        .ipv6.values = {
-            [0] = v0, [1] = v1, [2] = v2, [3] = v3,
-            [4] = v4, [5] = v5, [6] = v6, [7] = v7,
-        },
-    };
-}
+    pxMemorySet(&result, sizeof result, 0xAB);
 
-PxAddressIP
-pxAddressIPv6FromArray(u16* values, ssize size)
-{
-    PxAddressIP result = {.kind = PxAddressIP_IPv6};
-
-    size = pxClamp(size, 0, PX_ADDRESS_IPV6_SIZE);
-
-    for (ssize i = 0; i < size; i += 1)
-        result.ipv6.values[i] = values[i];
+    result.kind   = PxAddressIp_Ver6;
+    result.ip6.v0 = v0;
+    result.ip6.v1 = v1;
+    result.ip6.v2 = v2;
+    result.ip6.v3 = v3;
+    result.ip6.v4 = v4;
+    result.ip6.v5 = v5;
+    result.ip6.v6 = v6;
+    result.ip6.v7 = v7;
 
     return result;
 }
 
-PxAddressIP
-pxAddressIPEmpty(PxAddressIPKind kind)
+PxAddressIp
+pxAddressIpNone()
 {
-    switch (kind) {
-        case PxAddressIP_IPv4: return pxAddressIPv4Empty();
-        case PxAddressIP_IPv6: return pxAddressIPv6Empty();
+    PxAddressIp result;
 
-        default: break;
-    }
+    pxMemorySet(&result, sizeof result, 0xAB);
 
-    return (PxAddressIP) {0};
+    result.kind = PxAddressIp_None;
+
+    return result;
 }
 
-PxAddressIP
-pxAddressIPLocal(PxAddressIPKind kind)
+PxAddressIp
+pxAddressIpEmpty(PxAddressIpKind kind)
 {
+    PxAddressIp result;
+
+    pxMemorySet(&result, sizeof result, 0xAB);
+
     switch (kind) {
-        case PxAddressIP_IPv4: return pxAddressIPv4Local();
-        case PxAddressIP_IPv6: return pxAddressIPv6Local();
+        case PxAddressIp_Ver4: return pxAddressIp4Empty();
+        case PxAddressIp_Ver6: return pxAddressIp6Empty();
 
         default: break;
     }
 
-    return (PxAddressIP) {0};
+    return result;
+}
+
+PxAddressIp
+pxAddressIpLocal(PxAddressIpKind kind)
+{
+    PxAddressIp result;
+
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    switch (kind) {
+        case PxAddressIp_Ver4: return pxAddressIp4Local();
+        case PxAddressIp_Ver6: return pxAddressIp6Local();
+
+        default: break;
+    }
+
+    return result;
 }
 
 b32
-pxAddressIPIsEqual(PxAddressIP self, PxAddressIP value)
+pxAddressIpIsEqual(PxAddressIp self, PxAddressIp value)
 {
     if (self.kind != value.kind) return 0;
 
     switch (self.kind) {
-        case PxAddressIP_IPv4:
-            return pxAddressIPv4IsEqual(self.ipv4, value.ipv4);
+        case PxAddressIp_Ver4:
+            return pxAddressIp4IsEqual(self.ip4, value.ip4);
 
-        case PxAddressIP_IPv6:
-            return pxAddressIPv6IsEqual(self.ipv6, value.ipv6);
+        case PxAddressIp_Ver6:
+            return pxAddressIp6IsEqual(self.ip6, value.ip6);
 
         default: break;
     }

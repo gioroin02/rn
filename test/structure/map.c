@@ -68,7 +68,7 @@ main(int argc, char** argv)
 {
     u8 memory[1024] = {0};
 
-    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof(memory));
+    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof memory);
 
     PxString8U32Map map = {0};
 

@@ -35,31 +35,29 @@ typedef b32   (PxMapProcIsEqual) (void*, void*);
     __PxMapTag__(ktype); ktype* keys; vtype* values; \
 }
 
-#define pxMapSize(self)       __pxMapSize__(((PxMapTag*) self))
-#define pxMapCount(self)      __pxMapCount__(((PxMapTag*) self))
-#define pxMapIsEmpty(self)    __pxMapIsEmpty__(((PxMapTag*) self))
-#define pxMapIsFull(self)     __pxMapIsFull__(((PxMapTag*) self))
+#define pxMapSize(self)    __pxMapSize__(((PxMapTag*) self))
+#define pxMapCount(self)   __pxMapCount__(((PxMapTag*) self))
+#define pxMapIsEmpty(self) __pxMapIsEmpty__(((PxMapTag*) self))
+#define pxMapIsFull(self)  __pxMapIsFull__(((PxMapTag*) self))
 
 #define pxMapIsKey(self, key) ( \
     (self)->map_key = (key),    \
     __pxMapIsKey__(             \
         ((PxMapTag*) self),     \
         (self)->keys,           \
-        &(self)->map_key        \
-    )                           \
+        &(self)->map_key)       \
 )
 
 #define pxMapClear(self) __pxMapClear__(((PxMapTag*) self))
 
-#define pxMapCreate(self, arena, size, hash, is_equal) ( \
-    __pxMapCreate__(                                     \
-        ((PxMapTag*) self),                              \
-        (void**) &(self)->keys,                          \
-        sizeof *(self)->keys,                            \
-        (void**) &(self)->values,                        \
-        sizeof *(self)->values,                          \
-        arena, size, hash, is_equal                      \
-    )                                                    \
+#define pxMapCreate(self, arena, size, proc_hash, proc_is_equal) ( \
+    __pxMapCreate__(                                               \
+        ((PxMapTag*) self),                                        \
+        ((void**) &(self)->keys),                                  \
+        sizeof *(self)->keys,                                      \
+        ((void**) &(self)->values),                                \
+        sizeof *(self)->values,                                    \
+        arena, size, proc_hash, proc_is_equal)                     \
 )
 
 #define pxMapInsert(self, key, value) (                              \
@@ -67,15 +65,13 @@ typedef b32   (PxMapProcIsEqual) (void*, void*);
     __pxMapSlotOpen__(                                               \
         ((PxMapTag*) self),                                          \
         (self)->keys,                                                \
-        &(self)->map_key                                             \
-    ) != 0 ?                                                         \
+        &(self)->map_key) != 0 ?                                     \
     (                                                                \
         (self)->map_indices[(self)->map_index]  = (self)->map_count, \
         (self)->keys[(self)->map_count]         = (self)->map_key,   \
         (self)->values[(self)->map_count]       = (value),           \
         (self)->map_count                     += 1                   \
-    ), 1                                                             \
-    :  0                                                             \
+    ), 1 : 0                                                         \
 )
 
 #define pxMapGet(self, key, other) \
@@ -85,7 +81,7 @@ typedef b32   (PxMapProcIsEqual) (void*, void*);
     (pxMapIsKey(self, key) != 0 ? &(self)->values[(self)->map_index] : 0)
 
 b32
-__pxMapCreate__(PxMapTag* self, void** pntr_key, ssize step_key, void** pntr_value, ssize step_value,
+__pxMapCreate__(PxMapTag* self, void** pntr_keys, ssize step_key, void** pntr_values, ssize step_value,
     PxMemoryArena* arena, ssize size, void* proc_hash, void* proc_is_equal);
 
 ssize

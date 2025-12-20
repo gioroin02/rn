@@ -11,22 +11,22 @@ main(int argc, char** argv)
 {
     PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    PxSocketUDP* socket = pxSocketUDPReserve(&arena);
+    PxSocketUdp* socket = pxSocketUdpReserve(&arena);
 
-    pxSocketUDPCreate(socket, pxAddressIPv4Empty(), 0);
+    pxSocketUdpCreate(socket, pxAddressIp4Empty(), 0);
 
     u8 buffer[256] = {"Ciao!"};
 
     ssize size = strlen(((char*) buffer));
 
-    pxSocketUDPWrite(socket, buffer, size,
-        pxAddressIPv4Local(), 50000);
+    pxSocketUdpWrite(socket, buffer, size,
+        pxAddressIp4Local(), 50000);
 
     memset(buffer, 0, 256);
 
-    size = pxSocketUDPRead(socket, buffer, 256, 0, 0);
+    size = pxSocketUdpRead(socket, buffer, 256, 0, 0);
 
     printf("%.*s\n", ((int) size), buffer);
 
-    pxSocketUDPDestroy(socket);
+    pxSocketUdpDestroy(socket);
 }
