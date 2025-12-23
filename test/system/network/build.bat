@@ -14,11 +14,11 @@ set "test_client_tcp=test\system\network\client-tcp.c"
 set "test_server_tcp_async=test\system\network\server-tcp-async.c"
 set "test_client_tcp_async=test\system\network\client-tcp-async.c"
 
-%compiler% --std=c99 %impl% %test_address_ip% -lws2_32 -o bin\system_network_address_ip.exe
-%compiler% --std=c99 %impl% %test_server_udp% -lws2_32 -o bin\system_network_server_udp.exe
-%compiler% --std=c99 %impl% %test_client_udp% -lws2_32 -o bin\system_network_client_udp.exe
-%compiler% --std=c99 %impl% %test_server_tcp% -lws2_32 -o bin\system_network_server_tcp.exe
-%compiler% --std=c99 %impl% %test_client_tcp% -lws2_32 -o bin\system_network_client_tcp.exe
+%compiler% --std=c89 %impl% %test_address_ip% -lws2_32 -o bin\system_network_address_ip.exe
+%compiler% --std=c89 %impl% %test_server_udp% -lws2_32 -o bin\system_network_server_udp.exe
+%compiler% --std=c89 %impl% %test_client_udp% -lws2_32 -o bin\system_network_client_udp.exe
+%compiler% --std=c89 %impl% %test_server_tcp% -lws2_32 -o bin\system_network_server_tcp.exe
+%compiler% --std=c89 %impl% %test_client_tcp% -lws2_32 -o bin\system_network_client_tcp.exe
 
-@REM %compiler% --std=c99 %impl% %test_server_tcp_async% -lws2_32 -o bin\system_network_server_tcp_async.exe
-@REM %compiler% --std=c99 %impl% %test_client_tcp_async% -lws2_32 -o bin\system_network_client_tcp_async.exe
+@rem %compiler% --std=c89 %impl% %test_server_tcp_async% -lws2_32 -o bin\system_network_server_tcp_async.exe
+@rem %compiler% --std=c89 %impl% %test_client_tcp_async% -lws2_32 -o bin\system_network_client_tcp_async.exe

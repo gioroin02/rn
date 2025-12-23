@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+LPFN_CONNECTEX pxWin32ConnectEx = 0;
+LPFN_ACCEPTEX  pxWin32AcceptEx  = 0;
+
 static volatile LONG px_win32_winsock_refs = 0;
 
 b32
@@ -38,7 +41,7 @@ pxWin32NetworkStartImpl()
 
     closesocket(handle);
 
-    if (pxWin32ConnectEx != 0 && pxWin32AcceptEx != 0) return 1;
+    if (pxWin32ConnectEx != PX_NULL && pxWin32AcceptEx != PX_NULL) return 1;
 
     pxWin32NetworkStop();
 
@@ -55,6 +58,9 @@ pxWin32NetworkStop()
 void
 pxWin32NetworkStopImpl()
 {
+    pxWin32ConnectEx = PX_NULL;
+    pxWin32AcceptEx  = PX_NULL;
+
     WSACleanup();
 }
 

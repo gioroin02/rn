@@ -16,9 +16,6 @@ typedef struct sockaddr         PxWin32SockAddr;
 typedef struct sockaddr_in      PxWin32SockAddrIn4;
 typedef struct sockaddr_in6     PxWin32SockAddrIn6;
 
-static LPFN_CONNECTEX pxWin32ConnectEx = 0;
-static LPFN_ACCEPTEX  pxWin32AcceptEx  = 0;
-
 b32
 pxWin32NetworkStart();
 
