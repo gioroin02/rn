@@ -12,6 +12,7 @@
     #define __pxAsyncDestroy__ pxWin32AsyncDestroy
     #define __pxAsyncSubmit__  pxWin32AsyncSubmit
     #define __pxAsyncPoll__    pxWin32AsyncPoll
+    #define __pxAsyncReturn__  pxWin32AsyncReturn
 
 #else
 
@@ -26,9 +27,9 @@ pxAsyncReserve(PxMemoryArena* arena)
 }
 
 b32
-pxAsyncCreate(PxAsync* self)
+pxAsyncCreate(PxAsync* self, PxMemoryArena* arena, ssize size)
 {
-    return __pxAsyncCreate__(self);
+    return __pxAsyncCreate__(self, arena, size);
 }
 
 void
@@ -38,15 +39,21 @@ pxAsyncDestroy(PxAsync* self)
 }
 
 b32
-pxAsyncSubmit(PxAsync* self, ssize kind, PxAsyncTask* task)
+pxAsyncSubmit(PxAsync* self, PxAsyncTask* task)
 {
-    return __pxAsyncSubmit__(self, kind, task);
+    return __pxAsyncSubmit__(self, task);
 }
 
-ssize
+PxAsyncEventFamily
 pxAsyncPoll(PxAsync* self, void** event, ssize timeout)
 {
     return __pxAsyncPoll__(self, event, timeout);
+}
+
+b32
+pxAsyncReturn(PxAsync* self, void* event)
+{
+    return __pxAsyncReturn__(self, event);
 }
 
 #endif // PX_SYSTEM_ASYNC_COMMON_C

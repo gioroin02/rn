@@ -87,27 +87,27 @@ pxSocketTcpEventClose(PxSocketTcp* socket)
 }
 
 b32
-pxSocketTcpAcceptAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxSocketTcp* self, PxSocketTcp* value)
+pxSocketTcpAcceptAsync(PxAsync* async, PxSocketTcp* self, PxSocketTcp* value)
 {
-    return __pxSocketTcpAcceptAsync__(async, arena, kind, self, value);
+    return __pxSocketTcpAcceptAsync__(async, self, value);
 }
 
 b32
-pxSocketTcpConnectAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxSocketTcp* self, PxAddressIp address, u16 port)
+pxSocketTcpConnectAsync(PxAsync* async, PxSocketTcp* self, PxAddressIp address, u16 port)
 {
-    return __pxSocketTcpConnectAsync__(async, arena, kind, self, address, port);
+    return __pxSocketTcpConnectAsync__(async, self, address, port);
 }
 
 b32
-pxSocketTcpWriteAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxSocketTcp* self, u8* values, ssize start, ssize stop)
+pxSocketTcpWriteAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpWriteAsync__(async, arena, kind, self, values, start, stop);
+    return __pxSocketTcpWriteAsync__(async, self, values, start, stop);
 }
 
 b32
-pxSocketTcpReadAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxSocketTcp* self, u8* values, ssize start, ssize stop)
+pxSocketTcpReadAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpReadAsync__(async, arena, kind, self, values, start, stop);
+    return __pxSocketTcpReadAsync__(async, self, values, start, stop);
 }
 
 #endif // PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_C

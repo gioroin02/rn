@@ -3,7 +3,7 @@
 
 #include "import.h"
 
-#define PX_MEMORY_DEFAULT_ALIGNMENT ((ssize) 32)
+#define PX_MEMORY_DEFAULT_ALIGNMENT ((ssize) 16)
 
 #define PX_MEMORY_KB ((ssize) 1000ll)
 #define PX_MEMORY_MB (PX_MEMORY_KB * PX_MEMORY_KB)
@@ -51,13 +51,16 @@ void*
 pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value);
 
 void*
-pxMemoryAlignPntrForward(void* pntr, usize align);
+pxMemoryAlignPntrForw(void* pntr, usize align);
 
 void*
-pxMemoryAlignPntrForward(void* pntr, usize align);
+pxMemoryAlignPntrBack(void* pntr, usize align);
 
 ssize
-pxMemoryAlignSizeForward(ssize size, usize align);
+pxMemoryAlignSizeForw(ssize size, usize align);
+
+ssize
+pxMemoryAlignSizeBack(ssize size, usize align);
 
 PxByteOrder
 pxGetHostByteOrder();

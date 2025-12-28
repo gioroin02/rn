@@ -53,8 +53,8 @@ pxMemoryArenaReserve(PxMemoryArena* self, ssize count, ssize size)
 
     if (next > self->pntr_base + self->size) return PX_NULL;
 
-    self->pntr_next =
-        pxMemoryAlignPntrForward(next, PX_MEMORY_DEFAULT_ALIGNMENT);
+    self->pntr_next = pxMemoryAlignPntrForw(next,
+        PX_MEMORY_DEFAULT_ALIGNMENT);
 
     pxMemorySet(result, self->pntr_next - result, 0xAB);
 

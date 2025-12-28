@@ -75,27 +75,53 @@ pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value)
 }
 
 void*
-pxMemoryAlignPntrForward(void* pntr, usize align)
+pxMemoryAlignPntrForw(void* pntr, usize align)
 {
     usize dist = ((usize) pntr) % align;
 
     if (pntr == PX_NULL) return PX_NULL;
 
     if (dist != 0)
-        return ((u8*) pntr) + align - dist;
+        return ((u8*) pntr) + (align - dist);
+
+    return pntr;
+}
+
+void*
+pxMemoryAlignPntrBack(void* pntr, usize align)
+{
+    usize dist = ((usize) pntr) % align;
+
+    if (pntr == PX_NULL) return PX_NULL;
+
+    if (dist != 0)
+        return ((u8*) pntr) - dist;
 
     return pntr;
 }
 
 ssize
-pxMemoryAlignSizeForward(ssize size, usize align)
+pxMemoryAlignSizeForw(ssize size, usize align)
 {
     usize dist = ((usize) size) % align;
 
     if (size <= 0) return 0;
 
     if (dist != 0)
-        return size + align - dist;
+        return size + (align - dist);
+
+    return size;
+}
+
+ssize
+pxMemoryAlignSizeBack(ssize size, usize align)
+{
+    usize dist = ((usize) size) % align;
+
+    if (size <= 0) return 0;
+
+    if (dist != 0)
+        return size - dist;
 
     return size;
 }

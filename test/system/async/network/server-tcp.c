@@ -7,27 +7,17 @@
 
 #include <stdio.h>
 
-typedef enum PxAsyncEventKind
-{
-    PxAsyncEvent_None,
-    PxAsyncEvent_SocketTcp,
-    PxAsyncEvent_SocketUdp,
-    PxAsyncEvent_File,
-    PxAsyncEvent_Terminal,
-}
-PxAsyncEventKind;
-
-typedef struct ServerState
+typedef struct Server
 {
     PxAsync*     async;
     PxSocketTcp* socket;
 
     b32 active;
 }
-ServerState;
+Server;
 
 void
-serverOnSocketTcpEvent(ServerState* self, PxMemoryArena* arena, PxSocketTcpEvent* event)
+serverOnSocketTcpEvent(Server* self, PxMemoryArena* arena, PxSocketTcpEvent* event)
 {
     if (event->kind == PxSocketTcpEvent_Error) self->active = 0;
 
@@ -38,13 +28,11 @@ serverOnSocketTcpEvent(ServerState* self, PxMemoryArena* arena, PxSocketTcpEvent
 
         u8* buffer = pxMemoryArenaReserveManyOf(arena, u8, 256);
 
-        pxSocketTcpReadAsync(self->async, arena,
-            PxAsyncEvent_SocketTcp, socket, buffer, 0, 256);
+        pxSocketTcpReadAsync(self->async, socket, buffer, 0, 256);
 
         PxSocketTcp* other = pxSocketTcpReserve(arena);
 
-        pxSocketTcpAcceptAsync(self->async, arena,
-            PxAsyncEvent_SocketTcp, self->socket, other);
+        pxSocketTcpAcceptAsync(self->async, self->socket, other);
     }
 
     if (event->kind == PxSocketTcpEvent_Read) {
@@ -54,8 +42,7 @@ serverOnSocketTcpEvent(ServerState* self, PxMemoryArena* arena, PxSocketTcpEvent
 
         printf("%.*s\n", ((int) stop), values);
 
-        pxSocketTcpWriteAsync(self->async, arena,
-            PxAsyncEvent_SocketTcp, socket, values, 0, stop);
+        pxSocketTcpWriteAsync(self->async, socket, values, 0, stop);
     }
 
     if (event->kind == PxSocketTcpEvent_Write)
@@ -70,12 +57,12 @@ main(int argc, char** argv)
     PxAddressIp address = pxAddressIp4Local();
     u16         port    = 50000;
 
-    ServerState server = {0};
+    Server server = {0};
 
     server.async  = pxAsyncReserve(&arena);
     server.socket = pxSocketTcpReserve(&arena);
 
-    pxAsyncCreate(server.async);
+    pxAsyncCreate(server.async, &arena, pxMemoryKiB(16));
     pxSocketTcpCreate(server.socket, address, port);
     pxSocketTcpBind(server.socket);
     pxSocketTcpListen(server.socket);
@@ -84,21 +71,23 @@ main(int argc, char** argv)
 
     PxSocketTcp* socket = pxSocketTcpReserve(&arena);
 
-    pxSocketTcpAcceptAsync(server.async, &arena,
-        PxAsyncEvent_SocketTcp, server.socket, socket);
+    pxSocketTcpAcceptAsync(server.async, server.socket, socket);
 
     ssize index = 0;
 
     for (index = 0; index < 1000 && server.active != 0; index += 1) {
-        void* event = PX_NULL;
-        ssize kind  = 0;
+        PxAsyncEventFamily family = PxAsyncEventFamily_None;
+        void*              event  = PX_NULL;
 
-        while (kind >= 0) {
-            kind = pxAsyncPoll(server.async, &event, 10);
+        do {
+            family = pxAsyncPoll(server.async, &event, 10);
 
-            if (kind == PxAsyncEvent_SocketTcp)
+            if (family == PxAsyncEventFamily_Tcp)
                 serverOnSocketTcpEvent(&server, &arena, event);
+
+            pxAsyncReturn(&server.async, event);
         }
+        while (family != PxAsyncEventFamily_None);
     }
 
     pxSocketTcpDestroy(server.socket);

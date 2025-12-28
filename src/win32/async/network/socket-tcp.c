@@ -20,7 +20,7 @@ pxWin32AsyncBindSocketTcp(PxWin32Async* async, PxWin32SocketTcp* socket)
 static b32
 pxWin32SocketTcpTaskPrepare(PxWin32AsyncTask* task, PxWin32Async* async)
 {
-    PxWin32SocketTcpTask* self = ((PxWin32SocketTcpTask*) task->body);
+    PxWin32SocketTcpTask* self = ((PxWin32SocketTcpTask*) task->pntr_body);
 
     switch (self->kind) {
         case PxSocketTcpEvent_Accept: {
@@ -86,12 +86,12 @@ pxWin32SocketTcpTaskPrepare(PxWin32AsyncTask* task, PxWin32Async* async)
 static b32
 pxWin32SocketTcpTaskComplete(PxWin32AsyncTask* task, ssize bytes)
 {
-    PxWin32SocketTcpTask* self  = (PxWin32SocketTcpTask*) task->body;
-    PxSocketTcpEvent*     event = (PxSocketTcpEvent*) task->event;
+    PxWin32SocketTcpTask* self  = (PxWin32SocketTcpTask*) task->pntr_body;
+    PxSocketTcpEvent*     event = (PxSocketTcpEvent*) task->pntr_event;
 
     switch (self->kind) {
         case PxSocketTcpEvent_Accept: {
-            PxWin32SocketTcpTaskAccept accept  = self->accept;
+            PxWin32SocketTcpTaskAccept accept = self->accept;
 
             setsockopt(accept.socket->handle, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
                 ((char*) &accept.listener->handle), sizeof(accept.listener->handle));
@@ -146,169 +146,150 @@ pxWin32SocketTcpTaskComplete(PxWin32AsyncTask* task, ssize bytes)
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskAccept(PxMemoryArena* arena, PxWin32SocketTcp* listener, PxWin32SocketTcp* socket)
+pxWin32AsyncTaskSocketTcp(PxMemoryPool* pool, ssize size_body, void** pntr_body, ssize size_event, void** pntr_event)
 {
-    void* mark = pxMemoryArenaTell(arena);
+    if (pntr_body == 0 || size_body < 0 || size_body > pool->step)    return 0;
+    if (pntr_event == 0 || size_event < 0 || size_event > pool->step) return 0;
 
-    PxWin32AsyncTask*     result = pxMemoryArenaReserveOneOf(arena, PxWin32AsyncTask);
-    PxWin32SocketTcpTask* body   = pxMemoryArenaReserveOneOf(arena, PxWin32SocketTcpTask);
-    PxSocketTcpEvent*     event  = pxMemoryArenaReserveOneOf(arena, PxSocketTcpEvent);
+    PxWin32AsyncTask* result = (PxWin32AsyncTask*) pxMemoryPoolReserve(pool, 1, pool->step);
+    void*             body   = pxMemoryPoolReserve(pool, 1, pool->step);
+    void*             event  = pxMemoryPoolReserve(pool, 1, pool->step);
 
     if (result != PX_NULL && body != PX_NULL && event != PX_NULL) {
-        PxAddressIpKind kind    = pxWin32SocketTcpGetAddress(listener).kind;
-        PxAddressIp     address = pxAddressIpEmpty(kind);
-
-        if (pxWin32SocketTcpCreate(socket, address, 0) != 0) {
-            result->kind          = 0;
-            result->body          = body;
-            result->event         = event;
-            result->proc_prepare  = pxWin32SocketTcpTaskPrepare;
-            result->proc_complete = pxWin32SocketTcpTaskComplete;
-            result->pending_next  = PX_NULL;
-
-            pxMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
-            body->kind            = PxSocketTcpEvent_Accept;
-            body->accept.listener = listener;
-            body->accept.socket   = socket;
-
-            return result;
-        }
-    }
-
-    pxMemoryArenaRelease(arena, mark);
-
-    return PX_NULL;
-}
-
-static PxWin32AsyncTask*
-pxWin32SocketTcpTaskConnect(PxMemoryArena* arena, PxWin32SocketTcp* socket, PxAddressIp address, u16 port)
-{
-    void* mark = pxMemoryArenaTell(arena);
-
-    PxWin32AsyncTask*     result = pxMemoryArenaReserveOneOf(arena, PxWin32AsyncTask);
-    PxWin32SocketTcpTask* body   = pxMemoryArenaReserveOneOf(arena, PxWin32SocketTcpTask);
-    PxSocketTcpEvent*     event  = pxMemoryArenaReserveOneOf(arena, PxSocketTcpEvent);
-
-    if (result != PX_NULL && body != PX_NULL && event != PX_NULL) {
-        if (pxWin32SocketTcpBind(socket) != 0) {
-            result->kind          = 0;
-            result->body          = body;
-            result->event         = event;
-            result->proc_prepare  = pxWin32SocketTcpTaskPrepare;
-            result->proc_complete = pxWin32SocketTcpTaskComplete;
-            result->pending_next  = PX_NULL;
-
-            pxMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
-            body->kind            = PxSocketTcpEvent_Connect;
-            body->connect.socket  = socket;
-            body->connect.address = address;
-            body->connect.port    = port;
-
-            return result;
-        }
-    }
-
-    pxMemoryArenaRelease(arena, mark);
-
-    return PX_NULL;
-}
-
-static PxWin32AsyncTask*
-pxWin32SocketTcpTaskWrite(PxMemoryArena* arena, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
-{
-    void* mark = pxMemoryArenaTell(arena);
-
-    PxWin32AsyncTask*     result = pxMemoryArenaReserveOneOf(arena, PxWin32AsyncTask);
-    PxWin32SocketTcpTask* body   = pxMemoryArenaReserveOneOf(arena, PxWin32SocketTcpTask);
-    PxSocketTcpEvent*     event  = pxMemoryArenaReserveOneOf(arena, PxSocketTcpEvent);
-
-    if (result != PX_NULL && body != PX_NULL && event != PX_NULL) {
-        result->kind          = 0;
-        result->body          = body;
-        result->event         = event;
+        result->family        = PxAsyncEventFamily_Tcp;
+        result->pntr_body     = body;
+        result->pntr_event    = event;
         result->proc_prepare  = pxWin32SocketTcpTaskPrepare;
         result->proc_complete = pxWin32SocketTcpTaskComplete;
         result->pending_next  = PX_NULL;
 
         pxMemorySet(&result->overlap, sizeof result->overlap, 0x00);
 
-        body->kind             = PxSocketTcpEvent_Write;
-        body->write.socket     = socket;
-        body->write.values     = values;
-        body->write.start      = start;
-        body->write.stop       = stop;
-        body->write.wsabuf.buf = ((char*) values) + start;
-        body->write.wsabuf.len = stop - start;
-        body->write.wsaflags   = 0;
+        if (pntr_body != 0)  *pntr_body  = body;
+        if (pntr_event != 0) *pntr_event = event;
 
         return result;
     }
 
-    pxMemoryArenaRelease(arena, mark);
+    pxMemoryPoolRelease(pool, result);
+    pxMemoryPoolRelease(pool, body);
+    pxMemoryPoolRelease(pool, event);
 
     return PX_NULL;
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskRead(PxMemoryArena* arena, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
+pxWin32SocketTcpTaskAccept(PxMemoryPool* pool, PxWin32SocketTcp* listener, PxWin32SocketTcp* socket)
 {
-    void* mark = pxMemoryArenaTell(arena);
+    PxWin32SocketTcpTask* body  = PX_NULL;
+    PxSocketTcpEvent*     event = PX_NULL;
 
-    PxWin32AsyncTask*     result = pxMemoryArenaReserveOneOf(arena, PxWin32AsyncTask);
-    PxWin32SocketTcpTask* body   = pxMemoryArenaReserveOneOf(arena, PxWin32SocketTcpTask);
-    PxSocketTcpEvent*     event  = pxMemoryArenaReserveOneOf(arena, PxSocketTcpEvent);
+    PxAddressIpKind kind    = pxWin32SocketTcpGetAddress(listener).kind;
+    PxAddressIp     address = pxAddressIpEmpty(kind);
 
-    if (result != PX_NULL && body != PX_NULL && event != PX_NULL) {
-        result->kind          = 0;
-        result->body          = body;
-        result->event         = event;
-        result->proc_prepare  = pxWin32SocketTcpTaskPrepare;
-        result->proc_complete = pxWin32SocketTcpTaskComplete;
-        result->pending_next  = PX_NULL;
+    if (pxWin32SocketTcpCreate(socket, address, 0) == 0) return PX_NULL;
 
-        pxMemorySet(&result->overlap, sizeof result->overlap, 0x00);
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool,
+        sizeof *body, (void**) &body, sizeof *event, (void**) &event);
 
-        body->kind            = PxSocketTcpEvent_Read;
-        body->read.socket     = socket;
-        body->read.values     = values;
-        body->read.start      = start;
-        body->read.stop       = stop;
-        body->read.wsabuf.buf = ((char*) values) + start;
-        body->read.wsabuf.len = stop - start;
-        body->read.wsaflags   = 0;
+    if (result == PX_NULL) return PX_NULL;
 
-        return result;
-    }
+    body->kind            = PxSocketTcpEvent_Accept;
+    body->accept.listener = listener;
+    body->accept.socket   = socket;
 
-    pxMemoryArenaRelease(arena, mark);
+    return result;
+}
 
-    return PX_NULL;
+static PxWin32AsyncTask*
+pxWin32SocketTcpTaskConnect(PxMemoryPool* pool, PxWin32SocketTcp* socket, PxAddressIp address, u16 port)
+{
+    PxWin32SocketTcpTask* body  = PX_NULL;
+    PxSocketTcpEvent*     event = PX_NULL;
+
+    if (pxWin32SocketTcpBind(socket) == 0) return PX_NULL;
+
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool,
+        sizeof *body, (void**) &body, sizeof *event, (void**) &event);
+
+    if (result == PX_NULL) return PX_NULL;
+
+    body->kind            = PxSocketTcpEvent_Connect;
+    body->connect.socket  = socket;
+    body->connect.address = address;
+    body->connect.port    = port;
+
+    return result;
+}
+
+static PxWin32AsyncTask*
+pxWin32SocketTcpTaskWrite(PxMemoryPool* pool, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
+{
+    PxWin32SocketTcpTask* body  = PX_NULL;
+    PxSocketTcpEvent*     event = PX_NULL;
+
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool,
+        sizeof *body, (void**) &body, sizeof *event, (void**) &event);
+
+    if (result == PX_NULL) return PX_NULL;
+
+    body->kind             = PxSocketTcpEvent_Write;
+    body->write.socket     = socket;
+    body->write.values     = values;
+    body->write.start      = start;
+    body->write.stop       = stop;
+    body->write.wsabuf.buf = ((char*) values) + start;
+    body->write.wsabuf.len = stop - start;
+    body->write.wsaflags   = 0;
+
+    return result;
+}
+
+static PxWin32AsyncTask*
+pxWin32SocketTcpTaskRead(PxMemoryPool* pool, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
+{
+    PxWin32SocketTcpTask* body  = PX_NULL;
+    PxSocketTcpEvent*     event = PX_NULL;
+
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool,
+        sizeof *body, (void**) &body, sizeof *event, (void**) &event);
+
+    if (result == PX_NULL) return PX_NULL;
+
+    body->kind            = PxSocketTcpEvent_Read;
+    body->read.socket     = socket;
+    body->read.values     = values;
+    body->read.start      = start;
+    body->read.stop       = stop;
+    body->read.wsabuf.buf = ((char*) values) + start;
+    body->read.wsabuf.len = stop - start;
+    body->read.wsaflags   = 0;
+
+    return result;
 }
 
 b32
-pxWin32SocketTcpAcceptAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxWin32SocketTcp* self, PxWin32SocketTcp* value)
+pxWin32SocketTcpAcceptAsync(PxWin32Async* async, PxWin32SocketTcp* self, PxWin32SocketTcp* value)
 {
-    return pxAsyncSubmit(async, kind, pxWin32SocketTcpTaskAccept(arena, self, value));
+    return pxAsyncSubmit(async, pxWin32SocketTcpTaskAccept(&async->pool, self, value));
 }
 
 b32
-pxWin32SocketTcpConnectAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxWin32SocketTcp* self, PxAddressIp address, u16 port)
+pxWin32SocketTcpConnectAsync(PxWin32Async* async, PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 {
-    return pxAsyncSubmit(async, kind, pxWin32SocketTcpTaskConnect(arena, self, address, port));
+    return pxAsyncSubmit(async, pxWin32SocketTcpTaskConnect(&async->pool, self, address, port));
 }
 
 b32
-pxWin32SocketTcpWriteAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
+pxWin32SocketTcpWriteAsync(PxWin32Async* async, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return pxAsyncSubmit(async, kind, pxWin32SocketTcpTaskWrite(arena, self, values, start, stop));
+    return pxAsyncSubmit(async, pxWin32SocketTcpTaskWrite(&async->pool, self, values, start, stop));
 }
 
 b32
-pxWin32SocketTcpReadAsync(PxAsync* async, PxMemoryArena* arena, ssize kind, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
+pxWin32SocketTcpReadAsync(PxWin32Async* async, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return pxAsyncSubmit(async, kind, pxWin32SocketTcpTaskRead(arena, self, values, start, stop));
+    return pxAsyncSubmit(async, pxWin32SocketTcpTaskRead(&async->pool, self, values, start, stop));
 }
 
 #endif // PX_WIN32_ASYNC_NETWORK_SOCKET_TCP_C

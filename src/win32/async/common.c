@@ -79,20 +79,28 @@ pxWin32AsyncReserve(PxMemoryArena* arena)
 }
 
 b32
-pxWin32AsyncCreate(PxWin32Async* self)
+pxWin32AsyncCreate(PxWin32Async* self, PxMemoryArena* arena, ssize size)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE handle = CreateIoCompletionPort(
-        INVALID_HANDLE_VALUE, 0, 0, 0);
+    HANDLE handle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
     if (handle == 0) return 0;
 
-    self->handle        = handle;
-    self->pending_front = PX_NULL;
-    self->pending_back  = PX_NULL;
+    void* memory = pxMemoryArenaReserve(arena, size / 512, 512);
 
-    return 1;
+    if (memory != 0) {
+        self->handle        = handle;
+        self->pool          = pxMemoryPoolMake(memory, (size / 512) * 512, 512);
+        self->pending_front = PX_NULL;
+        self->pending_back  = PX_NULL;
+
+        return 1;
+    }
+
+    CloseHandle(handle);
+
+    return 0;
 }
 
 void
@@ -105,10 +113,8 @@ pxWin32AsyncDestroy(PxWin32Async* self)
 }
 
 b32
-pxWin32AsyncSubmit(PxWin32Async* self, ssize kind, PxWin32AsyncTask* task)
+pxWin32AsyncSubmit(PxWin32Async* self, PxWin32AsyncTask* task)
 {
-    task->kind = kind;
-
     if (pxWin32AsyncTaskPrepare(task, self) == 0)
         return 0;
 
@@ -117,7 +123,7 @@ pxWin32AsyncSubmit(PxWin32Async* self, ssize kind, PxWin32AsyncTask* task)
     return 1;
 }
 
-ssize
+PxAsyncEventFamily
 pxWin32AsyncPoll(PxWin32Async* self, void** event, ssize timeout)
 {
     DWORD       time    = timeout >= 0 ? timeout : INFINITE;
@@ -127,20 +133,32 @@ pxWin32AsyncPoll(PxWin32Async* self, void** event, ssize timeout)
 
     BOOL status = GetQueuedCompletionStatus(self->handle, &bytes, &key, &overlap, time);
 
-    if (status == 0 && GetLastError() != WAIT_TIMEOUT) return -1;
+    if (status == 0 && GetLastError() != WAIT_TIMEOUT)
+        return PxAsyncEventFamily_None;
 
     if (status != 0) {
         PxWin32AsyncTask* temp = pxWin32AsyncRemoveByOverlapped(self, overlap);
 
         if (temp == PX_NULL || pxWin32AsyncTaskComplete(temp, bytes) == 0)
-            return -1;
+            return PxAsyncEventFamily_None;
 
-        if (event != PX_NULL) *event = temp->event;
+        PxAsyncEventFamily family = temp->family;
 
-        return temp->kind;
+        if (event != PX_NULL) *event = temp->pntr_event;
+
+        pxMemoryPoolRelease(&self->pool, temp->pntr_body);
+        pxMemoryPoolRelease(&self->pool, temp);
+
+        return family;
     }
 
-    return -1;
+    return PxAsyncEventFamily_None;
+}
+
+b32
+pxWin32AsyncReturn(PxWin32Async* self, void* event)
+{
+    return pxMemoryPoolRelease(&self->pool, event);
 }
 
 #endif // PX_WIN32_ASYNC_COMMON_C
