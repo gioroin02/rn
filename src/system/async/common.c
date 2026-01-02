@@ -45,15 +45,15 @@ pxAsyncSubmit(PxAsync* self, PxAsyncTask* task)
 }
 
 PxAsyncEventFamily
-pxAsyncPoll(PxAsync* self, void** event, ssize timeout)
+pxAsyncPoll(PxAsync* self, void** tag, void** event, ssize timeout)
 {
-    return __pxAsyncPoll__(self, event, timeout);
+    return __pxAsyncPoll__(self, tag, event, timeout);
 }
 
 b32
-pxAsyncReturn(PxAsync* self, void* event)
+pxAsyncReturn(PxAsync* self, void* event, void* pntr, ssize size)
 {
-    return __pxAsyncReturn__(self, event);
+    return __pxAsyncReturn__(self, event, pntr, size);
 }
 
 #endif // PX_SYSTEM_ASYNC_COMMON_C

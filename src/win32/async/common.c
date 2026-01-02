@@ -4,15 +4,9 @@
 #include "common.h"
 
 static b32
-pxWin32AsyncTaskPrepare(PxWin32AsyncTask* self, PxWin32Async* async)
+pxWin32AsyncTaskProc(PxWin32AsyncTask* self, ssize bytes)
 {
-    return ((PxWin32AsyncTaskProcPrepare*) self->proc_prepare)(self, async);
-}
-
-static b32
-pxWin32AsyncTaskComplete(PxWin32AsyncTask* self, ssize bytes)
-{
-    return ((PxWin32AsyncTaskProcComplete*) self->proc_complete)(self, bytes);
+    return ((PxWin32AsyncTaskProc*) self->proc)(self, bytes);
 }
 
 void
@@ -87,11 +81,11 @@ pxWin32AsyncCreate(PxWin32Async* self, PxMemoryArena* arena, ssize size)
 
     if (handle == 0) return 0;
 
-    void* memory = pxMemoryArenaReserve(arena, size / 512, 512);
+    void* memory = pxMemoryArenaReserve(arena, size / 384, 384);
 
     if (memory != 0) {
         self->handle        = handle;
-        self->pool          = pxMemoryPoolMake(memory, (size / 512) * 512, 512);
+        self->pool          = pxMemoryPoolMake(memory, (size / 384) * 384, 384);
         self->pending_front = PX_NULL;
         self->pending_back  = PX_NULL;
 
@@ -115,8 +109,7 @@ pxWin32AsyncDestroy(PxWin32Async* self)
 b32
 pxWin32AsyncSubmit(PxWin32Async* self, PxWin32AsyncTask* task)
 {
-    if (pxWin32AsyncTaskPrepare(task, self) == 0)
-        return 0;
+    if (task == PX_NULL) return 0;
 
     pxWin32AsyncInsertBack(self, task);
 
@@ -124,7 +117,7 @@ pxWin32AsyncSubmit(PxWin32Async* self, PxWin32AsyncTask* task)
 }
 
 PxAsyncEventFamily
-pxWin32AsyncPoll(PxWin32Async* self, void** event, ssize timeout)
+pxWin32AsyncPoll(PxWin32Async* self, void** tag, void** event, ssize timeout)
 {
     DWORD       time    = timeout >= 0 ? timeout : INFINITE;
     DWORD       bytes   = 0;
@@ -137,17 +130,20 @@ pxWin32AsyncPoll(PxWin32Async* self, void** event, ssize timeout)
         return PxAsyncEventFamily_None;
 
     if (status != 0) {
-        PxWin32AsyncTask* temp = pxWin32AsyncRemoveByOverlapped(self, overlap);
+        PxWin32AsyncTask*  temp   = pxWin32AsyncRemoveByOverlapped(self, overlap);
+        PxAsyncEventFamily family = PxAsyncEventFamily_None;;
 
-        if (temp == PX_NULL || pxWin32AsyncTaskComplete(temp, bytes) == 0)
-            return PxAsyncEventFamily_None;
+        if (temp != PX_NULL) {
+            if (pxWin32AsyncTaskProc(temp, bytes) != 0) {
+                family = temp->family;
 
-        PxAsyncEventFamily family = temp->family;
+                if (event != PX_NULL) *event = temp->pntr_event;
+                if (tag != PX_NULL)   *tag   = temp->pntr_tag;
+            }
 
-        if (event != PX_NULL) *event = temp->pntr_event;
-
-        pxMemoryPoolRelease(&self->pool, temp->pntr_body);
-        pxMemoryPoolRelease(&self->pool, temp);
+            pxMemoryPoolRelease(&self->pool, temp->pntr_body);
+            pxMemoryPoolRelease(&self->pool, temp);
+        }
 
         return family;
     }
@@ -156,8 +152,11 @@ pxWin32AsyncPoll(PxWin32Async* self, void** event, ssize timeout)
 }
 
 b32
-pxWin32AsyncReturn(PxWin32Async* self, void* event)
+pxWin32AsyncReturn(PxWin32Async* self, void* event, void* pntr, ssize size)
 {
+    if (event != PX_NULL && event != PX_NULL)
+        pxMemoryCopy(pntr, size, event);
+
     return pxMemoryPoolRelease(&self->pool, event);
 }
 

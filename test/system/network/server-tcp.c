@@ -23,9 +23,11 @@ main(int argc, char** argv)
 
         pxSocketTcpAccept(listener, socket);
 
-        u8 buffer[256] = {0};
+        u8 buffer[256];
 
-        ssize size = pxSocketTcpRead(socket, buffer, 256);
+        pxMemorySet(buffer, sizeof buffer, 0x00);
+
+        ssize size = pxSocketTcpRead(socket, buffer, sizeof buffer);
 
         printf("%.*s\n", ((int) size), buffer);
 

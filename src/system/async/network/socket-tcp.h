@@ -84,15 +84,15 @@ PxSocketTcpEvent
 pxSocketTcpEventClose(PxSocketTcp* socket);
 
 b32
-pxSocketTcpAcceptAsync(PxAsync* async, PxSocketTcp* self, PxSocketTcp* value);
+pxSocketTcpAcceptAsync(PxAsync* async, void* tag, PxSocketTcp* self, PxSocketTcp* value);
 
 b32
-pxSocketTcpConnectAsync(PxAsync* async, PxSocketTcp* self, PxAddressIp address, u16 port);
+pxSocketTcpConnectAsync(PxAsync* async, void* tag, PxSocketTcp* self, PxAddressIp address, u16 port);
 
 b32
-pxSocketTcpWriteAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop);
+pxSocketTcpWriteAsync(PxAsync* async, void* tag, PxSocketTcp* self, u8* values, ssize start, ssize stop);
 
 b32
-pxSocketTcpReadAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop);
+pxSocketTcpReadAsync(PxAsync* async, void* tag, PxSocketTcp* self, u8* values, ssize start, ssize stop);
 
 #endif // PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_H

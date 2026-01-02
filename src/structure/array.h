@@ -64,6 +64,18 @@ PxArrayTag;
     ), 1 : 0                                            \
 )
 
+#define pxArrayAdd(self, index)     \
+(                                   \
+    (self)->array_index = (index),  \
+    __pxArraySlotOpen__(            \
+        ((PxArrayTag*) self),       \
+        (self)->values,             \
+        (self)->array_index) != 0 ? \
+    (                               \
+        (self)->array_count += 1    \
+    ), 1 : 0                        \
+)
+
 #define pxArrayRemove(self, index, value)  \
 (                                          \
     pxArrayCopy(self, index, value) != 0 ? \
@@ -76,17 +88,32 @@ PxArrayTag;
     ), 1 : 0                               \
 )
 
-#define pxArrayPushFront(self, value) pxArrayInsert(self, 0,                  value)
-#define pxArrayPushBack(self, value)  pxArrayInsert(self, pxArrayCount(self), value)
+#define pxArrayDrop(self, index) \
+(                                \
+    __pxArraySlotClose__(        \
+        ((PxArrayTag*) self),    \
+        (self)->values,          \
+        (index)) != 0 ?          \
+    1 : 0                        \
+)
 
-#define pxArrayPopFront(self, value) pxArrayRemove(self, 0,                 value)
-#define pxArrayPopBack(self, value)  pxArrayRemove(self, pxArrayBack(self), value)
+#define pxArrayInsertFront(self, value) pxArrayInsert(self, 0,                  value)
+#define pxArrayInsertBack(self, value)  pxArrayInsert(self, pxArrayCount(self), value)
+
+#define pxArrayAddFront(self) pxArrayAdd(self, 0)
+#define pxArrayAddBack(self)  pxArrayAdd(self, pxArrayCount(self))
+
+#define pxArrayRemoveFront(self, value) pxArrayRemove(self, 0,                 value)
+#define pxArrayRemoveBack(self, value)  pxArrayRemove(self, pxArrayBack(self), value)
+
+#define pxArrayDropFront(self) pxArrayDrop(self, 0)
+#define pxArrayDropBack(self)  pxArrayDrop(self, pxArrayBack(self))
 
 #define pxArrayGet(self, index, other) \
     (pxArrayIsIndex(self, index) != 0 ? (self)->values[(self)->array_index] : (other))
 
-#define pxArrayGetPtr(self, index) \
-    (pxArrayIsIndex(self, index) != 0 ? &(self)->values[(self)->array_index] : 0)
+#define pxArrayGetPntr(self, index) \
+    (pxArrayIsIndex(self, index) != 0 ? &(self)->values[(self)->array_index] : PX_NULL)
 
 b32
 __pxArrayCreate__(PxArrayTag* self, void** pntr, ssize step, PxMemoryArena* arena, ssize size);

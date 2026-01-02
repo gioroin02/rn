@@ -20,7 +20,7 @@ pxWin32NetworkStart()
 b32
 pxWin32NetworkStartImpl()
 {
-    WSADATA data = {0};
+    WSADATA data;
 
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) return 0;
 

@@ -3,7 +3,7 @@
 
 #include "import.h"
 
-typedef enum PxAsynEventFamily
+typedef enum PxAsyncEventFamily
 {
     PxAsyncEventFamily_None,
     PxAsyncEventFamily_Tcp,
@@ -30,9 +30,9 @@ b32
 pxAsyncSubmit(PxAsync* self, PxAsyncTask* task);
 
 PxAsyncEventFamily
-pxAsyncPoll(PxAsync* self, void** event, ssize timeout);
+pxAsyncPoll(PxAsync* self, void** tag, void** event, ssize timeout);
 
 b32
-pxAsyncReturn(PxAsync* self, void* event);
+pxAsyncReturn(PxAsync* self, void* event, void* pntr, ssize size);
 
 #endif // PX_SYSTEM_ASYNC_COMMON_H

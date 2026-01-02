@@ -21,93 +21,98 @@
 PxSocketTcpEvent
 pxSocketTcpEventAccept(PxSocketTcp* listener, PxSocketTcp* socket)
 {
-    return (PxSocketTcpEvent) {
-        .kind = PxSocketTcpEvent_Accept,
+    PxSocketTcpEvent result;
 
-        .accept = {
-            .listener = listener,
-            .socket   = socket,
-        },
-    };
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind            = PxSocketTcpEvent_Accept;
+    result.accept.listener = listener;
+    result.accept.socket   = socket;
+
+    return result;
 }
 
 PxSocketTcpEvent
 pxSocketTcpEventConnect(PxSocketTcp* socket, b32 status)
 {
-    return (PxSocketTcpEvent) {
-        .kind = PxSocketTcpEvent_Connect,
+    PxSocketTcpEvent result;
 
-        .connect = {
-            .socket = socket,
-            .status = status != 0 ? 1 : 0,
-        },
-    };
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind           = PxSocketTcpEvent_Connect;
+    result.connect.socket = socket;
+    result.connect.status = status != 0 ? 1 : 0;
+
+    return result;
 }
 
 PxSocketTcpEvent
 pxSocketTcpEventWrite(PxSocketTcp* socket, u8* values, ssize start, ssize stop)
 {
-    return (PxSocketTcpEvent) {
-        .kind = PxSocketTcpEvent_Write,
+    PxSocketTcpEvent result;
 
-        .write = {
-            .socket = socket,
-            .values = values,
-            .start  = start,
-            .stop   = stop,
-        },
-    };
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind         = PxSocketTcpEvent_Write;
+    result.write.socket = socket;
+    result.write.values = values;
+    result.write.start  = start,
+    result.write.stop   = stop;
+
+    return result;
 }
 
 PxSocketTcpEvent
 pxSocketTcpEventRead(PxSocketTcp* socket, u8* values, ssize start, ssize stop)
 {
-    return (PxSocketTcpEvent) {
-        .kind = PxSocketTcpEvent_Read,
+    PxSocketTcpEvent result;
 
-        .read = {
-            .socket = socket,
-            .values = values,
-            .start  = start,
-            .stop   = stop,
-        },
-    };
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind        = PxSocketTcpEvent_Read;
+    result.read.socket = socket;
+    result.read.values = values;
+    result.read.start  = start,
+    result.read.stop   = stop;
+
+    return result;
 }
 
 PxSocketTcpEvent
 pxSocketTcpEventClose(PxSocketTcp* socket)
 {
-    return (PxSocketTcpEvent) {
-        .kind = PxSocketTcpEvent_Close,
+    PxSocketTcpEvent result;
 
-        .close = {
-            .socket = socket,
-        },
-    };
+    pxMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind         = PxSocketTcpEvent_Close;
+    result.close.socket = socket;
+
+    return result;
 }
 
 b32
-pxSocketTcpAcceptAsync(PxAsync* async, PxSocketTcp* self, PxSocketTcp* value)
+pxSocketTcpAcceptAsync(PxAsync* async, void* tag, PxSocketTcp* self, PxSocketTcp* value)
 {
-    return __pxSocketTcpAcceptAsync__(async, self, value);
+    return __pxSocketTcpAcceptAsync__(async, tag, self, value);
 }
 
 b32
-pxSocketTcpConnectAsync(PxAsync* async, PxSocketTcp* self, PxAddressIp address, u16 port)
+pxSocketTcpConnectAsync(PxAsync* async, void* tag, PxSocketTcp* self, PxAddressIp address, u16 port)
 {
-    return __pxSocketTcpConnectAsync__(async, self, address, port);
+    return __pxSocketTcpConnectAsync__(async, tag, self, address, port);
 }
 
 b32
-pxSocketTcpWriteAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop)
+pxSocketTcpWriteAsync(PxAsync* async, void* tag, PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpWriteAsync__(async, self, values, start, stop);
+    return __pxSocketTcpWriteAsync__(async, tag, self, values, start, stop);
 }
 
 b32
-pxSocketTcpReadAsync(PxAsync* async, PxSocketTcp* self, u8* values, ssize start, ssize stop)
+pxSocketTcpReadAsync(PxAsync* async, void* tag, PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpReadAsync__(async, self, values, start, stop);
+    return __pxSocketTcpReadAsync__(async, tag, self, values, start, stop);
 }
 
 #endif // PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_C

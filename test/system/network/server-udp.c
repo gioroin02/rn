@@ -18,12 +18,15 @@ main(int argc, char** argv)
     ssize conns = 0;
 
     for (conns = 0; conns < 2; conns += 1) {
-        PxAddressIp address = {0};
-        u16         port    = 0;
+        PxAddressIp address;
+        u16         port;
 
-        u8 buffer[256] = {0};
+        u8 buffer[256];
 
-        ssize size = pxSocketUdpRead(socket, buffer, 256, &address, &port);
+        pxMemorySet(buffer, sizeof buffer, 0x00);
+
+        ssize size = pxSocketUdpRead(socket, buffer, sizeof buffer,
+            &address, &port);
 
         printf("%.*s\n", ((int) size), buffer);
 

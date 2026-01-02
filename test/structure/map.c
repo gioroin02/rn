@@ -1,9 +1,9 @@
-#include "../../src/base/export.h"
+#include "../../src/base/string/export.h"
 #include "../../src/structure/export.h"
 
 #include <stdio.h>
 
-typedef PxMap(PxStr8, u32) PxString8U32Map;
+typedef PxMap(PxStr8, u32) PxMapString8U32;
 
 ssize
 pxString8Hash(PxStr8* key)
@@ -33,12 +33,12 @@ pxString8IsEqual(PxStr8* key, PxStr8* other)
 }
 
 void
-showPairs(PxString8U32Map* self, PxStr8* keys, ssize size)
+showPairs(PxMapString8U32* self, PxStr8* keys, ssize size)
 {
     ssize index = 0;
 
     for (index = 0; index < size; index += 1) {
-        u32* value = pxMapGetPtr(self, keys[index]);
+        u32* value = pxMapGetPntr(self, keys[index]);
 
         printf("map(%s) -> ", keys[index].values);
 
@@ -50,7 +50,7 @@ showPairs(PxString8U32Map* self, PxStr8* keys, ssize size)
 }
 
 void
-showLists(PxString8U32Map* self)
+showLists(PxMapString8U32* self)
 {
     ssize index = 0;
 
@@ -66,15 +66,15 @@ showLists(PxString8U32Map* self)
 int
 main(int argc, char** argv)
 {
-    u8 memory[1024] = {0};
+    u8 memory[1024];
 
     PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof memory);
 
-    PxString8U32Map map = {0};
+    PxMapString8U32 map;
 
     pxMapCreate(&map, &arena, 16, &pxString8Hash, &pxString8IsEqual);
 
-    PxStr8 keys[] = {
+    PxStr8 keys[3] = {
         pxStr8("Filiberto"),
         pxStr8("Astronfo"),
         pxStr8("Roboldofo"),
@@ -84,13 +84,13 @@ main(int argc, char** argv)
     pxMapInsert(&map, keys[1], 20);
     pxMapInsert(&map, keys[2], 30);
 
-    showPairs(&map, keys, 3);
+    showPairs(&map, keys, sizeof keys);
     showLists(&map);
 
     pxMapClear(&map);
 
     printf("\n");
 
-    showPairs(&map, keys, 3);
+    showPairs(&map, keys, sizeof keys);
     showLists(&map);
 }

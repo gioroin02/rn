@@ -4,7 +4,6 @@
 #include "../../../src/system/network/export.h"
 
 #include <stdio.h>
-#include <string.h>
 
 int
 main(int argc, char** argv)
@@ -16,15 +15,17 @@ main(int argc, char** argv)
     pxSocketTcpCreate(socket, pxAddressIp4Empty(), 0);
     pxSocketTcpConnect(socket, pxAddressIp4Local(), 50000);
 
-    u8 buffer[256] = {"Ciao!"};
+    u8 buffer[256];
 
-    ssize size = strlen(((char*) buffer));
+    pxMemorySet(buffer, sizeof buffer, 0x00);
+
+    ssize size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
 
     pxSocketTcpWrite(socket, buffer, size);
 
-    memset(buffer, 0, 256);
+    pxMemorySet(buffer, sizeof buffer, 0x00);
 
-    size = pxSocketTcpRead(socket, buffer, 256);
+    size = pxSocketTcpRead(socket, buffer, sizeof buffer);
 
     printf("%.*s\n", ((int) size), buffer);
 

@@ -3,6 +3,7 @@
 set "compiler=zig cc"
 
 set "impl=%impl% src\base\export.c"
+set "impl=%impl% src\base\memory\export.c"
 set "impl=%impl% src\system\memory\export.c"
 
 set "test_arena=test\system\memory\arena.c"

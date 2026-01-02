@@ -1,13 +1,13 @@
-#include "../../../src/base/export.h"
+#include "../../../src/base/memory/export.h"
 
 #include <stdio.h>
 
 int
 main(int argc, char** argv)
 {
-    u8 buff[256] = {0};
+    u8 memory[256];
 
-    PxMemoryPool pool = pxMemoryPoolMake(buff, sizeof buff, 8);
+    PxMemoryPool pool = pxMemoryPoolMake(memory, sizeof memory, 8);
 
     ssize index = 0;
     ssize size  = 8;
