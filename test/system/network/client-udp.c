@@ -18,12 +18,12 @@ main(int argc, char** argv)
 
     ssize size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
 
-    pxSocketUdpWrite(socket, buffer, size,
-        pxAddressIp4Local(), 50000);
+    pxSocketUdpWrite(socket, buffer,
+        0, size, pxAddressIp4Local(), 50000);
 
     pxMemorySet(buffer, sizeof buffer, 0x00);
 
-    size = pxSocketUdpRead(socket, buffer, sizeof buffer, 0, 0);
+    size = pxSocketUdpRead(socket, buffer, 0, sizeof buffer, 0, 0);
 
     printf("%.*s\n", ((int) size), buffer);
 

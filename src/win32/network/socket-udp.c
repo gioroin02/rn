@@ -86,53 +86,58 @@ pxWin32SocketUdpBindTo(PxWin32SocketUdp* self, PxAddressIp address, u16 port)
 }
 
 ssize
-pxWin32SocketUdpWrite(PxWin32SocketUdp* self, u8* values, ssize size, PxAddressIp address, u16 port)
+pxWin32SocketUdpWrite(PxWin32SocketUdp* self, u8* values, ssize start, ssize stop, PxAddressIp address, u16 port)
 {
+    if (values == PX_NULL || stop <= start || start < 0) return 0;
+
     ssize length = 0;
-    ssize count  = 0;
-    ssize temp   = 0;
+    char* pntr   = ((char*) values + start);
+    ssize size   = stop - start;
+    ssize result = 0;
 
     PxWin32SockAddrStorage storage =
         pxWin32SockAddrStorageMake(address, port, &length);
 
     PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
 
-    if (values == PX_NULL || size <= 0 || length == 0) return 0;
+    while (result < size) {
+        DWORD count = sendto(self->handle, pntr + result,
+            ((int) size - result), 0, sockaddr, length);
 
-    for (temp = 0; count < size; count += temp) {
-        temp = sendto(self->handle, ((char*) values + count),
-            ((int) size - count), 0, sockaddr, length);
-
-        if (temp <= 0 || temp > size - count) break;
+        if (count > 0 && count <= size - result)
+            result += count;
+        else
+            break;
     }
 
-    return count;
+    return result;
 }
 
 ssize
-pxWin32SocketUdpRead(PxWin32SocketUdp* self, u8* values, ssize size, PxAddressIp* address, u16* port)
+pxWin32SocketUdpRead(PxWin32SocketUdp* self, u8* values, ssize start, ssize stop, PxAddressIp* address, u16* port)
 {
+    if (values == PX_NULL || stop <= start || start < 0) return 0;
+
     PxWin32SockAddrStorage storage;
 
     pxMemorySet(&storage, sizeof storage, 0xAB);
 
     PxWin32SockAddr* sockaddr = (PxWin32SockAddr*) &storage;
     int              length   = sizeof (PxWin32SockAddrStorage);
-    ssize            count    = 0;
+    char*            pntr     = ((char*) values + start);
+    ssize            size     = stop - start;
+    ssize            count    = recvfrom(self->handle, pntr, (int) size, 0, sockaddr, &length);
 
-    if (values == PX_NULL || size <= 0) return 0;
+    if (count > 0 && count <= size) {
+        if (address != PX_NULL)
+            *address = pxWin32SockAddrStorageGetAddress(&storage);
 
-    count = recvfrom(self->handle, ((char*) values),
-        ((int) size), 0, sockaddr, &length);
+        if (port != PX_NULL) *port = pxWin32SockAddrStorageGetPort(&storage);
 
-    if (count <= 0 || count > size || length == 0) return 0;
+        return count;
+    }
 
-    if (address != PX_NULL)
-        *address = pxWin32SockAddrStorageGetAddress(&storage);
-
-    if (port != PX_NULL) *port = pxWin32SockAddrStorageGetPort(&storage);
-
-    return count;
+    return 0;
 }
 
 PxAddressIp

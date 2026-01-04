@@ -55,15 +55,15 @@ pxSocketUdpBindTo(PxSocketUdp* self, PxAddressIp address, u16 port)
 }
 
 ssize
-pxSocketUdpWrite(PxSocketUdp* self, u8* values, ssize size, PxAddressIp address, u16 port)
+pxSocketUdpWrite(PxSocketUdp* self, u8* values, ssize start, ssize stop, PxAddressIp address, u16 port)
 {
-    return __pxSocketUdpWrite__(self, values, size, address, port);
+    return __pxSocketUdpWrite__(self, values, start, stop, address, port);
 }
 
 ssize
-pxSocketUdpRead(PxSocketUdp* self, u8* values, ssize size, PxAddressIp* address, u16* port)
+pxSocketUdpRead(PxSocketUdp* self, u8* values, ssize start, ssize stop, PxAddressIp* address, u16* port)
 {
-    return __pxSocketUdpRead__(self, values, size, address, port);
+    return __pxSocketUdpRead__(self, values, start, stop, address, port);
 }
 
 PxAddressIp

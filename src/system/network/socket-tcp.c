@@ -76,15 +76,15 @@ pxSocketTcpConnect(PxSocketTcp* self, PxAddressIp address, u16 port)
 }
 
 ssize
-pxSocketTcpWrite(PxSocketTcp* self, u8* values, ssize size)
+pxSocketTcpWrite(PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpWrite__(self, values, size);
+    return __pxSocketTcpWrite__(self, values, start, stop);
 }
 
 ssize
-pxSocketTcpRead(PxSocketTcp* self, u8* values, ssize size)
+pxSocketTcpRead(PxSocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    return __pxSocketTcpRead__(self, values, size);
+    return __pxSocketTcpRead__(self, values, start, stop);
 }
 
 PxAddressIp

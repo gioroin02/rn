@@ -136,34 +136,39 @@ pxWin32SocketTcpConnect(PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 }
 
 ssize
-pxWin32SocketTcpWrite(PxWin32SocketTcp* self, u8* values, ssize size)
+pxWin32SocketTcpWrite(PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    ssize count = 0;
-    ssize temp  = 0;
+    if (values == PX_NULL || stop <= start || start < 0) return 0;
 
-    if (values == PX_NULL || size <= 0) return 0;
+    char* pntr   = ((char*) values + start);
+    ssize size   = stop - start;
+    ssize result = 0;
 
-    for (temp = 0; count < size; count += temp) {
-        temp = send(self->handle, ((char*) values + count),
-            ((int) size - count), 0);
+    while (result < size) {
+        DWORD count = send(self->handle, pntr + result,
+            ((int) size - result), 0);
 
-        if (temp <= 0 || temp > size - count) break;
+        if (count > 0 && count <= size - result)
+            result += count;
+        else
+            break;
     }
 
-    return count;
+    return result;
 }
 
 ssize
-pxWin32SocketTcpRead(PxWin32SocketTcp* self, u8* values, ssize size)
+pxWin32SocketTcpRead(PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
-    if (values == PX_NULL || size <= 0) return 0;
+    if (values == PX_NULL || stop <= start || start < 0) return 0;
 
-    ssize count = recv(self->handle,
-        ((char*) values), ((int) size), 0);
+    char* pntr  = ((char*) values + start);
+    ssize size  = stop - start;
+    ssize count = recv(self->handle, pntr, (int) size, 0);
 
-    if (count < 0 || count >= size) return 0;
+    if (count > 0 && count <= size) return count;
 
-    return count;
+    return 0;
 }
 
 PxAddressIp

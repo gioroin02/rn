@@ -19,11 +19,11 @@ main(int argc, char** argv)
 
     ssize size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
 
-    pxSocketTcpWrite(socket, buffer, size);
+    pxSocketTcpWrite(socket, buffer, 0, size);
 
     pxMemorySet(buffer, sizeof buffer, 0x00);
 
-    size = pxSocketTcpRead(socket, buffer, sizeof buffer);
+    size = pxSocketTcpRead(socket, buffer, 0, sizeof buffer);
 
     printf("%.*s\n", ((int) size), buffer);
 

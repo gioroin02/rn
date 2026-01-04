@@ -23,12 +23,12 @@ main(int argc, char** argv)
 
         pxMemorySet(buffer, sizeof buffer, 0x00);
 
-        ssize size = pxSocketUdpRead(socket, buffer, sizeof buffer,
-            &address, &port);
+        ssize size = pxSocketUdpRead(socket, buffer,
+            0, sizeof buffer, &address, &port);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pxSocketUdpWrite(socket, buffer, size, address, port);
+        pxSocketUdpWrite(socket, buffer, 0, size, address, port);
     }
 
     pxSocketUdpDestroy(socket);

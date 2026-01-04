@@ -25,11 +25,11 @@ main(int argc, char** argv)
 
         pxMemorySet(buffer, sizeof buffer, 0x00);
 
-        ssize size = pxSocketTcpRead(socket, buffer, sizeof buffer);
+        ssize size = pxSocketTcpRead(socket, buffer, 0, sizeof buffer);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pxSocketTcpWrite(socket, buffer, size);
+        pxSocketTcpWrite(socket, buffer, 0, size);
         pxSocketTcpDestroy(socket);
     }
 

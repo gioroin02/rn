@@ -35,10 +35,10 @@ b32
 pxWin32SocketTcpConnect(PxWin32SocketTcp* self, PxAddressIp address, u16 port);
 
 ssize
-pxWin32SocketTcpWrite(PxWin32SocketTcp* self, u8* values, ssize size);
+pxWin32SocketTcpWrite(PxWin32SocketTcp* self, u8* values, ssize start, ssize stop);
 
 ssize
-pxWin32SocketTcpRead(PxWin32SocketTcp* self, u8* values, ssize size);
+pxWin32SocketTcpRead(PxWin32SocketTcp* self, u8* values, ssize start, ssize stop);
 
 PxAddressIp
 pxWin32SocketTcpGetAddress(PxWin32SocketTcp* self);
