@@ -1,5 +1,5 @@
-#ifndef PX_BASE_PLATFORM_H
-#define PX_BASE_PLATFORM_H
+#ifndef PX_BASE_SYSTEM_H
+#define PX_BASE_SYSTEM_H
 
 #define PX_WORD_NONE  0
 #define PX_WORD_32    1
@@ -33,7 +33,7 @@
 #define PX_SYSTEM_NONE    0
 #define PX_SYSTEM_WINDOWS 1
 #define PX_SYSTEM_LINUX   2
-#define PX_SYSTEM_MAX     3
+#define PX_SYSTEM_COUNT   3
 
 #ifndef PX_SYSTEM
 
@@ -54,4 +54,4 @@
 
 #endif
 
-#endif // PX_BASE_PLATFORM_H
+#endif // PX_BASE_SYSTEM_H

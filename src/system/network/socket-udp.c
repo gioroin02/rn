@@ -5,7 +5,7 @@
 
 #if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
-    #include "../../win32/network/export.c"
+    #include "../win32/network/export.c"
 
     #define __pxSocketUdpReserve__ pxWin32SocketUdpReserve
     #define __pxSocketUdpCreate__  pxWin32SocketUdpCreate

@@ -18,7 +18,7 @@ pxWin32AsyncBindSocketTcp(PxWin32Async* async, PxWin32SocketTcp* socket)
 }
 
 static b32
-pxWin32SocketTcpTaskPrepare(PxWin32AsyncTask* task, PxWin32Async* async)
+pxWin32SocketTcpTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
 {
     PxWin32SocketTcpTask* self = ((PxWin32SocketTcpTask*) task->pntr_body);
 
@@ -86,7 +86,7 @@ pxWin32SocketTcpTaskPrepare(PxWin32AsyncTask* task, PxWin32Async* async)
 }
 
 static b32
-pxWin32SocketTcpTaskComplete(PxWin32AsyncTask* task, ssize bytes)
+pxWin32SocketTcpTaskProc(PxWin32AsyncTask* task, ssize bytes)
 {
     PxWin32SocketTcpTask* self  = (PxWin32SocketTcpTask*) task->pntr_body;
     PxSocketTcpEvent*     event = (PxSocketTcpEvent*) task->pntr_event;
@@ -161,7 +161,7 @@ pxWin32AsyncTaskSocketTcp(PxMemoryPool* pool, void* tag, ssize size_body, void**
         result->pntr_body    = body;
         result->pntr_event   = event;
         result->pntr_tag     = tag;
-        result->proc         = pxWin32SocketTcpTaskComplete;
+        result->proc         = pxWin32SocketTcpTaskProc;
         result->pending_next = PX_NULL;
 
         pxMemorySet(&result->overlap, sizeof result->overlap, 0x00);
@@ -180,7 +180,7 @@ pxWin32AsyncTaskSocketTcp(PxMemoryPool* pool, void* tag, ssize size_body, void**
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskAccept(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* listener, PxWin32SocketTcp* socket)
+pxWin32SocketTcpTaskAccept(PxWin32Async* async, void* tag, PxWin32SocketTcp* listener, PxWin32SocketTcp* socket)
 {
     PxWin32SocketTcpTask* body  = PX_NULL;
     PxSocketTcpEvent*     event = PX_NULL;
@@ -190,7 +190,7 @@ pxWin32SocketTcpTaskAccept(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* list
 
     if (pxWin32SocketTcpCreate(socket, address, 0) == 0) return PX_NULL;
 
-    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool, tag,
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(&async->pool, tag,
         sizeof *body, (void**) &body, sizeof *event, (void**) &event);
 
     if (result == PX_NULL) return PX_NULL;
@@ -199,18 +199,26 @@ pxWin32SocketTcpTaskAccept(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* list
     body->accept.listener = listener;
     body->accept.socket   = socket;
 
+    if (pxWin32SocketTcpTaskStart(result, async) == 0) {
+        pxMemoryPoolRelease(&async->pool, result);
+        pxMemoryPoolRelease(&async->pool, body);
+        pxMemoryPoolRelease(&async->pool, event);
+
+        return PX_NULL;
+    }
+
     return result;
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskConnect(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* socket, PxAddressIp address, u16 port)
+pxWin32SocketTcpTaskConnect(PxWin32Async* async, void* tag, PxWin32SocketTcp* socket, PxAddressIp address, u16 port)
 {
     PxWin32SocketTcpTask* body  = PX_NULL;
     PxSocketTcpEvent*     event = PX_NULL;
 
     if (pxWin32SocketTcpBind(socket) == 0) return PX_NULL;
 
-    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool, tag,
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(&async->pool, tag,
         sizeof *body, (void**) &body, sizeof *event, (void**) &event);
 
     if (result == PX_NULL) return PX_NULL;
@@ -220,16 +228,24 @@ pxWin32SocketTcpTaskConnect(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* soc
     body->connect.address = address;
     body->connect.port    = port;
 
+    if (pxWin32SocketTcpTaskStart(result, async) == 0) {
+        pxMemoryPoolRelease(&async->pool, result);
+        pxMemoryPoolRelease(&async->pool, body);
+        pxMemoryPoolRelease(&async->pool, event);
+
+        return PX_NULL;
+    }
+
     return result;
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskWrite(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
+pxWin32SocketTcpTaskWrite(PxWin32Async* async, void* tag, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
 {
     PxWin32SocketTcpTask* body  = PX_NULL;
     PxSocketTcpEvent*     event = PX_NULL;
 
-    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool, tag,
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(&async->pool, tag,
         sizeof *body, (void**) &body, sizeof *event, (void**) &event);
 
     if (result == PX_NULL) return PX_NULL;
@@ -243,16 +259,24 @@ pxWin32SocketTcpTaskWrite(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* socke
     body->write.wsabuf.len = stop - start;
     body->write.wsaflags   = 0;
 
+    if (pxWin32SocketTcpTaskStart(result, async) == 0) {
+        pxMemoryPoolRelease(&async->pool, result);
+        pxMemoryPoolRelease(&async->pool, body);
+        pxMemoryPoolRelease(&async->pool, event);
+
+        return PX_NULL;
+    }
+
     return result;
 }
 
 static PxWin32AsyncTask*
-pxWin32SocketTcpTaskRead(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
+pxWin32SocketTcpTaskRead(PxWin32Async* async, void* tag, PxWin32SocketTcp* socket, u8* values, ssize start, ssize stop)
 {
     PxWin32SocketTcpTask* body  = PX_NULL;
     PxSocketTcpEvent*     event = PX_NULL;
 
-    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(pool, tag,
+    PxWin32AsyncTask* result = pxWin32AsyncTaskSocketTcp(&async->pool, tag,
         sizeof *body, (void**) &body, sizeof *event, (void**) &event);
 
     if (result == PX_NULL) return PX_NULL;
@@ -266,6 +290,14 @@ pxWin32SocketTcpTaskRead(PxMemoryPool* pool, void* tag, PxWin32SocketTcp* socket
     body->read.wsabuf.len = stop - start;
     body->read.wsaflags   = 0;
 
+    if (pxWin32SocketTcpTaskStart(result, async) == 0) {
+        pxMemoryPoolRelease(&async->pool, result);
+        pxMemoryPoolRelease(&async->pool, body);
+        pxMemoryPoolRelease(&async->pool, event);
+
+        return PX_NULL;
+    }
+
     return result;
 }
 
@@ -273,48 +305,44 @@ b32
 pxWin32SocketTcpAcceptAsync(PxWin32Async* async, void* tag, PxWin32SocketTcp* self, PxWin32SocketTcp* value)
 {
     PxWin32AsyncTask* task = pxWin32SocketTcpTaskAccept(
-        &async->pool, tag, self, value);
+        async, tag, self, value);
 
-    if (pxWin32SocketTcpTaskPrepare(task, async) == 0)
-        return 0;
+    if (task != PX_NULL) return pxAsyncSubmit(async, task);
 
-    return pxAsyncSubmit(async, task);
+    return 0;
 }
 
 b32
 pxWin32SocketTcpConnectAsync(PxWin32Async* async, void* tag, PxWin32SocketTcp* self, PxAddressIp address, u16 port)
 {
     PxWin32AsyncTask* task = pxWin32SocketTcpTaskConnect(
-        &async->pool, tag, self, address, port);
+        async, tag, self, address, port);
 
-    if (pxWin32SocketTcpTaskPrepare(task, async) == 0)
-        return 0;
+    if (task != PX_NULL) return pxAsyncSubmit(async, task);
 
-    return pxAsyncSubmit(async, task);
+    return 0;
 }
 
 b32
 pxWin32SocketTcpWriteAsync(PxWin32Async* async, void* tag, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
     PxWin32AsyncTask* task = pxWin32SocketTcpTaskWrite(
-        &async->pool, tag, self, values, start, stop);
+        async, tag, self, values, start, stop);
 
-    if (pxWin32SocketTcpTaskPrepare(task, async) == 0)
-        return 0;
+    if (task != PX_NULL) return pxAsyncSubmit(async, task);
 
-    return pxAsyncSubmit(async, task);
+    return 0;
 }
 
 b32
 pxWin32SocketTcpReadAsync(PxWin32Async* async, void* tag, PxWin32SocketTcp* self, u8* values, ssize start, ssize stop)
 {
     PxWin32AsyncTask* task = pxWin32SocketTcpTaskRead(
-        &async->pool, tag, self, values, start, stop);
+        async, tag, self, values, start, stop);
 
-    if (pxWin32SocketTcpTaskPrepare(task, async) == 0)
-        return 0;
+    if (task != PX_NULL) return pxAsyncSubmit(async, task);
 
-    return pxAsyncSubmit(async, task);
+    return 0;
 }
 
 #endif // PX_WIN32_ASYNC_NETWORK_SOCKET_TCP_C

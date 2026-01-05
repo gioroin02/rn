@@ -1,8 +1,8 @@
-#ifndef PX_BASE_NUMBERS_H
-#define PX_BASE_NUMBERS_H
+#ifndef PX_BASE_TYPE_H
+#define PX_BASE_TYPE_H
 
-#include "platform.h"
-#include "defines.h"
+#include "define.h"
+#include "system.h"
 
 /* Signed numbers */
 
@@ -82,4 +82,4 @@ typedef u64 b64;
 
 #endif
 
-#endif // PX_BASE_NUMBERS_H
+#endif // PX_BASE_TYPE_H

@@ -28,7 +28,7 @@ pxLinuxMemoryReserve(ssize size)
 
     if (size <= 0) return result;
 
-    size = pxMemoryAlignSizeForw(size, page);
+    size = pxMemoryAlignSize(size, page);
 
     do {
         memory = mmap(0, size, PROT_READ | PROT_WRITE,

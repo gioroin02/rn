@@ -93,7 +93,8 @@ main(int argc, char** argv)
                 case PxAsyncEventFamily_Tcp: {
                     PxSocketTcpEvent tcp;
 
-                    pxAsyncReturn(server.async, event, &tcp, sizeof tcp);
+                    pxMemoryCopy(&tcp, sizeof tcp, event);
+                    pxAsyncReturn(server.async, event);
 
                     serverOnTcpEvent(&server, &arena, tcp);
                 } break;

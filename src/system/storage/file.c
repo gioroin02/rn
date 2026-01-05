@@ -5,7 +5,7 @@
 
 #if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
-    #include "../../win32/storage/export.c"
+    #include "../win32/storage/export.c"
 
     #define __pxFileReserve__       pxWin32FileReserve
     #define __pxFileDefaultInput__  pxWin32FileDefaultInput

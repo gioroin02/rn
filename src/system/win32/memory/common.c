@@ -29,7 +29,7 @@ pxWin32MemoryReserve(ssize size)
 
     if (size <= 0) return result;
 
-    size = pxMemoryAlignSizeForw(size, page);
+    size = pxMemoryAlignSize(size, page);
 
     memory = VirtualAlloc(0, size,
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);

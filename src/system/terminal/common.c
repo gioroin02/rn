@@ -5,7 +5,7 @@
 
 #if PX_SYSTEM == PX_SYSTEM_WINDOWS
 
-    #include "../../win32/terminal/export.c"
+    #include "../win32/terminal/export.c"
 
     #define __pxTerminalReserve__ pxWin32TerminalReserve
     #define __pxTerminalCreate__  pxWin32TerminalCreate

@@ -1,6 +1,6 @@
 #ifndef PX_WIN32_TERMINAL_IMPORT_H
 #define PX_WIN32_TERMINAL_IMPORT_H
 
-#include "../../system/terminal/export.h"
+#include "../../terminal/export.h"
 
 #endif // PX_WIN32_TERMINAL_IMPORT_H

@@ -140,6 +140,7 @@ pxWin32AsyncPoll(PxWin32Async* self, void** tag, void** event, ssize timeout)
                 if (event != PX_NULL) *event = temp->pntr_event;
                 if (tag != PX_NULL)   *tag   = temp->pntr_tag;
             }
+            else pxMemoryPoolRelease(&self->pool, temp->pntr_event);
 
             pxMemoryPoolRelease(&self->pool, temp->pntr_body);
             pxMemoryPoolRelease(&self->pool, temp);
@@ -152,11 +153,8 @@ pxWin32AsyncPoll(PxWin32Async* self, void** tag, void** event, ssize timeout)
 }
 
 b32
-pxWin32AsyncReturn(PxWin32Async* self, void* event, void* pntr, ssize size)
+pxWin32AsyncReturn(PxWin32Async* self, void* event)
 {
-    if (event != PX_NULL && event != PX_NULL)
-        pxMemoryCopy(pntr, size, event);
-
     return pxMemoryPoolRelease(&self->pool, event);
 }
 

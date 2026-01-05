@@ -1,5 +1,5 @@
-#ifndef PX_BASE_DEFINES_H
-#define PX_BASE_DEFINES_H
+#ifndef PX_BASE_DEFINE_H
+#define PX_BASE_DEFINE_H
 
 #define PX_NULL ((void*) 0)
 
@@ -17,4 +17,4 @@
 #define pxText(expr) __pxText__(expr)
 #define pxGlue(a, b) __pxGlue__(a, b)
 
-#endif // PX_BASE_DEFINES_H
+#endif // PX_BASE_DEFINE_H

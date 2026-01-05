@@ -1,5 +1,5 @@
-#ifndef PX_BASE_STRING_STRING_H
-#define PX_BASE_STRING_STRING_H
+#ifndef PX_BASE_STRING_TYPE_H
+#define PX_BASE_STRING_TYPE_H
 
 #include "import.h"
 
@@ -37,4 +37,4 @@ pxStr16Make(u16* values, ssize size);
 PxStr32
 pxStr32Make(u32* values, ssize size);
 
-#endif // PX_BASE_STRING_STRING_H
+#endif // PX_BASE_STRING_TYPE_H

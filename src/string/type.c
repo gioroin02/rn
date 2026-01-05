@@ -1,7 +1,7 @@
-#ifndef PX_BASE_STRING_STRING_C
-#define PX_BASE_STRING_STRING_C
+#ifndef PX_BASE_STRING_TYPE_C
+#define PX_BASE_STRING_TYPE_C
 
-#include "string.h"
+#include "type.h"
 
 PxStr8
 pxStr8Make(u8* values, ssize size)
@@ -42,4 +42,4 @@ pxStr32Make(u32* values, ssize size)
     return result;
 }
 
-#endif // PX_BASE_STRING_STRING_C
+#endif // PX_BASE_STRING_TYPE_C

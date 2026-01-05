@@ -4,7 +4,7 @@ set "compiler=zig cc"
 
 set "impl=%impl% src\base\export.c"
 set "impl=%impl% src\base\memory\export.c"
-set "impl=%impl% src\base\string\export.c"
+set "impl=%impl% src\string\export.c"
 set "impl=%impl% src\structure\export.c"
 
 set "test_array=test\structure\array.c"
