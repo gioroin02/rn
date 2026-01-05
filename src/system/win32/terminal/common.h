@@ -3,7 +3,21 @@
 
 #include "import.h"
 
-typedef struct PxWin32Terminal PxWin32Terminal;
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+
+typedef struct PxWin32Terminal
+{
+    PxTerminalMode mode;
+
+    HANDLE handle_in;
+    HANDLE handle_out;
+
+    DWORD conf_in;
+    DWORD conf_out;
+}
+PxWin32Terminal;
 
 PxWin32Terminal*
 pxWin32TerminalReserve(PxMemoryArena* arena);

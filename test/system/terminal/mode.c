@@ -10,6 +10,7 @@ main(int argc, char** argv)
 
     PxTerminal* terminal = pxTerminalReserve(&arena);
 
+    pxTerminalCreate(terminal);
     pxTerminalModeSet(terminal, PxTerminalMode_Raw);
 
     char c = 0;

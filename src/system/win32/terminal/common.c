@@ -3,30 +3,32 @@
 
 #include "common.h"
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-
-struct PxWin32Terminal
+static HANDLE
+pxWin32DefaultInputHandle()
 {
-    PxTerminalMode mode;
+    DWORD perm = GENERIC_READ | GENERIC_WRITE;
+    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
 
-    DWORD conf_stdin;
-    DWORD conf_stdout;
-};
+    return CreateFileW(L"CONIN$", perm, FILE_SHARE_READ,
+        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
+}
+
+static HANDLE
+pxWin32DefaultOutputHandle()
+{
+    DWORD perm = GENERIC_READ | GENERIC_WRITE;
+    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+
+    return CreateFileW(L"CONOUT$", perm, FILE_SHARE_READ,
+        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
+}
 
 static b32
 pxWin32TerminalModeSetCooked(PxWin32Terminal* self)
 {
-    HANDLE stdin  = GetStdHandle(STD_INPUT_HANDLE);
-    HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    if (stdin == INVALID_HANDLE_VALUE || stdout == INVALID_HANDLE_VALUE)
-        return 0;
-
     if (self->mode != PxTerminalMode_Cooked) {
-        SetConsoleMode(stdin, self->conf_stdin);
-        SetConsoleMode(stdout, self->conf_stdout);
+        SetConsoleMode(self->handle_in, self->conf_in);
+        SetConsoleMode(self->handle_out, self->conf_out);
 
         self->mode = PxTerminalMode_Cooked;
     }
@@ -37,20 +39,15 @@ pxWin32TerminalModeSetCooked(PxWin32Terminal* self)
 static b32
 pxWin32TerminalModeSetRaw(PxWin32Terminal* self)
 {
-    HANDLE stdin  = GetStdHandle(STD_INPUT_HANDLE);
-    HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD conf_in = (self->conf_in & ~(ENABLE_PROCESSED_INPUT |
+        ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT)) | ENABLE_VIRTUAL_TERMINAL_INPUT;
 
-    if (stdin == INVALID_HANDLE_VALUE || stdout == INVALID_HANDLE_VALUE)
-        return 0;
+    DWORD conf_out = self->conf_out | (ENABLE_PROCESSED_OUTPUT |
+        ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
 
     if (self->mode != PxTerminalMode_Raw) {
-        DWORD conf_stdin = ENABLE_PROCESSED_INPUT |
-            ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT;
-
-        DWORD conf_stdout = ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-
-        SetConsoleMode(stdin, self->conf_stdin & ~conf_stdin);
-        SetConsoleMode(stdout, self->conf_stdout & ~conf_stdout);
+        SetConsoleMode(self->handle_in, conf_in);
+        SetConsoleMode(self->handle_out, conf_out);
 
         self->mode = PxTerminalMode_Raw;
     }
@@ -67,18 +64,24 @@ pxWin32TerminalReserve(PxMemoryArena* arena)
 b32
 pxWin32TerminalCreate(PxWin32Terminal* self)
 {
-    HANDLE stdin  = GetStdHandle(STD_INPUT_HANDLE);
-    HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE handle_in  = pxWin32DefaultInputHandle();
+    HANDLE handle_out = pxWin32DefaultOutputHandle();
 
-    if (stdin == INVALID_HANDLE_VALUE || stdout == INVALID_HANDLE_VALUE)
-        return 0;
+    if (handle_in != INVALID_HANDLE_VALUE && handle_out != INVALID_HANDLE_VALUE) {
+        GetConsoleMode(handle_in, &self->conf_in);
+        GetConsoleMode(handle_out, &self->conf_out);
 
-    GetConsoleMode(stdin, &self->conf_stdin);
-    GetConsoleMode(stdout, &self->conf_stdout);
+        self->mode       = PxTerminalMode_Cooked;
+        self->handle_in  = handle_in;
+        self->handle_out = handle_out;
 
-    self->mode = PxTerminalMode_Cooked;
+        return 1;
+    }
 
-    return 1;
+    CloseHandle(handle_out);
+    CloseHandle(handle_in);
+
+    return 0;
 }
 
 void
@@ -86,6 +89,9 @@ pxWin32TerminalDestroy(PxWin32Terminal* self)
 {
     if (self->mode != PxTerminalMode_Cooked)
         pxWin32TerminalModeSetCooked(self);
+
+    CloseHandle(self->handle_out);
+    CloseHandle(self->handle_in);
 
     pxMemorySet(self, sizeof *self, 0xAB);
 }

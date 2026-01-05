@@ -19,4 +19,6 @@ main(int argc, char** argv)
     ssize size = pxFileRead(file, buffer, 0, sizeof buffer);
 
     printf("%.*s\n", ((int) size), buffer);
+
+    pxFileDestroy(file);
 }

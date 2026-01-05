@@ -3,15 +3,35 @@
 
 #include "file.h"
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-
-struct PxWin32File
+static HANDLE
+pxWin32DefaultInputHandle()
 {
-    // TODO(gio): add perms.
-    HANDLE handle;
-};
+    DWORD perm = GENERIC_READ | GENERIC_WRITE;
+    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+
+    return CreateFileW(L"CONIN$", perm, FILE_SHARE_READ,
+        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
+}
+
+static HANDLE
+pxWin32DefaultOutputHandle()
+{
+    DWORD perm = GENERIC_READ | GENERIC_WRITE;
+    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+
+    return CreateFileW(L"CONOUT$", perm, FILE_SHARE_READ,
+        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
+}
+
+static HANDLE
+pxWin32DefaultErrorHandle()
+{
+    DWORD perm = GENERIC_READ | GENERIC_WRITE;
+    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
+
+    return CreateFileW(L"CONERR$", perm, FILE_SHARE_READ,
+        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
+}
 
 PxWin32File*
 pxWin32FileReserve(PxMemoryArena* arena)
@@ -24,7 +44,7 @@ pxWin32FileDefaultInput(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stdin = GetStdHandle(STD_INPUT_HANDLE);
+    HANDLE stdin = pxWin32DefaultInputHandle();
 
     if (stdin == INVALID_HANDLE_VALUE) return 0;
 
@@ -38,7 +58,7 @@ pxWin32FileDefaultOutput(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE stdout = pxWin32DefaultOutputHandle();
 
     if (stdout == INVALID_HANDLE_VALUE) return 0;
 
@@ -52,7 +72,7 @@ pxWin32FileDefaultError(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stderr = GetStdHandle(STD_ERROR_HANDLE);
+    HANDLE stderr = pxWin32DefaultErrorHandle();
 
     if (stderr == INVALID_HANDLE_VALUE) return 0;
 
@@ -79,17 +99,28 @@ pxWin32FileWrite(PxWin32File* self, u8* values, ssize start, ssize stop)
     ssize size   = stop - start;
     ssize result = 0;
 
+    pxMemorySet(&self->overlap, sizeof self->overlap, 0x00);
+
+    self->overlap.hEvent = CreateEvent(PX_NULL, 1, 0, PX_NULL);
+
+    if (self->overlap.hEvent == PX_NULL) return 0;
+
     while (result < size) {
         DWORD count = 0;
 
         b32 status = WriteFile(self->handle, pntr + result,
-            ((DWORD) size - result), &count, 0);
+            ((DWORD) size - result), &count, &self->overlap);
+
+        if (status == 0 && GetLastError() == ERROR_IO_PENDING)
+            status = GetOverlappedResult(self->handle, &self->overlap, &count, 1);
 
         if (status != 0 && count > 0 && count <= size - result)
             result += count;
         else
             break;
     }
+
+    CloseHandle(self->overlap.hEvent);
 
     return result;
 }
@@ -103,10 +134,20 @@ pxWin32FileRead(PxWin32File* self, u8* values, ssize start, ssize stop)
     ssize size  = stop - start;
     DWORD count = 0;
 
-    b32 status = ReadFile(self->handle, pntr, (DWORD) size, &count, 0);
+    pxMemorySet(&self->overlap, sizeof self->overlap, 0x00);
 
-    if (status != 0 && count > 0 && count <= size)
-        return count;
+    self->overlap.hEvent = CreateEvent(PX_NULL, 1, 0, PX_NULL);
+
+    if (self->overlap.hEvent == PX_NULL) return 0;
+
+    b32 status = ReadFile(self->handle, pntr, (DWORD) size, &count, &self->overlap);
+
+    if (status == 0 && GetLastError() == ERROR_IO_PENDING)
+        status = GetOverlappedResult(self->handle, &self->overlap, &count, 1);
+
+    CloseHandle(self->overlap.hEvent);
+
+    if (status != 0 && count > 0 && count <= size) return count;
 
     return 0;
 }
