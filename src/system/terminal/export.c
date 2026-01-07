@@ -1,6 +1,0 @@
-#ifndef PX_SYSTEM_TERMINAL_EXPORT_C
-#define PX_SYSTEM_TERMINAL_EXPORT_C
-
-#include "common.c"
-
-#endif // PX_SYSTEM_TERMINAL_EXPORT_C

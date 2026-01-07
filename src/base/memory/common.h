@@ -51,6 +51,9 @@ void*
 pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value);
 
 void*
+pxMemoryReverse(void* pntr, ssize size);
+
+void*
 pxMemoryAlignPntr(void* pntr, usize align);
 
 ssize

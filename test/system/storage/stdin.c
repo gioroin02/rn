@@ -10,7 +10,7 @@ main(int argc, char** argv)
 
     PxFile* file = pxFileReserve(&arena);
 
-    pxFileDefaultInput(file);
+    pxFileConsoleInput(file);
 
     u8 buffer[256];
 

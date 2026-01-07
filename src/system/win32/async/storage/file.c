@@ -24,12 +24,10 @@ pxWin32FileTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
             PxWin32FileTaskWrite write = self->write;
             DWORD                bytes = 0;
 
-            pxWin32AsyncBindFile(async, write.file);
+            if (pxWin32AsyncBindFile(async, write.file) == 0) return 0;
 
             int status = WriteFile(write.file->handle, write.values + write.start,
                 write.stop - write.start, &bytes, &task->overlap);
-
-            int err = GetLastError();
 
             if (status == 0 && GetLastError() != ERROR_IO_PENDING)
                 return 0;
@@ -39,12 +37,10 @@ pxWin32FileTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
             PxWin32FileTaskRead read  = self->read;
             DWORD               bytes = 0;
 
-            pxWin32AsyncBindFile(async, read.file);
+            if (pxWin32AsyncBindFile(async, read.file) == 0) return 0;
 
             int status = ReadFile(read.file->handle, read.values + read.start,
                 read.stop - read.start, &bytes, &task->overlap);
-
-            int err = GetLastError();
 
             if (status == 0 && GetLastError() != ERROR_IO_PENDING)
                 return 0;
@@ -120,7 +116,7 @@ pxWin32AsyncTaskFile(PxMemoryPool* pool, void* tag, ssize size_body, void** pntr
 }
 
 static PxWin32AsyncTask*
-pxWin32FileTaskWrite(PxWin32Async* async, void* tag, PxWin32File* socket, u8* values, ssize start, ssize stop)
+pxWin32FileTaskWrite(PxWin32Async* async, void* tag, PxWin32File* file, u8* values, ssize start, ssize stop)
 {
     PxWin32FileTask* body  = PX_NULL;
     PxFileEvent*     event = PX_NULL;
@@ -131,7 +127,7 @@ pxWin32FileTaskWrite(PxWin32Async* async, void* tag, PxWin32File* socket, u8* va
     if (result == PX_NULL) return PX_NULL;
 
     body->kind         = PxFileEvent_Write;
-    body->write.file   = socket;
+    body->write.file   = file;
     body->write.values = values;
     body->write.start  = start;
     body->write.stop   = stop;
@@ -148,7 +144,7 @@ pxWin32FileTaskWrite(PxWin32Async* async, void* tag, PxWin32File* socket, u8* va
 }
 
 static PxWin32AsyncTask*
-pxWin32FileTaskRead(PxWin32Async* async, void* tag, PxWin32File* socket, u8* values, ssize start, ssize stop)
+pxWin32FileTaskRead(PxWin32Async* async, void* tag, PxWin32File* file, u8* values, ssize start, ssize stop)
 {
     PxWin32FileTask* body  = PX_NULL;
     PxFileEvent*     event = PX_NULL;
@@ -159,7 +155,7 @@ pxWin32FileTaskRead(PxWin32Async* async, void* tag, PxWin32File* socket, u8* val
     if (result == PX_NULL) return PX_NULL;
 
     body->kind        = PxFileEvent_Read;
-    body->read.file   = socket;
+    body->read.file   = file;
     body->read.values = values;
     body->read.start  = start;
     body->read.stop   = stop;

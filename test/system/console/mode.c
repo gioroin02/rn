@@ -1,5 +1,5 @@
 #include "../../../src/system/memory/export.h"
-#include "../../../src/system/terminal/export.h"
+#include "../../../src/system/console/export.h"
 
 #include <stdio.h>
 
@@ -8,14 +8,14 @@ main(int argc, char** argv)
 {
     PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
 
-    PxTerminal* terminal = pxTerminalReserve(&arena);
+    PxConsole* console = pxConsoleReserve(&arena);
 
-    pxTerminalCreate(terminal);
-    pxTerminalModeSet(terminal, PxTerminalMode_Raw);
+    pxConsoleCreate(console);
+    pxConsoleModeSet(console, PxConsoleMode_Raw);
 
     char c = 0;
 
     while ((c = getchar()) != 'q') {}
 
-    pxTerminalDestroy(terminal);
+    pxConsoleDestroy(console);
 }

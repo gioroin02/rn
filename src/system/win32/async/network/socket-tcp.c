@@ -28,8 +28,8 @@ pxWin32SocketTcpTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
             DWORD                      bytes  = 0;
             DWORD                      size   = sizeof (PxWin32SockAddrStorage);
 
-            pxWin32AsyncBindSocketTcp(async, accept.listener);
-            pxWin32AsyncBindSocketTcp(async, accept.socket);
+            if (pxWin32AsyncBindSocketTcp(async, accept.listener) == 0) return 0;
+            if (pxWin32AsyncBindSocketTcp(async, accept.socket) == 0) return 0;
 
             BOOL status = pxWin32AcceptEx(accept.listener->handle, accept.socket->handle,
                 accept.buffer, 0, size, size, &bytes, &task->overlap);
@@ -43,7 +43,7 @@ pxWin32SocketTcpTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
             DWORD                       bytes   = 0;
             ssize                       length  = 0;
 
-            pxWin32AsyncBindSocketTcp(async, connect.socket);
+            if (pxWin32AsyncBindSocketTcp(async, connect.socket) == 0) return 0;
 
             PxWin32SockAddrStorage storage =
                 pxWin32SockAddrStorageMake(connect.address, connect.port, &length);
@@ -61,6 +61,8 @@ pxWin32SocketTcpTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
             PxWin32SocketTcpTaskWrite write = self->write;
             DWORD                     bytes = 0;
 
+            if (pxWin32AsyncBindSocketTcp(async, write.socket) == 0) return 0;
+
             int status = WSASend(write.socket->handle, &write.wsabuf, 1,
                 &bytes, write.wsaflags, &task->overlap, PX_NULL);
 
@@ -71,6 +73,8 @@ pxWin32SocketTcpTaskStart(PxWin32AsyncTask* task, PxWin32Async* async)
         case PxSocketTcpEvent_Read: {
             PxWin32SocketTcpTaskRead read  = self->read;
             DWORD                    bytes = 0;
+
+            if (pxWin32AsyncBindSocketTcp(async, read.socket) == 0) return 0;
 
             int status = WSARecv(read.socket->handle, &read.wsabuf, 1,
                 &bytes, &read.wsaflags, &task->overlap, PX_NULL);

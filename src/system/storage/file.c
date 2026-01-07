@@ -8,9 +8,9 @@
     #include "../win32/storage/export.c"
 
     #define __pxFileReserve__       pxWin32FileReserve
-    #define __pxFileDefaultInput__  pxWin32FileDefaultInput
-    #define __pxFileDefaultOutput__ pxWin32FileDefaultOutput
-    #define __pxFileDefaultError__  pxWin32FileDefaultError
+    #define __pxFileConsoleInput__  pxWin32FileConsoleInput
+    #define __pxFileConsoleOutput__ pxWin32FileConsoleOutput
+    #define __pxFileConsoleError__  pxWin32FileConsoleError
     #define __pxFileDestroy__       pxWin32FileDestroy
     #define __pxFileWrite__         pxWin32FileWrite
     #define __pxFileRead__          pxWin32FileRead
@@ -28,21 +28,21 @@ pxFileReserve(PxMemoryArena* arena)
 }
 
 b32
-pxFileDefaultInput(PxFile* self)
+pxFileConsoleInput(PxFile* self)
 {
-    return __pxFileDefaultInput__(self);
+    return __pxFileConsoleInput__(self);
 }
 
 b32
-pxFileDefaultOutput(PxFile* self)
+pxFileConsoleOutput(PxFile* self)
 {
-    return __pxFileDefaultOutput__(self);
+    return __pxFileConsoleOutput__(self);
 }
 
 b32
-pxFileDefaultError(PxFile* self)
+pxFileConsoleError(PxFile* self)
 {
-    return __pxFileDefaultError__(self);
+    return __pxFileConsoleError__(self);
 }
 
 void

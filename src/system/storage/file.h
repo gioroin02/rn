@@ -9,13 +9,13 @@ PxFile*
 pxFileReserve(PxMemoryArena* arena);
 
 b32
-pxFileDefaultInput(PxFile* self);
+pxFileConsoleInput(PxFile* self);
 
 b32
-pxFileDefaultOutput(PxFile* self);
+pxFileConsoleOutput(PxFile* self);
 
 b32
-pxFileDefaultError(PxFile* self);
+pxFileConsoleError(PxFile* self);
 
 void
 pxFileDestroy(PxFile* self);

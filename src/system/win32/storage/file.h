@@ -18,13 +18,13 @@ PxWin32File*
 pxWin32FileReserve(PxMemoryArena* arena);
 
 b32
-pxWin32FileDefaultInput(PxWin32File* self);
+pxWin32FileConsoleInput(PxWin32File* self);
 
 b32
-pxWin32FileDefaultOutput(PxWin32File* self);
+pxWin32FileConsoleOutput(PxWin32File* self);
 
 b32
-pxWin32FileDefaultError(PxWin32File* self);
+pxWin32FileConsoleError(PxWin32File* self);
 
 void
 pxWin32FileDestroy(PxWin32File* self);

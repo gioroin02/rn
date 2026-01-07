@@ -3,36 +3,6 @@
 
 #include "file.h"
 
-static HANDLE
-pxWin32DefaultInputHandle()
-{
-    DWORD perm = GENERIC_READ | GENERIC_WRITE;
-    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
-
-    return CreateFileW(L"CONIN$", perm, FILE_SHARE_READ,
-        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
-}
-
-static HANDLE
-pxWin32DefaultOutputHandle()
-{
-    DWORD perm = GENERIC_READ | GENERIC_WRITE;
-    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
-
-    return CreateFileW(L"CONOUT$", perm, FILE_SHARE_READ,
-        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
-}
-
-static HANDLE
-pxWin32DefaultErrorHandle()
-{
-    DWORD perm = GENERIC_READ | GENERIC_WRITE;
-    DWORD flag = FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED;
-
-    return CreateFileW(L"CONERR$", perm, FILE_SHARE_READ,
-        PX_NULL, OPEN_EXISTING, flag, PX_NULL);
-}
-
 PxWin32File*
 pxWin32FileReserve(PxMemoryArena* arena)
 {
@@ -40,11 +10,11 @@ pxWin32FileReserve(PxMemoryArena* arena)
 }
 
 b32
-pxWin32FileDefaultInput(PxWin32File* self)
+pxWin32FileConsoleInput(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stdin = pxWin32DefaultInputHandle();
+    HANDLE stdin = GetStdHandle(STD_INPUT_HANDLE);
 
     if (stdin == INVALID_HANDLE_VALUE) return 0;
 
@@ -54,11 +24,11 @@ pxWin32FileDefaultInput(PxWin32File* self)
 }
 
 b32
-pxWin32FileDefaultOutput(PxWin32File* self)
+pxWin32FileConsoleOutput(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stdout = pxWin32DefaultOutputHandle();
+    HANDLE stdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
     if (stdout == INVALID_HANDLE_VALUE) return 0;
 
@@ -68,11 +38,11 @@ pxWin32FileDefaultOutput(PxWin32File* self)
 }
 
 b32
-pxWin32FileDefaultError(PxWin32File* self)
+pxWin32FileConsoleError(PxWin32File* self)
 {
     pxMemorySet(self, sizeof *self, 0xAB);
 
-    HANDLE stderr = pxWin32DefaultErrorHandle();
+    HANDLE stderr = GetStdHandle(STD_ERROR_HANDLE);
 
     if (stderr == INVALID_HANDLE_VALUE) return 0;
 

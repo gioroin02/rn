@@ -117,6 +117,24 @@ pxMemoryShiftBack(void* pntr, ssize size, ssize about, u8 value)
 }
 
 void*
+pxMemoryReverse(void* pntr, ssize size)
+{
+    if (pntr == PX_NULL || size <= 0) return PX_NULL;
+
+    ssize index = 0;
+    ssize other = 0;
+
+    for (other = size - 1; index < other; index += 1, other -= 1) {
+        u8 temp = ((u8*) pntr)[index];
+
+        ((u8*) pntr)[index] = ((u8*) pntr)[other];
+        ((u8*) pntr)[other] = temp;
+    }
+
+    return pntr;
+}
+
+void*
 pxMemoryAlignPntr(void* pntr, usize align)
 {
     if (pntr == PX_NULL || (align & (align - 1)) != 0)
