@@ -5,8 +5,7 @@
 
 typedef PxMap(PxStr8, u32) PxMapStr8U32;
 
-ssize
-pxStr8Hash(PxStr8* key)
+ssize pxStr8Hash(PxStr8* key)
 {
     ssize result = 0;
     ssize index  = 0;
@@ -17,8 +16,7 @@ pxStr8Hash(PxStr8* key)
     return result;
 }
 
-b32
-pxStr8IsEqual(PxStr8* key, PxStr8* other)
+b32 pxStr8IsEqual(PxStr8* key, PxStr8* other)
 {
     ssize index = 0;
 
@@ -32,8 +30,7 @@ pxStr8IsEqual(PxStr8* key, PxStr8* other)
     return 1;
 }
 
-void
-showPairs(PxMapStr8U32* self, PxStr8* keys, ssize size)
+void showPairs(PxMapStr8U32* self, PxStr8* keys, ssize size)
 {
     ssize index = 0;
 
@@ -49,8 +46,7 @@ showPairs(PxMapStr8U32* self, PxStr8* keys, ssize size)
     }
 }
 
-void
-showLists(PxMapStr8U32* self)
+void showLists(PxMapStr8U32* self)
 {
     ssize index = 0;
 
@@ -63,8 +59,7 @@ showLists(PxMapStr8U32* self)
     }
 }
 
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     u8 memory[1024];
 

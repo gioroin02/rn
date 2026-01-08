@@ -4,8 +4,7 @@
 
 typedef PxArray(u32) PxArrayU32;
 
-int
-main(int argc, char** argv)
+int  main(int argc, char** argv)
 {
     u8 memory[256];
 

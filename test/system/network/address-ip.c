@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
     PxAddressIp client = pxAddressIp6Local();
     PxAddressIp server = pxAddressIp6Make(192, 168, 0, 0, 0, 0, 1, 2);

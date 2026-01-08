@@ -2,10 +2,9 @@
 
 #include <stdio.h>
 
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
-    u8 memory[256];
+    u8 memory[32];
 
     ssize index = 0;
 
@@ -19,7 +18,7 @@ main(int argc, char** argv)
             printf("\n");
     }
 
-    pxMemoryShiftForw(memory, sizeof memory, 16, 0xAB);
+    pxMemoryShiftForw(memory, sizeof memory, 8, 0xAB);
 
     printf("\n");
 
@@ -30,7 +29,7 @@ main(int argc, char** argv)
             printf("\n");
     }
 
-    pxMemoryShiftBack(memory, sizeof memory, 16, 0xAB);
+    pxMemoryShiftBack(memory, sizeof memory, 8, 0xAB);
 
     printf("\n");
 

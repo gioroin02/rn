@@ -3,10 +3,9 @@
 
 #include <stdio.h>
 
-int
-main(int argc, char** argv)
+int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMiB(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMebi(2));
 
     PxFile* file = pxFileReserve(&arena);
 
