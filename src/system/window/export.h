@@ -1,0 +1,6 @@
+#ifndef PX_SYSTEM_WINDOW_EXPORT_H
+#define PX_SYSTEM_WINDOW_EXPORT_H
+
+#include "window.h"
+
+#endif // PX_SYSTEM_WINDOW_EXPORT_H

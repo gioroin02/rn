@@ -22,12 +22,16 @@ b32 pxWin32SocketUdpCreate(PxWin32SocketUdp* self, PxAddressIp address, u16 port
     SOCKET handle = WSASocketW(storage.ss_family, SOCK_DGRAM,
         IPPROTO_UDP, 0, 0, WSA_FLAG_OVERLAPPED);
 
-    if (handle == INVALID_SOCKET) return 0;
+    if (handle == INVALID_SOCKET) {
+        self->handle  = handle;
+        self->storage = storage;
 
-    self->handle  = handle;
-    self->storage = storage;
+        return 1;
+    }
 
-    return 1;
+    pxWin32NetworkStop();
+
+    return 0;
 }
 
 void pxWin32SocketUdpDestroy(PxWin32SocketUdp* self)

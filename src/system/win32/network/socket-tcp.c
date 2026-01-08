@@ -22,12 +22,16 @@ b32 pxWin32SocketTcpCreate(PxWin32SocketTcp* self, PxAddressIp address, u16 port
     SOCKET handle = WSASocketW(storage.ss_family, SOCK_STREAM,
         IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
-    if (handle == INVALID_SOCKET) return 0;
+    if (handle != INVALID_SOCKET) {
+        self->handle  = handle;
+        self->storage = storage;
 
-    self->handle  = handle;
-    self->storage = storage;
+        return 1;
+    }
 
-    return 1;
+    pxWin32NetworkStop();
+
+    return 0;
 }
 
 b32 pxWin32SocketTcpAccept(PxWin32SocketTcp* self, PxWin32SocketTcp* value)
@@ -44,12 +48,16 @@ b32 pxWin32SocketTcpAccept(PxWin32SocketTcp* self, PxWin32SocketTcp* value)
 
     SOCKET handle = accept(self->handle, sockaddr, &length);
 
-    if (handle == INVALID_SOCKET) return 0;
+    if (handle != INVALID_SOCKET) {
+        value->handle  = handle;
+        value->storage = storage;
 
-    value->handle  = handle;
-    value->storage = storage;
+        return 1;
+    }
 
-    return 1;
+    pxWin32NetworkStop();
+
+    return 0;
 }
 
 void pxWin32SocketTcpDestroy(PxWin32SocketTcp* self)
