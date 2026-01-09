@@ -5,6 +5,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#pragma comment(lib, "gdi32.lib")
+
 #include <windows.h>
 
 b32 pxWin32WindowStart();

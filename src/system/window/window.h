@@ -2,6 +2,7 @@
 #define PX_SYSTEM_WINDOW_WINDOW_H
 
 #include "event.h"
+#include "surface.h"
 
 typedef enum PxWindowVisibility
 {
@@ -19,9 +20,13 @@ b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height);
 
 void pxWindowDestroy(PxWindow* self);
 
+void pxWindowClear(PxWindow* self);
+
+void pxWindowFlush(PxWindow* self, PxWindowSurface* surface);
+
 b32 pxWindowPollEvent(PxWindow* self, PxWindowEvent* event);
 
-b32 pxWindowColorSet(PxWindow* self, u32 color);
+void pxWindowClearColorSet(PxWindow* self, u8 red, u8 green, u8 blue, u8 alpha);
 
 b32 pxWindowVisibilitySet(PxWindow* self, PxWindowVisibility visibility);
 
