@@ -54,7 +54,7 @@ void serverOnTcpEvent(Server* self, PxMemoryArena* arena, PxSocketTcpEvent event
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMebi(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
 
     PxAddressIp address = pxAddressIp4Local();
     u16         port    = 50000;
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
     server.socket = pxSocketTcpReserve(&arena);
     server.active = 1;
 
-    pxAsyncCreate(server.async, &arena, pxKibi(16));
+    pxAsyncCreate(server.async, &arena, pxMemoryKIB(16));
     pxSocketTcpCreate(server.socket, address, port);
     pxSocketTcpBind(server.socket);
     pxSocketTcpListen(server.socket);
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
     for (index = 0; index < 300; index += 1) {
         PxAsyncEventFamily family = PxAsyncEventFamily_None;
 
-        u8 buffer[PX_SSIZE_KIBI];
+        u8 buffer[PX_MEMORY_KIB];
 
         while (server.active != 0) {
             pxMemorySet(buffer, sizeof buffer, 0x00);

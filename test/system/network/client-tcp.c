@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMebi(2));
+    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
 
     PxSocketTcp* socket = pxSocketTcpReserve(&arena);
 

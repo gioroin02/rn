@@ -3,6 +3,36 @@
 
 #include "common.h"
 
+ssize pxMemoryKB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_KB ? 0 : value * PX_MEMORY_KB;
+}
+
+ssize pxMemoryMB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_MB ? 0 : value * PX_MEMORY_MB;
+}
+
+ssize pxMemoryGB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_GB ? 0 : value * PX_MEMORY_GB;
+}
+
+ssize pxMemoryKIB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_KIB ? 0 : value * PX_MEMORY_KIB;
+}
+
+ssize pxMemoryMIB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_MIB ? 0 : value * PX_MEMORY_MIB;
+}
+
+ssize pxMemoryGIB(ssize value)
+{
+    return value < 0 || value > PX_SSIZE_MAX / PX_MEMORY_GIB ? 0 : value * PX_MEMORY_GIB;
+}
+
 PxByteOrder pxGetHostByteOrder()
 {
     static u16 value = 1;

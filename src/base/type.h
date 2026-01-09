@@ -82,20 +82,4 @@ typedef u64 b64;
 
 #endif
 
-#define PX_SSIZE_KILO ((ssize) 1000ll)
-#define PX_SSIZE_MEGA ((ssize) 1000000ll)
-#define PX_SSIZE_GIGA ((ssize) 1000000000ll)
-
-#define PX_SSIZE_KIBI ((ssize) 1024ll)
-#define PX_SSIZE_MEBI ((ssize) 1048576ll)
-#define PX_SSIZE_GIBI ((ssize) 1073741824ll)
-
-ssize pxKilo(ssize value);
-ssize pxMega(ssize value);
-ssize pxGiga(ssize value);
-
-ssize pxKibi(ssize value);
-ssize pxMebi(ssize value);
-ssize pxGibi(ssize value);
-
 #endif // PX_BASE_TYPE_H

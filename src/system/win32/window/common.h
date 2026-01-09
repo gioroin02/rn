@@ -7,10 +7,6 @@
 
 #include <windows.h>
 
-#define PX_WIN32_CLASS_NAME pxStr16(L"__pxClassName__")
-
-ssize CALLBACK pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
-
 b32 pxWin32WindowStart();
 
 b32 pxWin32WindowStartImpl();

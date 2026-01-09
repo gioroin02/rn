@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+extern ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
+
 static volatile LONG px_win32_winclass_count = 0;
 
 b32 pxWin32WindowStart()
@@ -15,19 +17,18 @@ b32 pxWin32WindowStart()
 
 b32 pxWin32WindowStartImpl()
 {
-    HINSTANCE instance   = GetModuleHandle(PX_NULL);
-    LPWSTR    class_name = (LPWSTR) PX_WIN32_CLASS_NAME.values;
-
-    WNDCLASSW window_class;
+    WNDCLASSEXW window_class;
 
     pxMemorySet(&window_class, sizeof window_class, 0x00);
 
-    window_class.style         = CS_HREDRAW | CS_VREDRAW,
+    window_class.cbSize        = sizeof window_class;
+    window_class.style         = CS_HREDRAW | CS_VREDRAW;
     window_class.lpfnWndProc   = pxWin32WindowProc;
-    window_class.hInstance     = instance;
-    window_class.lpszClassName = class_name;
+    window_class.hInstance     = GetModuleHandle(PX_NULL);
+    window_class.lpszClassName = L"PxWindowRegular";
+    window_class.hCursor       = LoadCursor(PX_NULL, IDC_ARROW);
 
-    if (RegisterClassW(&window_class) == 0) return 0;
+    if (RegisterClassExW(&window_class) == 0) return 0;
 
     return 1;
 }
@@ -40,10 +41,7 @@ void pxWin32WindowStop()
 
 void pxWin32WindowStopImpl()
 {
-    HINSTANCE instance   = GetModuleHandle(PX_NULL);
-    LPWSTR    class_name = (LPWSTR) PX_WIN32_CLASS_NAME.values;
-
-    UnregisterClassW(class_name, instance);
+    UnregisterClassW(L"PxWindowRegular", GetModuleHandle(PX_NULL));
 }
 
 #endif // PX_WIN32_WINDOW_COMMON_C

@@ -5,6 +5,14 @@
 
 #define PX_MEMORY_DEFAULT_ALIGNMENT ((ssize) 16)
 
+#define PX_MEMORY_KB ((ssize) 1000ll)
+#define PX_MEMORY_MB ((ssize) 1000000ll)
+#define PX_MEMORY_GB ((ssize) 1000000000ll)
+
+#define PX_MEMORY_KIB ((ssize) 1024ll)
+#define PX_MEMORY_MIB ((ssize) 1048576ll)
+#define PX_MEMORY_GIB ((ssize) 1073741824ll)
+
 #define pxHostByteOrderIsNetwork() (pxGetHostByteOrder() == PxByteOrder_Network ? 1 : 0)
 #define pxHostByteOrderIsReverse() (pxGetHostByteOrder() == PxByteOrder_Reverse ? 1 : 0)
 
@@ -15,6 +23,14 @@ typedef enum PxByteOrder
     PxByteOrder_Reverse,
 }
 PxByteOrder;
+
+ssize pxMemoryKB(ssize value);
+ssize pxMemoryMB(ssize value);
+ssize pxMemoryGB(ssize value);
+
+ssize pxMemoryKIB(ssize value);
+ssize pxMemoryMIB(ssize value);
+ssize pxMemoryGIB(ssize value);
 
 PxByteOrder pxGetHostByteOrder();
 

@@ -3,9 +3,9 @@
 
 #include "type.h"
 
-PxStr8 pxStr8Make(u8* values, ssize size)
+PxString8 pxString8Make(u8* values, ssize size)
 {
-    PxStr8 result;
+    PxString8 result;
 
     pxMemorySet(&result, sizeof result, 0xAB);
 
@@ -18,9 +18,9 @@ PxStr8 pxStr8Make(u8* values, ssize size)
     return result;
 }
 
-PxStr16 pxStr16Make(u16* values, ssize size)
+PxString16 pxString16Make(u16* values, ssize size)
 {
-    PxStr16 result;
+    PxString16 result;
 
     pxMemorySet(&result, sizeof result, 0xAB);
 
@@ -33,9 +33,9 @@ PxStr16 pxStr16Make(u16* values, ssize size)
     return result;
 }
 
-PxStr32 pxStr32Make(u32* values, ssize size)
+PxString32 pxString32Make(u32* values, ssize size)
 {
-    PxStr32 result;
+    PxString32 result;
 
     pxMemorySet(&result, sizeof result, 0xAB);
 

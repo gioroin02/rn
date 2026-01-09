@@ -3,98 +3,98 @@
 
 #include "import.h"
 
-typedef enum PxConsoleKey
+typedef enum PxConsoleKeyboardKey
 {
-    PxConsoleKey_None,
-    PxConsoleKey_A,
-    PxConsoleKey_B,
-    PxConsoleKey_C,
-    PxConsoleKey_D,
-    PxConsoleKey_E,
-    PxConsoleKey_F,
-    PxConsoleKey_G,
-    PxConsoleKey_H,
-    PxConsoleKey_I,
-    PxConsoleKey_J,
-    PxConsoleKey_K,
-    PxConsoleKey_L,
-    PxConsoleKey_M,
-    PxConsoleKey_N,
-    PxConsoleKey_O,
-    PxConsoleKey_P,
-    PxConsoleKey_Q,
-    PxConsoleKey_R,
-    PxConsoleKey_S,
-    PxConsoleKey_T,
-    PxConsoleKey_U,
-    PxConsoleKey_V,
-    PxConsoleKey_W,
-    PxConsoleKey_X,
-    PxConsoleKey_Y,
-    PxConsoleKey_Z,
-    PxConsoleKey_0,
-    PxConsoleKey_1,
-    PxConsoleKey_2,
-    PxConsoleKey_3,
-    PxConsoleKey_4,
-    PxConsoleKey_5,
-    PxConsoleKey_6,
-    PxConsoleKey_7,
-    PxConsoleKey_8,
-    PxConsoleKey_9,
-    PxConsoleKey_Space,
-    PxConsoleKey_Minus,
-    PxConsoleKey_Equal,
-    PxConsoleKey_SquareLeft,
-    PxConsoleKey_SquareRight,
-    PxConsoleKey_BackSlash,
-    PxConsoleKey_SemiColon,
-    PxConsoleKey_Apostrophe,
-    PxConsoleKey_Grave,
-    PxConsoleKey_Comma,
-    PxConsoleKey_Period,
-    PxConsoleKey_Slash,
-    PxConsoleKey_Up,
-    PxConsoleKey_Down,
-    PxConsoleKey_Left,
-    PxConsoleKey_Right,
-    PxConsoleKey_Home,
-    PxConsoleKey_End,
-    PxConsoleKey_PageUp,
-    PxConsoleKey_PageDown,
-    PxConsoleKey_Insert,
-    PxConsoleKey_Delete,
-    PxConsoleKey_F1,
-    PxConsoleKey_F2,
-    PxConsoleKey_F3,
-    PxConsoleKey_F4,
-    PxConsoleKey_F5,
-    PxConsoleKey_F6,
-    PxConsoleKey_F7,
-    PxConsoleKey_F8,
-    PxConsoleKey_F9,
-    PxConsoleKey_F10,
-    PxConsoleKey_F11,
-    PxConsoleKey_F12,
-    PxConsoleKey_Enter,
-    PxConsoleKey_Escape,
-    PxConsoleKey_BackSpace,
-    PxConsoleKey_Tab,
+    PxConsoleKeyboardKey_None,
+    PxConsoleKeyboardKey_A,
+    PxConsoleKeyboardKey_B,
+    PxConsoleKeyboardKey_C,
+    PxConsoleKeyboardKey_D,
+    PxConsoleKeyboardKey_E,
+    PxConsoleKeyboardKey_F,
+    PxConsoleKeyboardKey_G,
+    PxConsoleKeyboardKey_H,
+    PxConsoleKeyboardKey_I,
+    PxConsoleKeyboardKey_J,
+    PxConsoleKeyboardKey_K,
+    PxConsoleKeyboardKey_L,
+    PxConsoleKeyboardKey_M,
+    PxConsoleKeyboardKey_N,
+    PxConsoleKeyboardKey_O,
+    PxConsoleKeyboardKey_P,
+    PxConsoleKeyboardKey_Q,
+    PxConsoleKeyboardKey_R,
+    PxConsoleKeyboardKey_S,
+    PxConsoleKeyboardKey_T,
+    PxConsoleKeyboardKey_U,
+    PxConsoleKeyboardKey_V,
+    PxConsoleKeyboardKey_W,
+    PxConsoleKeyboardKey_X,
+    PxConsoleKeyboardKey_Y,
+    PxConsoleKeyboardKey_Z,
+    PxConsoleKeyboardKey_0,
+    PxConsoleKeyboardKey_1,
+    PxConsoleKeyboardKey_2,
+    PxConsoleKeyboardKey_3,
+    PxConsoleKeyboardKey_4,
+    PxConsoleKeyboardKey_5,
+    PxConsoleKeyboardKey_6,
+    PxConsoleKeyboardKey_7,
+    PxConsoleKeyboardKey_8,
+    PxConsoleKeyboardKey_9,
+    PxConsoleKeyboardKey_Space,
+    PxConsoleKeyboardKey_Minus,
+    PxConsoleKeyboardKey_Equal,
+    PxConsoleKeyboardKey_SquareLeft,
+    PxConsoleKeyboardKey_SquareRight,
+    PxConsoleKeyboardKey_BackSlash,
+    PxConsoleKeyboardKey_SemiColon,
+    PxConsoleKeyboardKey_Apostrophe,
+    PxConsoleKeyboardKey_Grave,
+    PxConsoleKeyboardKey_Comma,
+    PxConsoleKeyboardKey_Period,
+    PxConsoleKeyboardKey_Slash,
+    PxConsoleKeyboardKey_Up,
+    PxConsoleKeyboardKey_Down,
+    PxConsoleKeyboardKey_Left,
+    PxConsoleKeyboardKey_Right,
+    PxConsoleKeyboardKey_Home,
+    PxConsoleKeyboardKey_End,
+    PxConsoleKeyboardKey_PageUp,
+    PxConsoleKeyboardKey_PageDown,
+    PxConsoleKeyboardKey_Insert,
+    PxConsoleKeyboardKey_Delete,
+    PxConsoleKeyboardKey_F1,
+    PxConsoleKeyboardKey_F2,
+    PxConsoleKeyboardKey_F3,
+    PxConsoleKeyboardKey_F4,
+    PxConsoleKeyboardKey_F5,
+    PxConsoleKeyboardKey_F6,
+    PxConsoleKeyboardKey_F7,
+    PxConsoleKeyboardKey_F8,
+    PxConsoleKeyboardKey_F9,
+    PxConsoleKeyboardKey_F10,
+    PxConsoleKeyboardKey_F11,
+    PxConsoleKeyboardKey_F12,
+    PxConsoleKeyboardKey_Enter,
+    PxConsoleKeyboardKey_Escape,
+    PxConsoleKeyboardKey_BackSpace,
+    PxConsoleKeyboardKey_Tab,
 }
-PxConsoleKey;
+PxConsoleKeyboardKey;
 
 typedef enum PxConsoleEventKind
 {
     PxConsoleEvent_None,
-    PxConsoleEvent_Keyboard,
+    PxConsoleEvent_KeyboardKey,
 }
 PxConsoleEventKind;
 
-typedef struct PxConsoleEventKeyboard
+typedef struct PxConsoleEventKeyboardKey
 {
-    PxConsoleKey key;
+    PxConsoleKeyboardKey key;
 }
-PxConsoleEventKeyboard;
+PxConsoleEventKeyboardKey;
 
 typedef struct PxConsoleEvent
 {
@@ -102,9 +102,12 @@ typedef struct PxConsoleEvent
 
     union
     {
-        PxConsoleEventKeyboard keyboard;
+        PxConsoleEventKeyboardKey keyboard_key;
     };
 }
 PxConsoleEvent;
+
+PxConsoleEvent
+pxConsoleEventKeyboardKey(PxConsoleKeyboardKey key);
 
 #endif // PX_SYSTEM_CONSOLE_EVENT_H

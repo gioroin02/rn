@@ -10,6 +10,8 @@
     #define __pxWindowReserve__       pxWin32WindowReserve
     #define __pxWindowCreate__        pxWin32WindowCreate
     #define __pxWindowDestroy__       pxWin32WindowDestroy
+    #define __pxWindowPollEvent__     pxWin32WindowPollEvent
+    #define __pxWindowColorSet__      pxWin32WindowColorSet
     #define __pxWindowVisibilitySet__ pxWin32WindowVisibilitySet
 
 #else
@@ -23,7 +25,7 @@ PxWindow* pxWindowReserve(PxMemoryArena* arena)
     return __pxWindowReserve__(arena);
 }
 
-b32 pxWindowCreate(PxWindow* self, PxStr8 title, ssize width, ssize height)
+b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height)
 {
     return __pxWindowCreate__(self, title, width, height);
 }
@@ -31,6 +33,16 @@ b32 pxWindowCreate(PxWindow* self, PxStr8 title, ssize width, ssize height)
 void pxWindowDestroy(PxWindow* self)
 {
     return __pxWindowDestroy__(self);
+}
+
+b32 pxWindowPollEvent(PxWindow* self, PxWindowEvent* event)
+{
+    return __pxWindowPollEvent__(self, event);
+}
+
+b32 pxWindowColorSet(PxWindow* self, u32 color)
+{
+    return __pxWindowColorSet__(self, color);
 }
 
 b32 pxWindowVisibilitySet(PxWindow* self, PxWindowVisibility visibility)
