@@ -4,7 +4,18 @@
 
 #include <stdio.h>
 
-void gradient(PxWindowSurface* surface, ssize offset_x, ssize offset_y)
+typedef struct Context
+{
+    PxWindow*        window;
+    PxWindowSurface* surface;
+
+    ssize offset_x;
+    ssize offset_y;
+    ssize light;
+}
+Context;
+
+void paintGradient(PxWindowSurface* surface, ssize offset_x, ssize offset_y)
 {
     ssize col = 0;
     ssize row = 0;
@@ -20,30 +31,54 @@ void gradient(PxWindowSurface* surface, ssize offset_x, ssize offset_y)
     }
 }
 
+void contextPaint(Context* self)
+{
+    self->offset_x += 1;
+    self->offset_y += 1;
+
+    paintGradient(self->surface, self->offset_x, self->offset_y);
+
+    pxWindowClear(self->window, self->light, self->light, self->light);
+
+    ssize width  = pxWindowSurfaceWidth(self->surface);
+    ssize height = pxWindowSurfaceHeight(self->surface);
+    ssize x      = pxWindowWidth(self->window) / 2 - width / 2;
+    ssize y      = pxWindowHeight(self->window) / 2 - height / 2;
+
+    pxWindowPaint(self->window, x, y, width, height, self->surface);
+
+    self->light = (self->light + 1) % 256;
+}
+
 int main(int argc, char** argv)
 {
     PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(8));
 
-    PxWindow*        window  = pxWindowReserve(&arena);
-    PxWindowSurface* surface = pxWindowSurfaceReserve(&arena);
+    Context context;
 
-    pxWindowCreate(window, pxString8("Prova"), 800, 600);
+    pxMemorySet(&context, sizeof context, 0xAB);
 
-    pxWindowSurfaceCreate(surface, &arena, 800, 600);
+    context.window  = pxWindowReserve(&arena);
+    context.surface = pxWindowSurfaceReserve(&arena);
+
+    pxWindowCreate(context.window, pxString8("Prova"), 800, 600);
+
+    pxWindowSurfaceCreate(context.surface, &arena, 800, 600);
 
     b32   active   = 1;
     ssize offset_x = 0;
     ssize offset_y = 0;
+    usize light    = 0;
 
-    pxWindowClear(window);
+    pxWindowClear(context.window, 0, 0, 0);
 
-    pxWindowClearColorSet(window, 255, 0, 255, 0);
-    pxWindowVisibilitySet(window, PxWindowVisibility_Show);
+    pxWindowProcPaintSet(context.window, &context, contextPaint);
+    pxWindowVisibilitySet(context.window, PxWindowVisibility_Show);
 
     while (active != 0) {
         PxWindowEvent event;
 
-        while (pxWindowPollEvent(window, &event) != 0) {
+        while (pxWindowPollEvent(context.window, &event) != 0) {
             switch (event.kind) {
                 case PxWindowEvent_Quit: active = 0; break;
 
@@ -59,13 +94,8 @@ int main(int argc, char** argv)
             }
         }
 
-        gradient(surface, offset_x, offset_y);
-
-        offset_x += 1;
-        offset_y += 1;
-
-        pxWindowFlush(window, surface);
+        contextPaint(&context);
     }
 
-    pxWindowDestroy(window);
+    pxWindowDestroy(context.window);
 }

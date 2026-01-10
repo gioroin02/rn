@@ -3,6 +3,8 @@
 
 #include "window.h"
 
+#define PX_WIN32_TIMER_RESIZE ((ssize) 1)
+
 static POINT pxWin32Point(ssize x, ssize y)
 {
     POINT result;
@@ -183,112 +185,39 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
     ssize result = 0;
 
     switch (kind) {
-        case WM_NCLBUTTONDOWN: {
-            ssize mode = wparam;
+        case WM_ENTERSIZEMOVE:
+            SetTimer(handle, PX_WIN32_TIMER_RESIZE, 10, PX_NULL);
+        break;
 
-            if (mode == HTCAPTION || (mode >= HTLEFT && mode <= HTBOTTOMRIGHT)) {
-                self->drag_mode   = mode;
-                self->drag_cursor = pxWin32CursorPoint(self->handle);
-                self->drag_window = pxWin32WindowRect(self->handle);
+        case WM_EXITSIZEMOVE: KillTimer(handle, PX_WIN32_TIMER_RESIZE); break;
 
-                SetCapture(self->handle);
-            }
-            else result = -1;
+        case WM_TIMER: {
+            if (self->paint_proc != 0)
+                ((PxWindowProcPaint*) self->paint_proc)(self->paint_ctxt);
         } break;
 
-        case WM_LBUTTONUP: {
-            if (GetCapture() == handle)
-                ReleaseCapture();
-            else
-                result = -1;
+        case WM_GETMINMAXINFO: {
+            MINMAXINFO* info = (MINMAXINFO*) lparam;
+
+            info->ptMinTrackSize.x = self->width_min;
+            info->ptMaxTrackSize.x = self->width_max;
+            info->ptMinTrackSize.y = self->height_min;
+            info->ptMaxTrackSize.y = self->height_max;
         } break;
 
-        case WM_CAPTURECHANGED: self->drag_mode = 0; break;
-
-        case WM_MOUSEMOVE: {
-            if (GetCapture() == handle && self->drag_mode != 0) {
-                POINT point = pxWin32CursorPoint(handle);
-                RECT  rect  = self->drag_window;
-
-                ssize delta_x = point.x - self->drag_cursor.x;
-                ssize delta_y = point.y - self->drag_cursor.y;
-
-                switch (self->drag_mode) {
-                    case HTCAPTION: OffsetRect(&rect, delta_x, delta_y); break;
-
-                    case HTLEFT:   rect.left   += delta_x; break;
-                    case HTTOP:    rect.top    += delta_y; break;
-                    case HTBOTTOM: rect.bottom += delta_y; break;
-                    case HTRIGHT:  rect.right  += delta_x; break;
-
-                    case HTTOPLEFT:    rect.left += delta_x; rect.top    += delta_y; break;
-                    case HTBOTTOMLEFT: rect.left += delta_x; rect.bottom += delta_y; break;
-
-                    case HTTOPRIGHT:    rect.right += delta_x; rect.top    += delta_y; break;
-                    case HTBOTTOMRIGHT: rect.right += delta_x; rect.bottom += delta_y; break;
-
-                    default: break;
-                }
-
-                ssize left   = rect.left;
-                ssize top    = rect.top;
-                ssize width  = pxMax(rect.right - rect.left, 200);
-                ssize height = pxMax(rect.bottom - rect.top, 150);
-
-                SetWindowPos(handle, PX_NULL, left, top, width, height,
-                    SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOACTIVATE);
-            }
-            else result = -1;
-        } break;
-
-        case WM_SIZE: {
-            RECT rect = pxWin32ClientRect(handle);
-
-            if (self->back_surface != PX_NULL) DeleteObject(self->back_surface);
-
-            self->back_surface = CreateCompatibleBitmap(self->back_context,
-                rect.right - rect.left, rect.bottom - rect.top);
-
-            SelectObject(self->back_context, self->back_surface);
-
-            InvalidateRect(handle, PX_NULL, 0);
-
-            result = -1;
-        } break;
-
-        /* case WM_SYSCOMMAND: {
-            POINT point = pxWin32CursorPoint(handle);
-            UINT  cmd   = wparam & 0xFFF0;
-
-            if (cmd == SC_MOVE || cmd == SC_SIZE) {
-            }
-            else result = -1;
-        } break; */
-
-        case WM_ERASEBKGND: {
-            RECT rect = pxWin32ClientRect(handle);
-
-            u8 red   = (u8) (self->back_color & ((u32) 0x0000FF) >> 0);
-            u8 green = (u8) (self->back_color & ((u32) 0x00FF00) >> 8);
-            u8 blue  = (u8) (self->back_color & ((u32) 0xFF0000) >> 16);
-
-            SetDCBrushColor(self->back_context, RGB(red, green, blue));
-
-            FillRect(self->back_context, &rect, GetStockObject(DC_BRUSH));
-
-            result = 1;
-        } break;
+        case WM_ERASEBKGND: result = 1; break;
 
         case WM_PAINT: {
             PAINTSTRUCT paint;
 
-            RECT rect    = pxWin32ClientRect(handle);
+            RECT rect    = pxWin32ClientRect(self->handle);
             HDC  context = BeginPaint(handle, &paint);
 
             ssize width  = rect.right - rect.left;
             ssize height = rect.bottom - rect.top;
 
-            BitBlt(context, 0, 0, width, height, self->back_context, 0, 0, SRCCOPY);
+            BitBlt(context, 0, 0, width, height,
+                self->back_context, 0, 0, SRCCOPY);
 
             EndPaint(handle, &paint);
         } break;
@@ -315,36 +244,46 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
 
     if (width <= 0 || height <= 0 || width > PX_SSIZE_MAX / height) return 0;
 
-    PxString16 string = pxWin32Str8ToStr16(buffer, sizeof buffer, title);
-    DWORD      style  = WS_OVERLAPPEDWINDOW;
     RECT       rect   = pxWin32RectAdjusted(0, 0, width, height);
+    PxString16 string = pxWin32Str8ToStr16(buffer, sizeof buffer, title);
 
     if (string.size <= 0 || pxWin32WindowStart() == 0) return 0;
 
-    HWND handle = CreateWindowExW(0, L"PxWindowRegular", string.values,
-        style, CW_USEDEFAULT, CW_USEDEFAULT, rect.right, rect.bottom,
-        PX_NULL, PX_NULL, GetModuleHandle(PX_NULL), PX_NULL);
+    width  = rect.right - rect.left;
+    height = rect.bottom - rect.top;
+
+    HWND handle = CreateWindowW(L"PxWindowRegular",
+        string.values, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT,
+        width, height, PX_NULL, PX_NULL, PX_NULL, PX_NULL);
 
     if (handle != PX_NULL) {
+        self->handle       = handle;
+        self->width_max    = 2560;
+        self->width_min    = 320;
+        self->height_max   = 1440;
+        self->height_min   = 180;
+        self->back_color   = 0;
+        self->paint_ctxt   = PX_NULL;
+        self->paint_proc   = PX_NULL;
+
+        SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
+
+        RECT rect    = pxWin32ClientRect(self->handle);
         HDC  context = GetDC(self->handle);
 
-        self->handle       = handle;
         self->back_context = CreateCompatibleDC(context);
-        self->back_color   = 0;
-        self->drag_mode    = 0;
-        self->drag_cursor  = pxWin32Point(0, 0);
-        self->drag_window  = pxWin32Rect(0, 0, 0, 0);
+
+        self->back_surface = CreateCompatibleBitmap(context,
+            self->width_max, self->height_max);
 
         ReleaseDC(self->handle, context);
 
-        RECT rect = pxWin32ClientRect(self->handle);
-
-        self->back_surface = CreateCompatibleBitmap(self->back_context,
-            rect.right - rect.left, rect.bottom - rect.top);
-
         SelectObject(self->back_context, self->back_surface);
+        SetDCBrushColor(self->back_context, RGB(0, 0, 0));
 
-        SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
+        FillRect(self->back_context, &rect, GetStockObject(DC_BRUSH));
+
+        InvalidateRect(self->handle, PX_NULL, 0);
 
         return 1;
     }
@@ -361,7 +300,7 @@ void pxWin32WindowDestroy(PxWin32Window* self)
             ReleaseCapture();
 
         DeleteObject(self->back_surface);
-        DeleteObject(self->back_context);
+        DeleteDC(self->back_context);
 
         DestroyWindow(self->handle);
     }
@@ -371,14 +310,56 @@ void pxWin32WindowDestroy(PxWin32Window* self)
     pxWin32WindowStop();
 }
 
-void pxWin32WindowClear(PxWin32Window* self)
+ssize pxWin32WindowWidth(PxWin32Window* self)
 {
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    return rect.right - rect.left;
+}
+
+ssize pxWin32WindowHeight(PxWin32Window* self)
+{
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    return rect.bottom - rect.top;
+}
+
+void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue)
+{
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    u32 color = ((u32) red)   << 0
+              | ((u32) green) << 8
+              | ((u32) blue)  << 16;
+
+    self->back_color = color;
+
+    SetDCBrushColor(self->back_context, RGB(red, green, blue));
+    FillRect(self->back_context, &rect, GetStockObject(DC_BRUSH));
+
     InvalidateRect(self->handle, PX_NULL, 0);
 }
 
-void pxWin32WindowFlush(PxWin32Window* self, PxWin32WindowSurface* surface)
+void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
+    ssize width, ssize height, PxWin32WindowSurface* surface)
 {
-    // TODO(Gio): Render to back buffer...
+    if (self->back_surface == PX_NULL || surface == PX_NULL) return;
+
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    x = pxClamp(x, 0, rect.right - rect.left);
+    y = pxClamp(y, 0, rect.bottom - rect.top);
+
+    width  = pxClamp(pxMin(width, rect.right - rect.left - x), 0, surface->width);
+    height = pxClamp(pxMin(height, rect.bottom - rect.top - y), 0, surface->height);
+
+    StretchDIBits(self->back_context, x, y, width, height, 0, 0, width, height,
+        surface->pntr, &surface->info, DIB_RGB_COLORS, SRCCOPY);
+}
+
+void pxWin32WindowFlush(PxWin32Window* self)
+{
+    InvalidateRect(self->handle, PX_NULL, 0);
 }
 
 b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event)
@@ -421,16 +402,6 @@ b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event)
     return 0;
 }
 
-void pxWin32WindowClearColorSet(PxWin32Window* self, u8 red, u8 green, u8 blue, u8 alpha)
-{
-    u32 color = ((u32) red)   << 0
-              | ((u32) green) << 8
-              | ((u32) blue)  << 16
-              | ((u32) alpha) << 24;
-
-    self->back_color = color;
-}
-
 b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibility)
 {
     switch (visibility) {
@@ -443,6 +414,12 @@ b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibilit
     UpdateWindow(self->handle);
 
     return 1;
+}
+
+void pxWin32WindowProcPaintSet(PxWin32Window* self, void* ctxt, void* proc)
+{
+    self->paint_ctxt = ctxt;
+    self->paint_proc = proc;
 }
 
 #endif // PX_WI32_WINDOW_WINDOW_C

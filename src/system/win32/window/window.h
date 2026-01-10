@@ -9,9 +9,12 @@ typedef struct PxWin32Window
     HDC     back_context;
     HBITMAP back_surface;
     u32     back_color;
-    ssize   drag_mode;
-    POINT   drag_cursor;
-    RECT    drag_window;
+    ssize   width_max;
+    ssize   width_min;
+    ssize   height_max;
+    ssize   height_min;
+    void*   paint_ctxt;
+    void*   paint_proc;
 }
 PxWin32Window;
 
@@ -21,14 +24,21 @@ b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize
 
 void pxWin32WindowDestroy(PxWin32Window* self);
 
-void pxWin32WindowClear(PxWin32Window* self);
+ssize pxWin32WindowWidth(PxWin32Window* self);
 
-void pxWin32WindowFlush(PxWin32Window* self, PxWin32WindowSurface* surface);
+ssize pxWin32WindowHeight(PxWin32Window* self);
+
+void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue);
+
+void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
+    ssize width, ssize height, PxWin32WindowSurface* surface);
+
+void pxWin32WindowFlush(PxWin32Window* self);
 
 b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event);
 
-void pxWin32WindowClearColorSet(PxWin32Window* self, u8 red, u8 green, u8 blue, u8 alpha);
-
 b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibility);
+
+void pxWin32WindowProcPaintSet(PxWin32Window* self, void* ctxt, void* proc);
 
 #endif // PX_WIN32_WINDOW_WINDOW_H
