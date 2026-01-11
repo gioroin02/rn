@@ -192,8 +192,8 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
         case WM_EXITSIZEMOVE: KillTimer(handle, PX_WIN32_TIMER_RESIZE); break;
 
         case WM_TIMER: {
-            if (self->paint_proc != 0)
-                ((PxWindowProcPaint*) self->paint_proc)(self->paint_ctxt);
+            if (self->proc_update != 0)
+                ((PxWindowProcUpdate*) self->proc_update)(self->ctxt);
         } break;
 
         case WM_GETMINMAXINFO: {
@@ -257,14 +257,14 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
         width, height, PX_NULL, PX_NULL, PX_NULL, PX_NULL);
 
     if (handle != PX_NULL) {
-        self->handle       = handle;
-        self->width_max    = 2560;
-        self->width_min    = 320;
-        self->height_max   = 1440;
-        self->height_min   = 180;
-        self->back_color   = 0;
-        self->paint_ctxt   = PX_NULL;
-        self->paint_proc   = PX_NULL;
+        self->handle      = handle;
+        self->back_color  = 0;
+        self->ctxt        = PX_NULL;
+        self->proc_update = PX_NULL;
+        self->width_max   = 2560;
+        self->width_min   = 320;
+        self->height_max  = 1440;
+        self->height_min  = 180;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
 
@@ -308,20 +308,6 @@ void pxWin32WindowDestroy(PxWin32Window* self)
     pxMemorySet(self, sizeof *self, 0xAB);
 
     pxWin32WindowStop();
-}
-
-ssize pxWin32WindowWidth(PxWin32Window* self)
-{
-    RECT rect = pxWin32ClientRect(self->handle);
-
-    return rect.right - rect.left;
-}
-
-ssize pxWin32WindowHeight(PxWin32Window* self)
-{
-    RECT rect = pxWin32ClientRect(self->handle);
-
-    return rect.bottom - rect.top;
 }
 
 void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue)
@@ -402,6 +388,76 @@ b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event)
     return 0;
 }
 
+ssize pxWin32WindowWidthSet(PxWin32Window* self, ssize width)
+{
+    RECT rect = pxWin32WindowRect(self->handle);
+
+    ssize result = rect.right - rect.left;
+
+    width = pxClamp(width, self->width_min, self->width_max);
+
+    MoveWindow(self->handle, rect.left, rect.top,
+        width, rect.bottom - rect.top, 1);
+
+    return result;
+}
+
+ssize pxWin32WindowWidthGet(PxWin32Window* self)
+{
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    return rect.right - rect.left;
+}
+
+ssize pxWin32WindowHeightSet(PxWin32Window* self, ssize height)
+{
+    RECT rect = pxWin32WindowRect(self->handle);
+
+    ssize result = rect.bottom - rect.top;
+
+    height = pxClamp(height, self->height_min, self->height_max);
+
+    MoveWindow(self->handle, rect.left, rect.top,
+        rect.right - rect.left, height, 1);
+
+    return result;
+}
+
+ssize pxWin32WindowHeightGet(PxWin32Window* self)
+{
+    RECT rect = pxWin32ClientRect(self->handle);
+
+    return rect.bottom - rect.top;
+}
+
+void* pxWin32WindowPntrContextSet(PxWin32Window* self, void* ctxt)
+{
+    void* result = self->ctxt;
+
+    self->ctxt = ctxt;
+
+    return result;
+}
+
+void* pxWin32WindowPntrContextGet(PxWin32Window* self)
+{
+    return self->ctxt;
+}
+
+void* pxWin32WindowProcUpdateSet(PxWin32Window* self, void* proc)
+{
+    void* result = self->proc_update;
+
+    self->proc_update = proc;
+
+    return result;
+}
+
+void* pxWin32WindowProcUpdateGet(PxWin32Window* self)
+{
+    return self->proc_update;
+}
+
 b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibility)
 {
     switch (visibility) {
@@ -416,10 +472,9 @@ b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibilit
     return 1;
 }
 
-void pxWin32WindowProcPaintSet(PxWin32Window* self, void* ctxt, void* proc)
+ PxWindowVisibility pxWin32WindowVisibilityGet(PxWin32Window* self)
 {
-    self->paint_ctxt = ctxt;
-    self->paint_proc = proc;
+    return PxWindowVisibility_None;
 }
 
 #endif // PX_WI32_WINDOW_WINDOW_C

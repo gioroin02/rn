@@ -14,17 +14,13 @@ PxWindowVisibility;
 
 typedef void PxWindow;
 
-typedef void (PxWindowProcPaint) (void*);
+typedef void (PxWindowProcUpdate) (void*);
 
 PxWindow* pxWindowReserve(PxMemoryArena* arena);
 
 b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height);
 
 void pxWindowDestroy(PxWindow* self);
-
-ssize pxWindowWidth(PxWindow* self);
-
-ssize pxWindowHeight(PxWindow* self);
 
 void pxWindowClear(PxWindow* self, u8 red, u8 green, u8 blue);
 
@@ -34,8 +30,24 @@ void pxWindowFlush(PxWindow* self);
 
 b32 pxWindowPollEvent(PxWindow* self, PxWindowEvent* event);
 
+ssize pxWindowWidthSet(PxWindow* self, ssize width);
+
+ssize pxWindowWidthGet(PxWindow* self);
+
+ssize pxWindowHeightSet(PxWindow* self, ssize height);
+
+ssize pxWindowHeightGet(PxWindow* self);
+
+void* pxWindowPntrContextSet(PxWindow* self, void* ctxt);
+
+void* pxWindowPntrContextGet(PxWindow* self);
+
+void* pxWindowProcUpdateSet(PxWindow* self, void* proc);
+
+void* pxWindowProcUpdateGet(PxWindow* self);
+
 b32 pxWindowVisibilitySet(PxWindow* self, PxWindowVisibility visibility);
 
-void pxWindowProcPaintSet(PxWindow* self, void* ctxt, void* proc);
+PxWindowVisibility pxWindowVisibilityGet(PxWindow* self);
 
 #endif // PX_SYSTEM_WINDOW_WINDOW_H

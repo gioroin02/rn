@@ -9,12 +9,12 @@ typedef struct PxWin32Window
     HDC     back_context;
     HBITMAP back_surface;
     u32     back_color;
+    void*   ctxt;
+    void*   proc_update;
     ssize   width_max;
     ssize   width_min;
     ssize   height_max;
     ssize   height_min;
-    void*   paint_ctxt;
-    void*   paint_proc;
 }
 PxWin32Window;
 
@@ -23,10 +23,6 @@ PxWin32Window* pxWin32WindowReserve(PxMemoryArena* arena);
 b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height);
 
 void pxWin32WindowDestroy(PxWin32Window* self);
-
-ssize pxWin32WindowWidth(PxWin32Window* self);
-
-ssize pxWin32WindowHeight(PxWin32Window* self);
 
 void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue);
 
@@ -37,8 +33,18 @@ void pxWin32WindowFlush(PxWin32Window* self);
 
 b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event);
 
-b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibility);
+ssize pxWin32windowWidthSet(PxWin32Window* self, ssize width);
 
-void pxWin32WindowProcPaintSet(PxWin32Window* self, void* ctxt, void* proc);
+ssize pxWin32WindowWidthGet(PxWin32Window* self);
+
+ssize pxWin32windowHeightSet(PxWin32Window* self, ssize height);
+
+ssize pxWin32WindowHeightGet(PxWin32Window* self);
+
+void* pxWin32WindowPntrContextSet(PxWin32Window* self, void* ctxt);
+
+void* pxWin32WindowProcUpdateSet(PxWin32Window* self, void* proc);
+
+b32 pxWin32WindowVisibilitySet(PxWin32Window* self, PxWindowVisibility visibility);
 
 #endif // PX_WIN32_WINDOW_WINDOW_H

@@ -12,6 +12,8 @@ typedef struct Context
     ssize offset_x;
     ssize offset_y;
     ssize light;
+
+    b32 active;
 }
 Context;
 
@@ -24,15 +26,35 @@ void paintGradient(PxWindowSurface* surface, ssize offset_x, ssize offset_y)
         for (row = 0; row < pxWindowSurfaceHeight(surface); row += 1) {
             u32 red   = col + offset_x;
             u32 blue  = row + offset_y;
-            u32 green = 256 - red / 2 - blue / 2;
+            u32 green = (red + blue) / 4;
 
             pxWindowSurfacePixelSet(surface, col, row, red, green, blue, 0);
         }
     }
 }
 
-void contextPaint(Context* self)
+void contextUpdate(Context* self)
 {
+    // Context* self = (Context*) pxWindowPntrContextGet(window);
+
+    PxWindowEvent event;
+
+    while (pxWindowPollEvent(self->window, &event) != 0) {
+        switch (event.kind) {
+            case PxWindowEvent_Quit: self->active = 0; break;
+
+            case PxWindowEvent_KeyboardKey: {
+                PxWindowKeyboardKey key     = event.keyboard_key.key;
+                b32                 pressed = event.keyboard_key.pressed;
+
+                if (pressed != 0 && key == PxWindowKeyboardKey_Escape)
+                    self->active = 0;
+            } break;
+
+            default: break;
+        }
+    }
+
     self->offset_x += 1;
     self->offset_y += 1;
 
@@ -42,8 +64,8 @@ void contextPaint(Context* self)
 
     ssize width  = pxWindowSurfaceWidth(self->surface);
     ssize height = pxWindowSurfaceHeight(self->surface);
-    ssize x      = pxWindowWidth(self->window) / 2 - width / 2;
-    ssize y      = pxWindowHeight(self->window) / 2 - height / 2;
+    ssize x      = pxWindowWidthGet(self->window) / 2 - width / 2;
+    ssize y      = pxWindowHeightGet(self->window) / 2 - height / 2;
 
     pxWindowPaint(self->window, x, y, width, height, self->surface);
 
@@ -60,42 +82,22 @@ int main(int argc, char** argv)
 
     context.window  = pxWindowReserve(&arena);
     context.surface = pxWindowSurfaceReserve(&arena);
+    context.offset_x = 0;
+    context.offset_y = 0;
+    context.light    = 0;
+    context.active   = 1;
 
     pxWindowCreate(context.window, pxString8("Prova"), 800, 600);
 
-    pxWindowSurfaceCreate(context.surface, &arena, 800, 600);
-
-    b32   active   = 1;
-    ssize offset_x = 0;
-    ssize offset_y = 0;
-    usize light    = 0;
+    pxWindowSurfaceCreate(context.surface, &arena, 1024, 1024);
 
     pxWindowClear(context.window, 0, 0, 0);
 
-    pxWindowProcPaintSet(context.window, &context, contextPaint);
+    pxWindowPntrContextSet(context.window, &context);
+    pxWindowProcUpdateSet(context.window, contextUpdate);
     pxWindowVisibilitySet(context.window, PxWindowVisibility_Show);
 
-    while (active != 0) {
-        PxWindowEvent event;
-
-        while (pxWindowPollEvent(context.window, &event) != 0) {
-            switch (event.kind) {
-                case PxWindowEvent_Quit: active = 0; break;
-
-                case PxWindowEvent_KeyboardKey: {
-                    PxWindowKeyboardKey key     = event.keyboard_key.key;
-                    b32                 pressed = event.keyboard_key.pressed;
-
-                    if (pressed != 0 && key == PxWindowKeyboardKey_Escape)
-                        active = 0;
-                } break;
-
-                default: break;
-            }
-        }
-
-        contextPaint(&context);
-    }
+    while (context.active != 0) contextUpdate(&context);
 
     pxWindowDestroy(context.window);
 }
