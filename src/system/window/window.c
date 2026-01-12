@@ -21,8 +21,8 @@
     #define __pxWindowHeightGet__      pxWin32WindowHeightGet
     #define __pxWindowPntrContextSet__ pxWin32WindowPntrContextSet
     #define __pxWindowPntrContextGet__ pxWin32WindowPntrContextGet
-    #define __pxWindowProcUpdateSet__  pxWin32WindowProcUpdateSet
-    #define __pxWindowProcUpdateGet__  pxWin32WindowProcUpdateGet
+    #define __pxWindowProcUpdateSet__    pxWin32WindowProcUpdateSet
+    #define __pxWindowProcUpdateGet__    pxWin32WindowProcUpdateGet
     #define __pxWindowVisibilitySet__  pxWin32WindowVisibilitySet
     #define __pxWindowVisibilityGet__  pxWin32WindowVisibilityGet
 

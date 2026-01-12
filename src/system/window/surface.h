@@ -15,6 +15,8 @@ ssize pxWindowSurfaceWidth(PxWindowSurface* self);
 
 ssize pxWindowSurfaceHeight(PxWindowSurface* self);
 
+void pxWindowSurfaceFill(PxWindowSurface* self, u8 red, u8 green, u8 blue, u8 alpha);
+
 b32 pxWindowSurfacePixelSet(PxWindowSurface* self, ssize x, ssize y,
     u8 red, u8 green, u8 blue, u8 alpha);
 

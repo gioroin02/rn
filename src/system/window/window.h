@@ -14,7 +14,7 @@ PxWindowVisibility;
 
 typedef void PxWindow;
 
-typedef void (PxWindowProcUpdate) (void*);
+typedef void (PxWindowProcUpdate) (PxWindow*);
 
 PxWindow* pxWindowReserve(PxMemoryArena* arena);
 

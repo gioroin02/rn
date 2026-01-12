@@ -87,6 +87,8 @@ typedef enum PxWindowEventKind
 {
     PxWindowEvent_None,
     PxWindowEvent_Quit,
+    PxWindowEvent_WindowCreate,
+    PxWindowEvent_WindowDestroy,
     PxWindowEvent_KeyboardKey,
 }
 PxWindowEventKind;
@@ -104,6 +106,8 @@ typedef struct PxWindowEvent
 {
     PxWindowEventKind kind;
 
+    void* self;
+
     union
     {
         PxWindowEventKeyboardKey keyboard_key;
@@ -112,9 +116,18 @@ typedef struct PxWindowEvent
 PxWindowEvent;
 
 PxWindowEvent
-pxWindowEventQuit();
+pxWindowEventNone();
 
 PxWindowEvent
-pxWindowEventKeyboardKey(PxWindowKeyboardKey key, b32 pressed, ssize scan);
+pxWindowEventQuit(void* self);
+
+PxWindowEvent
+pxWindowEventWindowCreate(void* self);
+
+PxWindowEvent
+pxWindowEventWindowDestroy(void* self);
+
+PxWindowEvent
+pxWindowEventKeyboardKey(void* self, PxWindowKeyboardKey key, b32 pressed, ssize scan);
 
 #endif // PX_SYSTEM_WINDOW_EVENT_H

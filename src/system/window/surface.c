@@ -12,6 +12,7 @@
     #define __pxWindowSurfaceDestroy__  pxWin32WindowSurfaceDestroy
     #define __pxWindowSurfaceWidth__    pxWin32WindowSurfaceWidth
     #define __pxWindowSurfaceHeight__   pxWin32WindowSurfaceHeight
+    #define __pxWindowSurfaceFill__     pxWin32WindowSurfaceFill
     #define __pxWindowSurfacePixelSet__ pxWin32WindowSurfacePixelSet
     #define __pxWindowSurfacePixelGet__ pxWin32WindowSurfacePixelGet
 
@@ -44,6 +45,11 @@ ssize pxWindowSurfaceWidth(PxWindowSurface* self)
 ssize pxWindowSurfaceHeight(PxWindowSurface* self)
 {
     return __pxWindowSurfaceHeight__(self);
+}
+
+void pxWindowSurfaceFill(PxWindowSurface* self, u8 red, u8 green, u8 blue, u8 alpha)
+{
+    return __pxWindowSurfaceFill__(self, red, green, blue, alpha);
 }
 
 b32 pxWindowSurfacePixelSet(PxWindowSurface* self, ssize x, ssize y,

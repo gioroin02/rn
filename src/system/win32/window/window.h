@@ -6,9 +6,11 @@
 typedef struct PxWin32Window
 {
     HWND    handle;
+    HDC     front_context;
+    HBITMAP front_buffer;
     HDC     back_context;
-    HBITMAP back_surface;
-    u32     back_color;
+    HBITMAP back_buffer;
+    u32     draw_color;
     void*   ctxt;
     void*   proc_update;
     ssize   width_max;

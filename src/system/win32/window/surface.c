@@ -30,6 +30,8 @@ b32 pxWin32WindowSurfaceCreate(PxWin32WindowSurface* self, PxMemoryArena* arena,
     self->width  = width;
     self->height = height;
 
+    pxWin32WindowSurfaceFill(self, 0, 0, 0, 0);
+
     return 1;
 }
 
@@ -49,6 +51,22 @@ ssize pxWin32WindowSurfaceWidth(PxWin32WindowSurface* self)
 ssize pxWin32WindowSurfaceHeight(PxWin32WindowSurface* self)
 {
     return self->height;
+}
+
+void pxWin32WindowSurfaceFill(PxWin32WindowSurface* self, u8 red, u8 green, u8 blue, u8 alpha)
+{
+    u32 color = ((u32) red) << 0
+              | ((u32) green) << 8
+              | ((u32) blue)  << 16
+              | ((u32) alpha) << 24;
+
+    ssize row = 0;
+    ssize col = 0;
+
+    for (row = 0; row < self->height; row += 1) {
+        for (col = 0; col < self->width; col += 1)
+            self->pntr[self->width * row + col] = color;
+    }
 }
 
 b32 pxWin32WindowSurfacePixelSet(PxWin32WindowSurface* self, ssize x, ssize y,

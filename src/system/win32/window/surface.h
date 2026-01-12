@@ -23,6 +23,8 @@ ssize pxWin32WindowSurfaceWidth(PxWin32WindowSurface* self);
 
 ssize pwWin32WindowSurfaceHeight(PxWin32WindowSurface* self);
 
+void pxWin32WindowSurfaceFill(PxWin32WindowSurface* self, u8 red, u8 green, u8 blue, u8 alpha);
+
 b32 pxWin32WindowSurfacePixelSet(PxWin32WindowSurface* self, ssize x, ssize y,
     u8 red, u8 green, u8 blue, u8 alpha);
 

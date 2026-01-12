@@ -192,8 +192,10 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
         case WM_EXITSIZEMOVE: KillTimer(handle, PX_WIN32_TIMER_RESIZE); break;
 
         case WM_TIMER: {
-            if (self->proc_update != 0)
-                ((PxWindowProcUpdate*) self->proc_update)(self->ctxt);
+            if (wparam == PX_WIN32_TIMER_RESIZE) {
+                if (self->proc_update != PX_NULL)
+                    ((PxWindowProcUpdate*) self->proc_update)(self->ctxt);
+            }
         } break;
 
         case WM_GETMINMAXINFO: {
@@ -210,19 +212,20 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
         case WM_PAINT: {
             PAINTSTRUCT paint;
 
-            RECT rect    = pxWin32ClientRect(self->handle);
-            HDC  context = BeginPaint(handle, &paint);
+            HDC context = BeginPaint(handle, &paint);
 
-            ssize width  = rect.right - rect.left;
-            ssize height = rect.bottom - rect.top;
+            ssize left   = paint.rcPaint.left;
+            ssize top    = paint.rcPaint.top;
+            ssize width  = paint.rcPaint.right - left;
+            ssize height = paint.rcPaint.bottom - top;
 
-            BitBlt(context, 0, 0, width, height,
-                self->back_context, 0, 0, SRCCOPY);
+            BitBlt(context, left, top, width, height,
+                self->front_context, left, top, SRCCOPY);
 
             EndPaint(handle, &paint);
         } break;
 
-        case WM_CLOSE: case WM_DESTROY: PostQuitMessage(0); break;
+        case WM_CLOSE: PostQuitMessage(0); break;
 
         default: result = -1;
     }
@@ -257,31 +260,39 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
         width, height, PX_NULL, PX_NULL, PX_NULL, PX_NULL);
 
     if (handle != PX_NULL) {
-        self->handle      = handle;
-        self->back_color  = 0;
-        self->ctxt        = PX_NULL;
-        self->proc_update = PX_NULL;
-        self->width_max   = 2560;
-        self->width_min   = 320;
-        self->height_max  = 1440;
-        self->height_min  = 180;
+        self->handle        = handle;
+        self->front_context = PX_NULL;
+        self->front_buffer  = PX_NULL;
+        self->back_context  = PX_NULL;
+        self->back_buffer   = PX_NULL;
+        self->draw_color    = 0;
+        self->ctxt          = PX_NULL;
+        self->proc_update     = PX_NULL;
+        self->width_max     = 2560;
+        self->width_min     = 320;
+        self->height_max    = 1440;
+        self->height_min    = 180;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
 
         RECT rect    = pxWin32ClientRect(self->handle);
         HDC  context = GetDC(self->handle);
 
-        self->back_context = CreateCompatibleDC(context);
+        self->front_context = CreateCompatibleDC(context);
+        self->back_context  = CreateCompatibleDC(context);
 
-        self->back_surface = CreateCompatibleBitmap(context,
+        self->front_buffer = CreateCompatibleBitmap(context,
+            self->width_max, self->height_max);
+
+        self->back_buffer = CreateCompatibleBitmap(context,
             self->width_max, self->height_max);
 
         ReleaseDC(self->handle, context);
 
-        SelectObject(self->back_context, self->back_surface);
-        SetDCBrushColor(self->back_context, RGB(0, 0, 0));
+        SelectObject(self->front_context, self->front_buffer);
+        SetDCBrushColor(self->front_context, RGB(0, 0, 0));
 
-        FillRect(self->back_context, &rect, GetStockObject(DC_BRUSH));
+        FillRect(self->front_context, &rect, GetStockObject(DC_BRUSH));
 
         InvalidateRect(self->handle, PX_NULL, 0);
 
@@ -299,8 +310,11 @@ void pxWin32WindowDestroy(PxWin32Window* self)
         if (GetCapture() == self->handle)
             ReleaseCapture();
 
-        DeleteObject(self->back_surface);
+        DeleteObject(self->back_buffer);
+        DeleteObject(self->front_buffer);
+
         DeleteDC(self->back_context);
+        DeleteDC(self->front_context);
 
         DestroyWindow(self->handle);
     }
@@ -318,7 +332,7 @@ void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue)
               | ((u32) green) << 8
               | ((u32) blue)  << 16;
 
-    self->back_color = color;
+    self->draw_color = color;
 
     SetDCBrushColor(self->back_context, RGB(red, green, blue));
     FillRect(self->back_context, &rect, GetStockObject(DC_BRUSH));
@@ -329,7 +343,7 @@ void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue)
 void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
     ssize width, ssize height, PxWin32WindowSurface* surface)
 {
-    if (self->back_surface == PX_NULL || surface == PX_NULL) return;
+    if (self->back_buffer == PX_NULL || surface == PX_NULL) return;
 
     RECT rect = pxWin32ClientRect(self->handle);
 
@@ -345,43 +359,47 @@ void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
 
 void pxWin32WindowFlush(PxWin32Window* self)
 {
+    HDC     context = self->back_context;
+    HBITMAP buffer  = self->back_buffer;
+
+    self->back_context  = self->front_context;
+    self->front_context = context;
+
+    self->back_buffer  = self->front_buffer;
+    self->front_buffer = buffer;
+
     InvalidateRect(self->handle, PX_NULL, 0);
 }
 
 b32 pxWin32WindowPollEvent(PxWin32Window* self, PxWindowEvent* event)
 {
-    PxWindowEvent temp;
-    MSG           message;
+    MSG message;
 
     while (PeekMessageW(&message, 0, 0, 0, PM_REMOVE) > 0) {
         TranslateMessage(&message);
         DispatchMessageW(&message);
 
         switch (message.message) {
-            case WM_QUIT: temp = pxWindowEventQuit(); break;
+            case WM_QUIT: *event = pxWindowEventQuit(self); return 1;
+
+            case WM_CREATE:  *event = pxWindowEventWindowCreate(self);  return 1;
+            case WM_DESTROY: *event = pxWindowEventWindowDestroy(self); return 1;
 
             case WM_KEYDOWN: {
                 PxWindowKeyboardKey key  = pxWin32WindowConvertKey(message.wParam);
                 ssize               scan = (message.lParam >> 16) & 0xff;
 
-                temp = pxWindowEventKeyboardKey(key, 1, scan);
-            } break;
+                *event = pxWindowEventKeyboardKey(self, key, 1, scan);
+            } return 1;
 
             case WM_KEYUP: {
                 PxWindowKeyboardKey key  = pxWin32WindowConvertKey(message.wParam);
                 ssize               scan = (message.lParam >> 16) & 0xff;
 
-                temp = pxWindowEventKeyboardKey(key, 0, scan);
-            } break;
+                *event = pxWindowEventKeyboardKey(self, key, 0, scan);
+            } return 1;
 
             default: break;
-        }
-
-        if (temp.kind != PxWindowEvent_None) {
-            if (event != PX_NULL)
-                *event = temp;
-
-            return 1;
         }
     }
 
