@@ -55,9 +55,9 @@ ssize pxWin32WindowSurfaceHeight(PxWin32WindowSurface* self)
 
 void pxWin32WindowSurfaceFill(PxWin32WindowSurface* self, u8 red, u8 green, u8 blue, u8 alpha)
 {
-    u32 color = ((u32) red) << 0
+    u32 color = ((u32) blue)  << 0
               | ((u32) green) << 8
-              | ((u32) blue)  << 16
+              | ((u32) red)   << 16
               | ((u32) alpha) << 24;
 
     ssize row = 0;
@@ -77,9 +77,9 @@ b32 pxWin32WindowSurfacePixelSet(PxWin32WindowSurface* self, ssize x, ssize y,
 
     ssize index = self->width * y + x;
 
-    u32 color = ((u32) red) << 0
+    u32 color = ((u32) blue)  << 0
               | ((u32) green) << 8
-              | ((u32) blue)  << 16
+              | ((u32) red)   << 16
               | ((u32) alpha) << 24;
 
     self->pntr[index] = color;
@@ -96,9 +96,9 @@ b32 pxWin32WindowSurfacePixelGet(PxWin32WindowSurface* self, ssize x, ssize y,
     ssize index = self->width * y + x;
     u32   color = self->pntr[index];
 
-    if (red != PX_NULL)   *red   = (u8) ((color & 0x000000FF) >> 0);
+    if (red != PX_NULL)   *blue  = (u8) ((color & 0x000000FF) >> 0);
     if (green != PX_NULL) *green = (u8) ((color & 0x0000FF00) >> 8);
-    if (blue != PX_NULL)  *blue  = (u8) ((color & 0x00FF0000) >> 16);
+    if (blue != PX_NULL)  *red   = (u8) ((color & 0x00FF0000) >> 16);
     if (alpha != PX_NULL) *alpha = (u8) ((color & 0xFF000000) >> 24);
 
     return 1;
