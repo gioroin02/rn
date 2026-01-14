@@ -219,8 +219,8 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
             ssize width  = paint.rcPaint.right - left;
             ssize height = paint.rcPaint.bottom - top;
 
-            BitBlt(context, left, top, width, height,
-                self->front_context, left, top, SRCCOPY);
+            StretchBlt(context, left, top, width, height,
+                self->front_context, 0, 0, width / 4, height / 4, SRCCOPY);
 
             EndPaint(handle, &paint);
         } break;
@@ -241,7 +241,7 @@ PxWin32Window* pxWin32WindowReserve(PxMemoryArena* arena)
 }
 
 b32
-pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height)
+pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height, ssize scale)
 {
     static u16 buffer[PX_MEMORY_KIB];
 
@@ -267,10 +267,10 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
         self->back_buffer   = PX_NULL;
         self->draw_color    = 0;
         self->ctxt          = PX_NULL;
-        self->proc_update     = PX_NULL;
-        self->width_max     = 2560;
+        self->proc_update   = PX_NULL;
+        self->width_max     = 1920;
         self->width_min     = 320;
-        self->height_max    = 1440;
+        self->height_max    = 1080;
         self->height_min    = 180;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
@@ -282,10 +282,10 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
         self->back_context  = CreateCompatibleDC(context);
 
         self->front_buffer = CreateCompatibleBitmap(context,
-            self->width_max, self->height_max);
+            self->width_max / scale, self->height_max / scale);
 
         self->back_buffer = CreateCompatibleBitmap(context,
-            self->width_max, self->height_max);
+            self->width_max / scale, self->height_max / scale);
 
         ReleaseDC(self->handle, context);
 
@@ -340,21 +340,20 @@ void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue)
     InvalidateRect(self->handle, PX_NULL, 0);
 }
 
-void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
-    ssize width, ssize height, PxWin32WindowSurface* surface)
+void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y, ssize width, ssize height, PxWin32Bitmap* bitmap)
 {
-    if (self->back_buffer == PX_NULL || surface == PX_NULL) return;
+    if (self->back_buffer == PX_NULL || bitmap == PX_NULL) return;
 
     RECT rect = pxWin32ClientRect(self->handle);
 
     x = pxClamp(x, 0, rect.right - rect.left);
     y = pxClamp(y, 0, rect.bottom - rect.top);
 
-    width  = pxClamp(pxMin(width, rect.right - rect.left - x), 0, surface->width);
-    height = pxClamp(pxMin(height, rect.bottom - rect.top - y), 0, surface->height);
+    width  = pxClamp(pxMin(width, rect.right - rect.left - x), 0, bitmap->width);
+    height = pxClamp(pxMin(height, rect.bottom - rect.top - y), 0, bitmap->height);
 
     StretchDIBits(self->back_context, x, y, width, height, 0, 0, width, height,
-        surface->pntr, &surface->info, DIB_RGB_COLORS, SRCCOPY);
+        bitmap->pntr, &bitmap->info, DIB_RGB_COLORS, SRCCOPY);
 }
 
 void pxWin32WindowFlush(PxWin32Window* self)

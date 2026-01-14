@@ -3,6 +3,6 @@
 
 #include "event.c"
 #include "window.c"
-#include "surface.c"
+#include "bitmap.c"
 
 #endif // PX_SYSTEM_WINDOW_EXPORT_C

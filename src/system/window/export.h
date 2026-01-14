@@ -3,6 +3,6 @@
 
 #include "event.h"
 #include "window.h"
-#include "surface.h"
+#include "bitmap.h"
 
 #endif // PX_SYSTEM_WINDOW_EXPORT_H

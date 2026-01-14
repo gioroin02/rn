@@ -3,6 +3,6 @@
 
 #include "common.c"
 #include "window.c"
-#include "surface.c"
+#include "bitmap.c"
 
 #endif // PX_WIN32_WINDOW_EXPORT_C

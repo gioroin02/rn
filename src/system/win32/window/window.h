@@ -1,7 +1,7 @@
 #ifndef PX_WIN32_WINDOW_WINDOW_H
 #define PX_WIN32_WINDOW_WINDOW_H
 
-#include "surface.h"
+#include "bitmap.h"
 
 typedef struct PxWin32Window
 {
@@ -22,14 +22,13 @@ PxWin32Window;
 
 PxWin32Window* pxWin32WindowReserve(PxMemoryArena* arena);
 
-b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height);
+b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height, ssize scale);
 
 void pxWin32WindowDestroy(PxWin32Window* self);
 
 void pxWin32WindowClear(PxWin32Window* self, u8 red, u8 green, u8 blue);
 
-void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y,
-    ssize width, ssize height, PxWin32WindowSurface* surface);
+void pxWin32WindowPaint(PxWin32Window* self, ssize x, ssize y, ssize width, ssize height, PxWin32Bitmap* bitmap);
 
 void pxWin32WindowFlush(PxWin32Window* self);
 

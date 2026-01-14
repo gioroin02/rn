@@ -3,8 +3,22 @@
 #include "../../../src/system/time/export.h"
 #include "../../../src/system/window/export.h"
 
+#include "vector/export.h"
+
 #include <stdio.h>
 #include <math.h>
+
+typedef struct Context
+{
+    PxWindow* window;
+    PxBitmap* bitmap;
+    PxClock*  clock;
+
+    f32 ticks;
+    f32 time;
+    b32 active;
+}
+Context;
 
 void swap(void* pntr, ssize size, void* other)
 {
@@ -17,234 +31,141 @@ void swap(void* pntr, ssize size, void* other)
     }
 }
 
-typedef union u8vec4
+void paintLine(PxBitmap* bitmap, S64Vec2 p0, S64Vec2 p1, U8Vec4 color)
 {
-    u8  values[4];
-    u32 v03;
+    ssize max_x   = pxMax(p0.x, p1.x);
+    ssize min_x   = pxMin(p0.x, p1.x);
+    ssize max_y   = pxMax(p0.y, p1.y);
+    ssize min_y   = pxMin(p0.y, p1.y);
 
-    struct
-    {
-        u8 x, y, z, w;
-    };
+    if (max_x - min_x > max_y - min_y) {
+        if (p0.x > p1.x) swap(&p0, sizeof p0, &p1);
 
-    struct
-    {
-        u8 r, g, b, a;
-    };
+        ssize delta_x = p1.x - p0.x;
+        ssize delta_y = p1.y - p0.y;
+        ssize dir     = delta_y >= 0 ? +1 : -1;
 
-    struct
-    {
-        u8 v0, v1, v2, v3;
-    };
+        delta_y *= dir;
 
-    struct
-    {
-        u16 v01, v23;
-    };
-}
-u8vec4;
-
-u8vec4 u8v4(u8 v0, u8 v1, u8 v2, u8 v3)
-{
-    u8vec4 result;
-
-    pxMemorySet(&result, sizeof result, 0xAB);
-
-    result.v0 = v0;
-    result.v1 = v1;
-    result.v2 = v2;
-    result.v3 = v3;
-
-    return result;
-}
-
-typedef union svec2
-{
-    ssize values[4];
-
-    struct
-    {
-        ssize x, y;
-    };
-
-    struct
-    {
-        ssize r, g;
-    };
-
-    struct
-    {
-        ssize v0, v1;
-    };
-}
-svec2;
-
-svec2 sv2(ssize v0, ssize v1)
-{
-    svec2 result;
-
-    pxMemorySet(&result, sizeof result, 0xAB);
-
-    result.v0 = v0;
-    result.v1 = v1;
-
-    return result;
-}
-
-typedef struct Context
-{
-    PxWindow*        window;
-    PxWindowSurface* surface;
-    PxClock*         clock;
-
-    f32 ticks;
-    f32 time;
-    b32 active;
-}
-Context;
-
-u8vec4 blend(u8vec4 c0, u8vec4 c1)
-{
-    usize one_minus_alpha = 255 - c0.a;
-    usize alpha           = c0.a + c1.a * one_minus_alpha;
-
-    usize red   = (c0.r * c0.a + c1.r * c1.a * one_minus_alpha) / alpha;
-    usize green = (c0.g * c0.a + c1.g * c1.a * one_minus_alpha) / alpha;
-    usize blue  = (c0.b * c0.a + c1.b * c1.a * one_minus_alpha) / alpha;
-
-    return u8v4(red, green, blue, alpha);
-}
-
-void paintLineHor(PxWindowSurface* surface, svec2 p0, svec2 p1, u8vec4 color)
-{
-    if (p0.x > p1.x) swap(&p0, sizeof p0, &p1);
-
-    ssize delta_x = p1.x - p0.x;
-    ssize delta_y = p1.y - p0.y;
-    ssize dir     = delta_y >= 0 ? 1 : -1;
-
-    delta_y *= dir;
-
-    if (delta_x != 0) {
-        ssize y = p0.y;
-        ssize p = 2 * delta_y - delta_x;
-
+        ssize y     = p0.y;
+        ssize p     = 2 * delta_y - delta_x;
         ssize index = 0;
 
         for (index = 0; index <= delta_x; index += 1) {
-            pxWindowSurfacePixelSet(surface, p0.x + index, y,
+            pxBitmapPixelSet(bitmap, p0.x + index, y,
                 color.r, color.g, color.b, color.a);
 
-            if (p >= 0) {
-                y += dir;
-                p -= 2 * delta_x;
-            }
+            y += (p >= 0 ? 1 : 0) * dir;
+            p -= (p >= 0 ? 1 : 0) * 2 * delta_x;
 
             p += 2 * delta_y;
         }
     }
-    else pxWindowSurfacePixelSet(surface, p0.x, p0.y,
-        color.r, color.g, color.b, color.a);
-}
+    else {
+        if (p0.y > p1.y) swap(&p0, sizeof p0, &p1);
 
-void paintLineVer(PxWindowSurface* surface, svec2 p0, svec2 p1, u8vec4 color)
-{
-    if (p0.y > p1.y) swap(&p0, sizeof p0, &p1);
+        ssize delta_x = p1.x - p0.x;
+        ssize delta_y = p1.y - p0.y;
+        ssize dir     = delta_x >= 0 ? +1 : -1;
 
-    ssize delta_x = p1.x - p0.x;
-    ssize delta_y = p1.y - p0.y;
-    ssize dir     = delta_x >= 0 ? 1 : -1;
+        delta_x *= dir;
 
-    delta_x *= dir;
-
-    if (delta_y != 0) {
-        ssize x = p0.x;
-        ssize p = 2 * delta_x - delta_y;
-
+        ssize x     = p0.x;
+        ssize p     = 2 * delta_x - delta_y;
         ssize index = 0;
 
         for (index = 0; index <= delta_y; index += 1) {
-            pxWindowSurfacePixelSet(surface, x, p0.y + index,
-                color.r, color.g, color.b, 0xFF);
+            pxBitmapPixelSet(bitmap, x, p0.y + index,
+                color.r, color.g, color.b, color.a);
 
-            if (p >= 0) {
-                x += dir;
-                p -= 2 * delta_y;
-            }
+            x += (p >= 0 ? 1 : 0) * dir;
+            p -= (p >= 0 ? 1 : 0) * 2 * delta_y;
 
             p += 2 * delta_x;
         }
     }
-    else pxWindowSurfacePixelSet(surface, p0.x, p0.y,
-        color.r, color.g, color.b, 0xFF);
 }
 
-void paintLine(PxWindowSurface* surface, svec2 p0, svec2 p1, u8vec4 color)
+s64 triangleEdgeCross(S64Vec2 p0, S64Vec2 p1, S64Vec2 p2)
 {
-    /*
-    p0.x = pxClamp(p0.x, 0, pxWindowSurfaceWidth(surface));
-    p1.x = pxClamp(p1.x, 0, pxWindowSurfaceWidth(surface));
-    p0.y = pxClamp(p0.y, 0, pxWindowSurfaceHeight(surface));
-    p1.y = pxClamp(p1.y, 0, pxWindowSurfaceHeight(surface));
-    */
-
-    ssize delta_x = pxMax(p0.x, p1.x) - pxMin(p0.x, p1.x);
-    ssize delta_y = pxMax(p0.y, p1.y) - pxMin(p0.y, p1.y);
-
-    if (delta_x > delta_y)
-        paintLineHor(surface, p0, p1, color);
-    else
-        paintLineVer(surface, p0, p1, color);
+    return (p1.x - p0.x) * (p2.y - p0.y) - (p1.y - p0.y) * (p2.x - p0.x);
 }
 
-void paintTriangleLines(PxWindowSurface* surface, svec2 p0, svec2 p1, svec2 p2, u8vec4 color)
+b32 triangleEdgeIsTopLeft(S64Vec2 p0, S64Vec2 p1)
 {
-    paintLine(surface, p0, p1, color);
-    paintLine(surface, p1, p2, color);
-    paintLine(surface, p2, p0, color);
+    if (p1.x - p0.x < 0) return 0;
+    if (p1.y - p0.y > 0) return 1;
+
+    return 0;
 }
 
-void paintTriangle(PxWindowSurface* surface, svec2 p0, svec2 p1, svec2 p2, u8vec4 color)
+void paintTriangleLines(PxBitmap* bitmap, S64Vec2 p0, S64Vec2 p1, S64Vec2 p2, U8Vec4 color)
 {
-    
+    paintLine(bitmap, p0, p1, color);
+    paintLine(bitmap, p1, p2, color);
+    paintLine(bitmap, p2, p0, color);
 }
 
-void paintRectangleLines(PxWindowSurface* surface, svec2 origin, svec2 size, u8vec4 color)
+void paintTriangle(PxBitmap* bitmap, S64Vec2 p0, S64Vec2 p1, S64Vec2 p2, U8Vec4 c0, U8Vec4 c1, U8Vec4 c2)
 {
-    svec2 p0 = sv2(origin.x - size.x / 2, origin.y - size.y / 2);
-    svec2 p1 = sv2(origin.x + size.x / 2, origin.y - size.y / 2);
-    svec2 p2 = sv2(origin.x - size.x / 2, origin.y + size.y / 2);
-    svec2 p3 = sv2(origin.x + size.x / 2, origin.y + size.y / 2);
+    s64 max_x = pxMax(p0.x, pxMax(p1.x, p2.x));
+    s64 min_x = pxMin(p0.x, pxMin(p1.x, p2.x));
+    s64 max_y = pxMax(p0.y, pxMax(p1.y, p2.y));
+    s64 min_y = pxMin(p0.y, pxMin(p1.y, p2.y));
 
-    paintTriangleLines(surface, p0, p1, p2, color);
-    paintTriangleLines(surface, p1, p2, p3, color);
-}
+    s64 area = triangleEdgeCross(p0, p1, p2);
 
-void paintRectangle(PxWindowSurface* surface, svec2 origin, svec2 size, u8vec4 color)
-{
-    svec2 p0 = sv2(origin.x - size.x / 2, origin.y - size.y / 2);
-    svec2 p1 = sv2(origin.x + size.x / 2, origin.y - size.y / 2);
-    svec2 p2 = sv2(origin.x - size.x / 2, origin.y + size.y / 2);
-    svec2 p3 = sv2(origin.x + size.x / 2, origin.y + size.y / 2);
+    S64Vec2 point = s64Vec2(min_x, min_y);
 
-    paintTriangle(surface, p0, p1, p2, color);
-    paintTriangle(surface, p1, p2, p3, color);
-}
+    s64 b0 = triangleEdgeIsTopLeft(p1, p2) != 0 ? 1 : 0;
+    s64 b1 = triangleEdgeIsTopLeft(p2, p0) != 0 ? 1 : 0;
+    s64 b2 = triangleEdgeIsTopLeft(p0, p1) != 0 ? 1 : 0;
 
-void paintGradient(PxWindowSurface* surface, ssize offset_x, ssize offset_y)
-{
-    ssize col = 0;
-    ssize row = 0;
+    for (point.y = min_y; point.y <= max_y; point.y += 1) {
+        for (point.x = min_x; point.x <= max_x; point.x += 1) {
+            s64 w0 = triangleEdgeCross(p1, p2, point) - b0;
+            s64 w1 = triangleEdgeCross(p2, p0, point) - b1;
+            s64 w2 = triangleEdgeCross(p0, p1, point) - b2;
 
-    for (col = 0; col < pxWindowSurfaceWidth(surface); col += 1) {
-        for (row = 0; row < pxWindowSurfaceHeight(surface); row += 1) {
-            u32 red   = col + offset_x;
-            u32 blue  = row + offset_y;
-            u32 green = (red + blue) / 4;
+            if ((w0 | w1 | w2) >= 0) {
+                f32 alpha = (f32) w0 / (f32) area;
+                f32 beta  = (f32) w1 / (f32) area;
+                f32 gamma = (f32) w2 / (f32) area;
 
-            pxWindowSurfacePixelSet(surface, col, row, red, green, blue, 0);
+                S64Vec4 color = s64Vec4(
+                    alpha * c0.r + beta * c1.r + gamma * c2.r,
+                    alpha * c0.g + beta * c1.g + gamma * c2.g,
+                    alpha * c0.b + beta * c1.b + gamma * c2.b,
+                    0xFF // alpha * ((f32) c0.a) / 255 + beta * ((f32) c1.a) / 255 + gamma * ((f32) c2.a) / 255
+                );
+
+                pxBitmapPixelSet(bitmap, point.x, point.y,
+                    color.r, color.g, color.b, color.a);
+            }
         }
     }
+}
+
+void paintRectangleLines(PxBitmap* bitmap, S64Vec2 origin, S64Vec2 size, U8Vec4 color)
+{
+    S64Vec2 p0 = s64Vec2(origin.x - size.x / 2, origin.y - size.y / 2);
+    S64Vec2 p1 = s64Vec2(origin.x + size.x / 2, origin.y - size.y / 2);
+    S64Vec2 p2 = s64Vec2(origin.x - size.x / 2, origin.y + size.y / 2);
+    S64Vec2 p3 = s64Vec2(origin.x + size.x / 2, origin.y + size.y / 2);
+
+    paintTriangleLines(bitmap, p0, p1, p2, color);
+    paintTriangleLines(bitmap, p3, p2, p1, color);
+}
+
+void paintRectangle(PxBitmap* bitmap, S64Vec2 origin, S64Vec2 size, U8Vec4 color)
+{
+    S64Vec2 p0 = s64Vec2(origin.x - size.x / 2, origin.y - size.y / 2);
+    S64Vec2 p1 = s64Vec2(origin.x + size.x / 2, origin.y - size.y / 2);
+    S64Vec2 p2 = s64Vec2(origin.x - size.x / 2, origin.y + size.y / 2);
+    S64Vec2 p3 = s64Vec2(origin.x + size.x / 2, origin.y + size.y / 2);
+
+    paintTriangle(bitmap, p0, p1, p2, u8Vec4(0xFF, 0, 0, 0), u8Vec4(0, 0xFF, 0, 0), u8Vec4(0, 0, 0xFF, 0));
+    paintTriangle(bitmap, p3, p2, p1, u8Vec4(0xFF, 0, 0, 0), u8Vec4(0, 0, 0xFF, 0), u8Vec4(0, 0xFF, 0, 0));
 }
 
 void contextUpdate(Context* self)
@@ -254,39 +175,39 @@ void contextUpdate(Context* self)
     self->ticks += elapsed;
     self->time  += elapsed;
 
-    // if (self->time >= 0.0166f) {
-        // self->time -= 0.0166f;
+    pxWindowClear(self->window, 0x0F, 0x0F, 0x0F);
 
-        pxWindowClear(self->window, 0x0F, 0x0F, 0x0F);
+    f32 delta_sin = sin(self->ticks * 5);
+    f32 delta_cos = cos(self->ticks * 5);
 
-        f32 delta_sin = sin(self->ticks * 10) * 10;
-        f32 delta_cos = cos(self->ticks * 10) * 10;
+    pxBitmapFill(self->bitmap, 0x08, 0x08, 0x08, 0xFF);
 
-        pxWindowSurfaceFill(self->surface, 0x08, 0x08, 0x08, 0xFF);
+    paintTriangle(self->bitmap,
+        s64Vec2(100 + delta_sin * 5, 50 + delta_cos * 5),
+        s64Vec2(50 + delta_cos * 5, 100 + delta_sin * 5),
+        s64Vec2(50 + delta_cos * 5, 50 + delta_sin * 5),
+        u8Vec4(0xFF, 0, 0, 0xFF),
+        u8Vec4(0, 0xFF, 0, 0xFF),
+        u8Vec4(0, 0, 0xFF, 0xFF));
 
-        paintTriangleLines(self->surface,
-            sv2(300 + delta_sin, 100 + delta_cos),
-            sv2(300 + delta_cos, 300 + delta_sin),
-            sv2(400 + delta_sin, 100 + delta_cos),
-            u8v4(0xFF, 0, 0, 0xFF));
+    paintRectangleLines(self->bitmap,
+        s64Vec2(150 + delta_sin * 5, 150 + delta_sin * 5),
+        s64Vec2(100 + delta_cos * 5, 150 + delta_cos * 5),
+        u8Vec4(0xBE, 0x0A, 0xFF, 0xFF));
 
-        paintRectangleLines(self->surface,
-            sv2(500 + delta_sin, 500 + delta_sin),
-            sv2(100 + delta_cos, 150 + delta_cos),
-            u8v4(0xBE, 0x0A, 0xFF, 0xFF));
+    paintLine(self->bitmap,
+        s64Vec2(300 + delta_cos * 5, 0),
+        s64Vec2(0, 300 + delta_sin * 5),
+        u8Vec4(0x14, 0x7D, 0xF5, 0xFF));
 
-        paintLine(self->surface, sv2(800, 0), sv2(0, 800),
-            u8v4(0x14, 0x7D, 0xF5, 0xFF));
+    ssize width  = pxBitmapWidth(self->bitmap);
+    ssize height = pxBitmapHeight(self->bitmap);
+    ssize x      = pxWindowWidthGet(self->window) / 2 - width / 2;
+    ssize y      = pxWindowHeightGet(self->window) / 2 - height / 2;
 
-        ssize width  = pxWindowSurfaceWidth(self->surface);
-        ssize height = pxWindowSurfaceHeight(self->surface);
-        ssize x      = pxWindowWidthGet(self->window) / 2 - width / 2;
-        ssize y      = pxWindowHeightGet(self->window) / 2 - height / 2;
+    pxWindowPaint(self->window, 0, 0, width, height, self->bitmap);
 
-        pxWindowPaint(self->window, x, y, width, height, self->surface);
-
-        pxWindowFlush(self->window);
-     // }
+    pxWindowFlush(self->window);
 }
 
 int main(int argc, char** argv)
@@ -297,19 +218,15 @@ int main(int argc, char** argv)
 
     pxMemorySet(&context, sizeof context, 0xAB);
 
-    context.window  = pxWindowReserve(&arena);
-    context.surface = pxWindowSurfaceReserve(&arena);
-    context.clock   = pxClockReserve(&arena);
-    context.ticks   = 0;
-    context.active  = 1;
+    context.window = pxWindowReserve(&arena);
+    context.bitmap = pxBitmapReserve(&arena);
+    context.clock  = pxClockReserve(&arena);
+    context.ticks  = 0;
+    context.active = 1;
 
-    pxWindowCreate(context.window, pxString8("Prova"), 1600, 900);
-
-    pxWindowSurfaceCreate(context.surface, &arena, 800, 800);
-
+    pxWindowCreate(context.window, pxString8("Prova"), 1600, 900, 4);
+    pxBitmapCreate(context.bitmap, &arena, 800, 800);
     pxClockCreate(context.clock);
-
-    pxWindowClear(context.window, 0, 0, 0);
 
     pxWindowPntrContextSet(context.window, &context);
     pxWindowProcUpdateSet(context.window, contextUpdate);

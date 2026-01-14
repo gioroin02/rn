@@ -21,8 +21,8 @@
     #define __pxWindowHeightGet__      pxWin32WindowHeightGet
     #define __pxWindowPntrContextSet__ pxWin32WindowPntrContextSet
     #define __pxWindowPntrContextGet__ pxWin32WindowPntrContextGet
-    #define __pxWindowProcUpdateSet__    pxWin32WindowProcUpdateSet
-    #define __pxWindowProcUpdateGet__    pxWin32WindowProcUpdateGet
+    #define __pxWindowProcUpdateSet__  pxWin32WindowProcUpdateSet
+    #define __pxWindowProcUpdateGet__  pxWin32WindowProcUpdateGet
     #define __pxWindowVisibilitySet__  pxWin32WindowVisibilitySet
     #define __pxWindowVisibilityGet__  pxWin32WindowVisibilityGet
 
@@ -37,9 +37,9 @@ PxWindow* pxWindowReserve(PxMemoryArena* arena)
     return __pxWindowReserve__(arena);
 }
 
-b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height)
+b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height, ssize scale)
 {
-    return __pxWindowCreate__(self, title, width, height);
+    return __pxWindowCreate__(self, title, width, height, scale);
 }
 
 void pxWindowDestroy(PxWindow* self)
@@ -52,9 +52,9 @@ void pxWindowClear(PxWindow* self, u8 red, u8 green, u8 blue)
     return __pxWindowClear__(self, red, green, blue);
 }
 
-void pxWindowPaint(PxWindow* self, ssize x, ssize y, ssize width, ssize height, PxWindowSurface* surface)
+void pxWindowPaint(PxWindow* self, ssize x, ssize y, ssize width, ssize height, PxBitmap* bitmap)
 {
-    return __pxWindowPaint__(self, x, y, width, height, surface);
+    return __pxWindowPaint__(self, x, y, width, height, bitmap);
 }
 
 void pxWindowFlush(PxWindow* self)
