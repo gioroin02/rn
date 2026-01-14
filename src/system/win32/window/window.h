@@ -22,7 +22,7 @@ PxWin32Window;
 
 PxWin32Window* pxWin32WindowReserve(PxMemoryArena* arena);
 
-b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height, ssize scale);
+b32 pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height);
 
 void pxWin32WindowDestroy(PxWin32Window* self);
 

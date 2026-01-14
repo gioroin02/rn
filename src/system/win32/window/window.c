@@ -220,7 +220,7 @@ ssize pxWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
             ssize height = paint.rcPaint.bottom - top;
 
             StretchBlt(context, left, top, width, height,
-                self->front_context, 0, 0, width / 4, height / 4, SRCCOPY);
+                self->front_context, 0, 0, width, height, SRCCOPY);
 
             EndPaint(handle, &paint);
         } break;
@@ -241,7 +241,7 @@ PxWin32Window* pxWin32WindowReserve(PxMemoryArena* arena)
 }
 
 b32
-pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height, ssize scale)
+pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize height)
 {
     static u16 buffer[PX_MEMORY_KIB];
 
@@ -282,10 +282,10 @@ pxWin32WindowCreate(PxWin32Window* self, PxString8 title, ssize width, ssize hei
         self->back_context  = CreateCompatibleDC(context);
 
         self->front_buffer = CreateCompatibleBitmap(context,
-            self->width_max / scale, self->height_max / scale);
+            self->width_max, self->height_max);
 
         self->back_buffer = CreateCompatibleBitmap(context,
-            self->width_max / scale, self->height_max / scale);
+            self->width_max, self->height_max);
 
         ReleaseDC(self->handle, context);
 

@@ -37,9 +37,9 @@ PxWindow* pxWindowReserve(PxMemoryArena* arena)
     return __pxWindowReserve__(arena);
 }
 
-b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height, ssize scale)
+b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height)
 {
-    return __pxWindowCreate__(self, title, width, height, scale);
+    return __pxWindowCreate__(self, title, width, height);
 }
 
 void pxWindowDestroy(PxWindow* self)

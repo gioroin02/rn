@@ -18,7 +18,7 @@ typedef void (PxWindowProcUpdate) (PxWindow*);
 
 PxWindow* pxWindowReserve(PxMemoryArena* arena);
 
-b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height, ssize scale);
+b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height);
 
 void pxWindowDestroy(PxWindow* self);
 

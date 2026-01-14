@@ -10,6 +10,7 @@ set "impl=%impl% src\system\time\export.c"
 set "impl=%impl% src\system\window\export.c"
 
 set "impl=%impl% test\system\window\vector\export.c"
+set "impl=%impl% test\system\window\rasterize.c"
 
 set "test_rectangle=test\system\window\rectangle.c"
 
