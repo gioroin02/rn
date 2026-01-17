@@ -1,8 +1,8 @@
-#ifndef PX_SYSTEM_WINDOW_EXPORT_C
-#define PX_SYSTEM_WINDOW_EXPORT_C
+#ifndef P_SYSTEM_WINDOW_EXPORT_C
+#define P_SYSTEM_WINDOW_EXPORT_C
 
 #include "event.c"
 #include "window.c"
 #include "bitmap.c"
 
-#endif // PX_SYSTEM_WINDOW_EXPORT_C
+#endif // P_SYSTEM_WINDOW_EXPORT_C

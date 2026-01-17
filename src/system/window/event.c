@@ -1,67 +1,67 @@
-#ifndef PX_SYSTEM_WINDOW_EVENT_C
-#define PX_SYSTEM_WINDOW_EVENT_C
+#ifndef P_SYSTEM_WINDOW_EVENT_C
+#define P_SYSTEM_WINDOW_EVENT_C
 
 #include "event.h"
 
-PxWindowEvent
-pxWindowEventNone()
+PWindowEvent
+pWindowEventNone()
 {
-    PxWindowEvent result;
+    PWindowEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind = PxWindowEvent_None;
+    result.kind = PWindowEvent_None;
 
     return result;
 }
 
-PxWindowEvent
-pxWindowEventQuit(void* self)
+PWindowEvent
+pWindowEventQuit(void* self)
 {
-    PxWindowEvent result;
+    PWindowEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind = PxWindowEvent_Quit;
+    result.kind = PWindowEvent_Quit;
     result.self = self;
 
     return result;
 }
 
-PxWindowEvent
-pxWindowEventWindowCreate(void* self)
+PWindowEvent
+pWindowEventWindowCreate(void* self)
 {
-    PxWindowEvent result;
+    PWindowEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind = PxWindowEvent_WindowCreate;
+    result.kind = PWindowEvent_WindowCreate;
     result.self = self;
 
     return result;
 }
 
-PxWindowEvent
-pxWindowEventWindowDestroy(void* self)
+PWindowEvent
+pWindowEventWindowDestroy(void* self)
 {
-    PxWindowEvent result;
+    PWindowEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind = PxWindowEvent_WindowDestroy;
+    result.kind = PWindowEvent_WindowDestroy;
     result.self = self;
 
     return result;
 }
 
-PxWindowEvent
-pxWindowEventKeyboardKey(void* self, PxWindowKeyboardKey key, b32 pressed, ssize scan)
+PWindowEvent
+pWindowEventKeyboardKey(void* self, PWindowKeyboardKey key, b32 pressed, ssize scan)
 {
-    PxWindowEvent result;
+    PWindowEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind                 = PxWindowEvent_KeyboardKey;
+    result.kind                 = PWindowEvent_KeyboardKey;
     result.self                 = self;
     result.keyboard_key.key     = key;
     result.keyboard_key.pressed = pressed != 0 ? 1 : 0;
@@ -70,4 +70,4 @@ pxWindowEventKeyboardKey(void* self, PxWindowKeyboardKey key, b32 pressed, ssize
     return result;
 }
 
-#endif // PX_SYSTEM_WINDOW_EVENT_C
+#endif // P_SYSTEM_WINDOW_EVENT_C

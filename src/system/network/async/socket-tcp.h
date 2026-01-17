@@ -1,81 +1,19 @@
-#ifndef PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_H
-#define PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_H
+#ifndef P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
+#define P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
 
 #include "import.h"
 
-typedef enum PxSocketTcpEventKind
-{
-    PxSocketTcpEvent_None,
-    PxSocketTcpEvent_Error,
-    PxSocketTcpEvent_Accept,
-    PxSocketTcpEvent_Connect,
-    PxSocketTcpEvent_Write,
-    PxSocketTcpEvent_Read,
-    PxSocketTcpEvent_Close,
-}
-PxSocketTcpEventKind;
+typedef void (PSocketTcpAcceptProc)  (void*, PSocketTcp*, PSocketTcp*);
+typedef void (PSocketTcpConnectProc) (void*, PSocketTcp*, PHostIp, Bool);
+typedef void (PSocketTcpWriteProc)   (void*, PSocketTcp*, U8*, Int, Int, Int);
+typedef void (PSocketTcpReadProc)    (void*, PSocketTcp*, U8*, Int, Int, Int);
 
-typedef struct PxSocketTcpEventAccept
-{
-    PxSocketTcp* value;
-}
-PxSocketTcpEventAccept;
+Bool pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt, void* proc);
 
-typedef struct PxSocketTcpEventConnect
-{
-    b32 status;
-}
-PxSocketTcpEventConnect;
+Bool pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt, void* proc);
 
-typedef struct PxSocketTcpEventWrite
-{
-    u8*   pntr;
-    ssize start;
-    ssize stop;
-}
-PxSocketTcpEventWrite;
+Bool pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt, void* proc);
 
-typedef struct PxSocketTcpEventRead
-{
-    u8*   pntr;
-    ssize start;
-    ssize stop;
-}
-PxSocketTcpEventRead;
+Bool pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt, void* proc);
 
-typedef struct PxSocketTcpEvent
-{
-    PxSocketTcpEventKind kind;
-
-    void*        ctxt;
-    PxSocketTcp* self;
-
-    union
-    {
-        PxSocketTcpEventAccept  accept;
-        PxSocketTcpEventConnect connect;
-        PxSocketTcpEventWrite   write;
-        PxSocketTcpEventRead    read;
-    };
-}
-PxSocketTcpEvent;
-
-PxSocketTcpEvent pxSocketTcpEventAccept(void* ctxt, PxSocketTcp* self, PxSocketTcp* value);
-
-PxSocketTcpEvent pxSocketTcpEventConnect(void* ctxt, PxSocketTcp* self, b32 status);
-
-PxSocketTcpEvent pxSocketTcpEventWrite(void* ctxt, PxSocketTcp* self, u8* pntr, ssize start, ssize stop);
-
-PxSocketTcpEvent pxSocketTcpEventRead(void* ctxt, PxSocketTcp* self, u8* pntr, ssize start, ssize stop);
-
-PxSocketTcpEvent pxSocketTcpEventClose(void* ctxt, PxSocketTcp* self);
-
-b32 pxSocketTcpAcceptAsync(PxAsync* async, void* ctxt, PxSocketTcp* self, PxSocketTcp* value);
-
-b32 pxSocketTcpConnectAsync(PxAsync* async, void* ctxt, PxSocketTcp* self, PxAddressIp address, u16 port);
-
-b32 pxSocketTcpWriteAsync(PxAsync* async, void* ctxt, PxSocketTcp* self, u8* pntr, ssize start, ssize stop);
-
-b32 pxSocketTcpReadAsync(PxAsync* async, void* ctxt, PxSocketTcp* self, u8* pntr, ssize start, ssize stop);
-
-#endif // PX_SYSTEM_ASYNC_NETWORK_SOCKET_TCP_H
+#endif // P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H

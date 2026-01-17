@@ -1,14 +1,14 @@
-#ifndef PX_SYSTEM_TIME_CLOCK_H
-#define PX_SYSTEM_TIME_CLOCK_H
+#ifndef P_SYSTEM_TIME_CLOCK_H
+#define P_SYSTEM_TIME_CLOCK_H
 
 #include "import.h"
 
-typedef void PxClock;
+typedef struct PClock { U8 __private__; } PClock;
 
-PxClock* pxClockReserve(PxMemoryArena* arena);
+PClock* pClockReserve(PMemoryArena* arena);
 
-b32 pxClockCreate(PxClock* self);
+Bool pClockCreate(PClock* self);
 
-f32 pxClockElapsed(PxClock* self);
+F32 pClockElapsed(PClock* self);
 
-#endif // PX_SYSTEM_TIME_CLOCK_H
+#endif // P_SYSTEM_TIME_CLOCK_H

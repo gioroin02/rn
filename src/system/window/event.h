@@ -1,133 +1,133 @@
-#ifndef PX_SYSTEM_WINDOW_EVENT_H
-#define PX_SYSTEM_WINDOW_EVENT_H
+#ifndef P_SYSTEM_WINDOW_EVENT_H
+#define P_SYSTEM_WINDOW_EVENT_H
 
 #include "import.h"
 
-typedef enum PxWindowKeyboardKey
+typedef enum PWindowKeyboardKey
 {
-    PxWindowKeyboardKey_None,
-    PxWindowKeyboardKey_A,
-    PxWindowKeyboardKey_B,
-    PxWindowKeyboardKey_C,
-    PxWindowKeyboardKey_D,
-    PxWindowKeyboardKey_E,
-    PxWindowKeyboardKey_F,
-    PxWindowKeyboardKey_G,
-    PxWindowKeyboardKey_H,
-    PxWindowKeyboardKey_I,
-    PxWindowKeyboardKey_J,
-    PxWindowKeyboardKey_K,
-    PxWindowKeyboardKey_L,
-    PxWindowKeyboardKey_M,
-    PxWindowKeyboardKey_N,
-    PxWindowKeyboardKey_O,
-    PxWindowKeyboardKey_P,
-    PxWindowKeyboardKey_Q,
-    PxWindowKeyboardKey_R,
-    PxWindowKeyboardKey_S,
-    PxWindowKeyboardKey_T,
-    PxWindowKeyboardKey_U,
-    PxWindowKeyboardKey_V,
-    PxWindowKeyboardKey_W,
-    PxWindowKeyboardKey_X,
-    PxWindowKeyboardKey_Y,
-    PxWindowKeyboardKey_Z,
-    PxWindowKeyboardKey_0,
-    PxWindowKeyboardKey_1,
-    PxWindowKeyboardKey_2,
-    PxWindowKeyboardKey_3,
-    PxWindowKeyboardKey_4,
-    PxWindowKeyboardKey_5,
-    PxWindowKeyboardKey_6,
-    PxWindowKeyboardKey_7,
-    PxWindowKeyboardKey_8,
-    PxWindowKeyboardKey_9,
-    PxWindowKeyboardKey_Space,
-    PxWindowKeyboardKey_Minus,
-    PxWindowKeyboardKey_Equal,
-    PxWindowKeyboardKey_SquareLeft,
-    PxWindowKeyboardKey_SquareRight,
-    PxWindowKeyboardKey_BackSlash,
-    PxWindowKeyboardKey_SemiColon,
-    PxWindowKeyboardKey_Apostrophe,
-    PxWindowKeyboardKey_Grave,
-    PxWindowKeyboardKey_Comma,
-    PxWindowKeyboardKey_Period,
-    PxWindowKeyboardKey_Slash,
-    PxWindowKeyboardKey_Up,
-    PxWindowKeyboardKey_Down,
-    PxWindowKeyboardKey_Left,
-    PxWindowKeyboardKey_Right,
-    PxWindowKeyboardKey_Home,
-    PxWindowKeyboardKey_End,
-    PxWindowKeyboardKey_PageUp,
-    PxWindowKeyboardKey_PageDown,
-    PxWindowKeyboardKey_Insert,
-    PxWindowKeyboardKey_Delete,
-    PxWindowKeyboardKey_F1,
-    PxWindowKeyboardKey_F2,
-    PxWindowKeyboardKey_F3,
-    PxWindowKeyboardKey_F4,
-    PxWindowKeyboardKey_F5,
-    PxWindowKeyboardKey_F6,
-    PxWindowKeyboardKey_F7,
-    PxWindowKeyboardKey_F8,
-    PxWindowKeyboardKey_F9,
-    PxWindowKeyboardKey_F10,
-    PxWindowKeyboardKey_F11,
-    PxWindowKeyboardKey_F12,
-    PxWindowKeyboardKey_Enter,
-    PxWindowKeyboardKey_Escape,
-    PxWindowKeyboardKey_BackSpace,
-    PxWindowKeyboardKey_Tab,
+    PWindowKeyboardKey_None,
+    PWindowKeyboardKey_A,
+    PWindowKeyboardKey_B,
+    PWindowKeyboardKey_C,
+    PWindowKeyboardKey_D,
+    PWindowKeyboardKey_E,
+    PWindowKeyboardKey_F,
+    PWindowKeyboardKey_G,
+    PWindowKeyboardKey_H,
+    PWindowKeyboardKey_I,
+    PWindowKeyboardKey_J,
+    PWindowKeyboardKey_K,
+    PWindowKeyboardKey_L,
+    PWindowKeyboardKey_M,
+    PWindowKeyboardKey_N,
+    PWindowKeyboardKey_O,
+    PWindowKeyboardKey_P,
+    PWindowKeyboardKey_Q,
+    PWindowKeyboardKey_R,
+    PWindowKeyboardKey_S,
+    PWindowKeyboardKey_T,
+    PWindowKeyboardKey_U,
+    PWindowKeyboardKey_V,
+    PWindowKeyboardKey_W,
+    PWindowKeyboardKey_X,
+    PWindowKeyboardKey_Y,
+    PWindowKeyboardKey_Z,
+    PWindowKeyboardKey_0,
+    PWindowKeyboardKey_1,
+    PWindowKeyboardKey_2,
+    PWindowKeyboardKey_3,
+    PWindowKeyboardKey_4,
+    PWindowKeyboardKey_5,
+    PWindowKeyboardKey_6,
+    PWindowKeyboardKey_7,
+    PWindowKeyboardKey_8,
+    PWindowKeyboardKey_9,
+    PWindowKeyboardKey_Space,
+    PWindowKeyboardKey_Minus,
+    PWindowKeyboardKey_Equal,
+    PWindowKeyboardKey_SquareLeft,
+    PWindowKeyboardKey_SquareRight,
+    PWindowKeyboardKey_BackSlash,
+    PWindowKeyboardKey_SemiColon,
+    PWindowKeyboardKey_Apostrophe,
+    PWindowKeyboardKey_Grave,
+    PWindowKeyboardKey_Comma,
+    PWindowKeyboardKey_Period,
+    PWindowKeyboardKey_Slash,
+    PWindowKeyboardKey_Up,
+    PWindowKeyboardKey_Down,
+    PWindowKeyboardKey_Left,
+    PWindowKeyboardKey_Right,
+    PWindowKeyboardKey_Home,
+    PWindowKeyboardKey_End,
+    PWindowKeyboardKey_PageUp,
+    PWindowKeyboardKey_PageDown,
+    PWindowKeyboardKey_Insert,
+    PWindowKeyboardKey_Delete,
+    PWindowKeyboardKey_F1,
+    PWindowKeyboardKey_F2,
+    PWindowKeyboardKey_F3,
+    PWindowKeyboardKey_F4,
+    PWindowKeyboardKey_F5,
+    PWindowKeyboardKey_F6,
+    PWindowKeyboardKey_F7,
+    PWindowKeyboardKey_F8,
+    PWindowKeyboardKey_F9,
+    PWindowKeyboardKey_F10,
+    PWindowKeyboardKey_F11,
+    PWindowKeyboardKey_F12,
+    PWindowKeyboardKey_Enter,
+    PWindowKeyboardKey_Escape,
+    PWindowKeyboardKey_BackSpace,
+    PWindowKeyboardKey_Tab,
 }
-PxWindowKeyboardKey;
+PWindowKeyboardKey;
 
-typedef enum PxWindowEventKind
+typedef enum PWindowEventKind
 {
-    PxWindowEvent_None,
-    PxWindowEvent_Quit,
-    PxWindowEvent_WindowCreate,
-    PxWindowEvent_WindowDestroy,
-    PxWindowEvent_KeyboardKey,
+    PWindowEvent_None,
+    PWindowEvent_Quit,
+    PWindowEvent_WindowCreate,
+    PWindowEvent_WindowDestroy,
+    PWindowEvent_KeyboardKey,
 }
-PxWindowEventKind;
+PWindowEventKind;
 
-typedef struct PxWindowEventKeyboardKey
+typedef struct PWindowEventKeyboardKey
 {
-    PxWindowKeyboardKey key;
+    PWindowKeyboardKey key;
 
     b32   pressed;
     ssize scan;
 }
-PxWindowEventKeyboardKey;
+PWindowEventKeyboardKey;
 
-typedef struct PxWindowEvent
+typedef struct PWindowEvent
 {
-    PxWindowEventKind kind;
+    PWindowEventKind kind;
 
     void* self;
 
     union
     {
-        PxWindowEventKeyboardKey keyboard_key;
+        PWindowEventKeyboardKey keyboard_key;
     };
 }
-PxWindowEvent;
+PWindowEvent;
 
-PxWindowEvent
-pxWindowEventNone();
+PWindowEvent
+pWindowEventNone();
 
-PxWindowEvent
-pxWindowEventQuit(void* self);
+PWindowEvent
+pWindowEventQuit(void* self);
 
-PxWindowEvent
-pxWindowEventWindowCreate(void* self);
+PWindowEvent
+pWindowEventWindowCreate(void* self);
 
-PxWindowEvent
-pxWindowEventWindowDestroy(void* self);
+PWindowEvent
+pWindowEventWindowDestroy(void* self);
 
-PxWindowEvent
-pxWindowEventKeyboardKey(void* self, PxWindowKeyboardKey key, b32 pressed, ssize scan);
+PWindowEvent
+pWindowEventKeyboardKey(void* self, PWindowKeyboardKey key, b32 pressed, ssize scan);
 
-#endif // PX_SYSTEM_WINDOW_EVENT_H
+#endif // P_SYSTEM_WINDOW_EVENT_H

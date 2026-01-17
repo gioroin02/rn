@@ -5,30 +5,28 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    PxSocketUdp* socket = pxSocketUdpReserve(&arena);
+    PSocketUdp* socket = pSocketUdpReserve(&arena);
 
-    pxSocketUdpCreate(socket, pxAddressIp4Empty(), 50000);
-    pxSocketUdpBind(socket);
+    pSocketUdpCreate(socket, pHostIpMake(pAddressIp4Any(), 50000));
+    pSocketUdpBind(socket);
 
-    ssize conns = 0;
+    Int conns = 0;
 
     for (conns = 0; conns < 2; conns += 1) {
-        PxAddressIp address;
-        u16         port;
+        PHostIp host = pHostIpMake(pAddressIp4Any(), 0);
 
-        u8 buffer[256];
+        U8 buffer[256];
 
-        pxMemorySet(buffer, sizeof buffer, 0x00);
+        pMemorySet(buffer, sizeof buffer, 0x00);
 
-        ssize size = pxSocketUdpRead(socket, buffer,
-            0, sizeof buffer, &address, &port);
+        Int size = pSocketUdpRead(socket, buffer, 0, sizeof buffer, &host);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pxSocketUdpWrite(socket, buffer, 0, size, address, port);
+        pSocketUdpWrite(socket, buffer, 0, size, host);
     }
 
-    pxSocketUdpDestroy(socket);
+    pSocketUdpDestroy(socket);
 }

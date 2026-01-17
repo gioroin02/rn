@@ -5,32 +5,32 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    PxSocketTcp* listener = pxSocketTcpReserve(&arena);
+    PSocketTcp* listener = pSocketTcpReserve(&arena);
 
-    pxSocketTcpCreate(listener, pxAddressIp4Empty(), 50000);
-    pxSocketTcpBind(listener);
-    pxSocketTcpListen(listener);
+    pSocketTcpCreate(listener, pHostIpMake(pAddressIp4Any(), 50000));
+    pSocketTcpBind(listener);
+    pSocketTcpListen(listener);
 
-    ssize conns = 0;
+    Int conns = 0;
 
     for (conns = 0; conns < 2; conns += 1) {
-        PxSocketTcp* socket = pxSocketTcpReserve(&arena);
+        PSocketTcp* socket = pSocketTcpReserve(&arena);
 
-        pxSocketTcpAccept(listener, socket);
+        pSocketTcpAccept(listener, socket);
 
-        u8 buffer[256];
+        U8 buffer[256];
 
-        pxMemorySet(buffer, sizeof buffer, 0x00);
+        pMemorySet(buffer, sizeof buffer, 0x00);
 
-        ssize size = pxSocketTcpRead(socket, buffer, 0, sizeof buffer);
+        Int size = pSocketTcpRead(socket, buffer, 0, sizeof buffer);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pxSocketTcpWrite(socket, buffer, 0, size);
-        pxSocketTcpDestroy(socket);
+        pSocketTcpWrite(socket, buffer, 0, size);
+        pSocketTcpDestroy(socket);
     }
 
-    pxSocketTcpDestroy(listener);
+    pSocketTcpDestroy(listener);
 }

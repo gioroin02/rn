@@ -1,15 +1,17 @@
-#ifndef PX_SYSTEM_TIME_CLOCK_C
-#define PX_SYSTEM_TIME_CLOCK_C
+#ifndef P_SYSTEM_TIME_CLOCK_C
+#define P_SYSTEM_TIME_CLOCK_C
 
 #include "clock.h"
 
-#if PX_SYSTEM == PX_SYSTEM_WINDOWS
+#if P_SYSTEM == P_SYSTEM_WINDOWS
 
-    #include "../win32/time/export.c"
+    #include "win32/export.c"
 
-    #define __pxClockReserve__ pxWin32ClockReserve
-    #define __pxClockCreate__  pxWin32ClockCreate
-    #define __pxClockElapsed__ pxWin32ClockElapsed
+    #define __PClock__ PWin32Clock
+
+    #define __pClockReserve__ pWin32ClockReserve
+    #define __pClockCreate__  pWin32ClockCreate
+    #define __pClockElapsed__ pWin32ClockElapsed
 
 #else
 
@@ -17,19 +19,19 @@
 
 #endif
 
-PxClock* pxClockReserve(PxMemoryArena* arena)
+PClock* pClockReserve(PMemoryArena* arena)
 {
-    return __pxClockReserve__(arena);
+    return (PClock*) __pClockReserve__(arena);
 }
 
-b32 pxClockCreate(PxClock* self)
+Bool pClockCreate(PClock* self)
 {
-    return __pxClockCreate__(self);
+    return __pClockCreate__((__PClock__*) self);
 }
 
-f32 pxClockElapsed(PxClock* self)
+F32 pClockElapsed(PClock* self)
 {
-    return __pxClockElapsed__(self);
+    return __pClockElapsed__((__PClock__*) self);
 }
 
-#endif // PX_SYSTEM_TIME_CLOCK_C
+#endif // P_SYSTEM_TIME_CLOCK_C

@@ -2,36 +2,43 @@
 
 #include <stdio.h>
 
-typedef PxArray(u32) PxArrayU32;
+typedef PArray(U32) PArrayU32;
 
 int  main(int argc, char** argv)
 {
-    u8 memory[256];
+    U8 memory[256];
 
-    PxMemoryArena arena = pxMemoryArenaMake(memory, sizeof memory);
+    PMemoryArena arena = pMemoryArenaMake(memory, sizeof memory);
 
-    PxArrayU32 array;
+    PArrayU32 array;
 
-    printf("reserve = %lu\n", pxArrayCreate(&array, &arena, 17));
+    printf("reserve = %llu\n", pArrayCreate(&array, &arena, 17));
 
-    pxArrayInsertBack(&array, 156);
-    pxArrayInsertBack(&array, 222);
-    pxArrayInsertBack(&array, 9);
-    pxArrayInsertBack(&array, 453);
-    pxArrayInsertBack(&array, 333);
+    pArrayInsertBack(&array, 156);
+    pArrayInsertBack(&array, 222);
+    pArrayInsertBack(&array, 9);
+    pArrayInsertBack(&array, 453);
+    pArrayInsertBack(&array, 333);
 
-    u32   temp  = 0;
-    ssize state = pxArrayRemove(&array, 0, &temp);
+    U32  temp  = 0;
+    Bool state = pArrayRemove(&array, 0, &temp);
 
-    printf("remove (0,   &x) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
+    printf("remove (0) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
 
     temp  = 0;
-    state = pxArrayRemove(&array, 2, PX_NULL);
+    state = pArrayRemove(&array, 2, &temp);
 
-    printf("remove (2, null) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
+    printf("remove (2) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
 
-    ssize index = 0;
+    Int index = 0;
 
-    for (index = 0; index < pxArrayCount(&array); index += 1)
-        printf("#%03lli %4lu\n", index, *pxArrayGetPntr(&array, index));
+    for (index = 0; index < pArrayCount(&array); index += 1)
+        printf("#%03lli %4lu\n", index, *pArrayGetPntr(&array, index));
+
+    state = pArrayDropBack(&array);
+
+    printf("drop (back) -> (%s)\n", state ? "SUCC" : "FAIL");
+
+    for (index = 0; index < pArrayCount(&array); index += 1)
+        printf("#%03lli %4lu\n", index, *pArrayGetPntr(&array, index));
 }

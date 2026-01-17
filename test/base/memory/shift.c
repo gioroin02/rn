@@ -4,12 +4,12 @@
 
 int main(int argc, char** argv)
 {
-    u8 memory[32];
+    U8 memory[32];
 
-    ssize index = 0;
+    Int index = 0;
 
     for (index = 0; index < sizeof memory; index += 1)
-        memory[index] = (u8) index;
+        memory[index] = (U8) index;
 
     for (index = 0; index < sizeof memory; index += 1) {
         printf("%2X ", memory[index]);
@@ -18,7 +18,7 @@ int main(int argc, char** argv)
             printf("\n");
     }
 
-    pxMemoryShiftForw(memory, sizeof memory, 8, 0xAB);
+    pMemoryShiftForw(memory, sizeof memory, 8, 0xAB);
 
     printf("\n");
 
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
             printf("\n");
     }
 
-    pxMemoryShiftBack(memory, sizeof memory, 8, 0xAB);
+    pMemoryShiftBack(memory, sizeof memory, 8, 0xAB);
 
     printf("\n");
 

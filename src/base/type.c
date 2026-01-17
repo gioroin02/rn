@@ -1,6 +1,6 @@
-#ifndef PX_BASE_TYPE_C
-#define PX_BASE_TYPE_C
+#ifndef P_BASE_TYPE_C
+#define P_BASE_TYPE_C
 
 #include "type.h"
 
-#endif // PX_BASE_TYPE_C
+#endif // P_BASE_TYPE_C

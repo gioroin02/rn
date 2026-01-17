@@ -1,19 +1,18 @@
-#ifndef PX_SYSTEM_STORAGE_FILE_C
-#define PX_SYSTEM_STORAGE_FILE_C
+#ifndef P_SYSTEM_STORAGE_FILE_C
+#define P_SYSTEM_STORAGE_FILE_C
 
 #include "file.h"
 
-#if PX_SYSTEM == PX_SYSTEM_WINDOWS
+#if P_SYSTEM == P_SYSTEM_WINDOWS
 
-    #include "../win32/storage/export.c"
+    #include "win32/export.c"
 
-    #define __pxFileReserve__       pxWin32FileReserve
-    #define __pxFileConsoleInput__  pxWin32FileConsoleInput
-    #define __pxFileConsoleOutput__ pxWin32FileConsoleOutput
-    #define __pxFileConsoleError__  pxWin32FileConsoleError
-    #define __pxFileDestroy__       pxWin32FileDestroy
-    #define __pxFileWrite__         pxWin32FileWrite
-    #define __pxFileRead__          pxWin32FileRead
+    #define __PFile__ PWin32File
+
+    #define __pFileReserve__ pWin32FileReserve
+    #define __pFileDestroy__ pWin32FileDestroy
+    #define __pFileWrite__   pWin32FileWrite
+    #define __pFileRead__    pWin32FileRead
 
 #else
 
@@ -21,40 +20,25 @@
 
 #endif
 
-PxFile*
-pxFileReserve(PxMemoryArena* arena)
+PFile*
+pFileReserve(PMemoryArena* arena)
 {
-    return __pxFileReserve__(arena);
+    return (PFile*) __pFileReserve__(arena);
 }
 
-b32 pxFileConsoleInput(PxFile* self)
+void pFileDestroy(PFile* self)
 {
-    return __pxFileConsoleInput__(self);
+    return __pFileDestroy__((__PFile__*) self);
 }
 
-b32 pxFileConsoleOutput(PxFile* self)
+Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop)
 {
-    return __pxFileConsoleOutput__(self);
+    return __pFileWrite__((__PFile__*) self, pntr, start, stop);
 }
 
-b32 pxFileConsoleError(PxFile* self)
+Int pFileRead(PFile* self, U8* pntr, Int start, Int stop)
 {
-    return __pxFileConsoleError__(self);
+    return __pFileRead__((__PFile__*) self, pntr, start, stop);
 }
 
-void pxFileDestroy(PxFile* self)
-{
-    return __pxFileDestroy__(self);
-}
-
-ssize pxFileWrite(PxFile* self, u8* pntr, ssize start, ssize stop)
-{
-    return __pxFileWrite__(self, pntr, start, stop);
-}
-
-ssize pxFileRead(PxFile* self, u8* pntr, ssize start, ssize stop)
-{
-    return __pxFileRead__(self, pntr, start, stop);
-}
-
-#endif // PX_SYSTEM_STORAGE_FILE_C
+#endif // P_SYSTEM_STORAGE_FILE_C

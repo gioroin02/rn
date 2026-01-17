@@ -7,7 +7,7 @@ U8Vec2 u8Vec2(u8 v0, u8 v1)
 {
     U8Vec2 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -19,7 +19,7 @@ U8Vec3 u8Vec3(u8 v0, u8 v1, u8 v2)
 {
     U8Vec3 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -32,7 +32,7 @@ U8Vec4 u8Vec4(u8 v0, u8 v1, u8 v2, u8 v3)
 {
     U8Vec4 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -46,7 +46,7 @@ U16Vec2 u16Vec2(u16 v0, u16 v1)
 {
     U16Vec2 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -58,7 +58,7 @@ U16Vec3 u16Vec3(u16 v0, u16 v1, u16 v2)
 {
     U16Vec3 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -71,7 +71,7 @@ U16Vec4 u16Vec4(u16 v0, u16 v1, u16 v2, u16 v3)
 {
     U16Vec4 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -85,7 +85,7 @@ U32Vec2 u32Vec2(u32 v0, u32 v1)
 {
     U32Vec2 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -97,7 +97,7 @@ U32Vec3 u32Vec3(u32 v0, u32 v1, u32 v2)
 {
     U32Vec3 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -110,7 +110,7 @@ U32Vec4 u32Vec4(u32 v0, u32 v1, u32 v2, u32 v3)
 {
     U32Vec4 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -124,7 +124,7 @@ U64Vec2 u64Vec2(u64 v0, u64 v1)
 {
     U64Vec2 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -136,7 +136,7 @@ U64Vec3 u64Vec3(u64 v0, u64 v1, u64 v2)
 {
     U64Vec3 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;
@@ -149,7 +149,7 @@ U64Vec4 u64Vec4(u64 v0, u64 v1, u64 v2, u64 v3)
 {
     U64Vec4 result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
     result.v0 = v0;
     result.v1 = v1;

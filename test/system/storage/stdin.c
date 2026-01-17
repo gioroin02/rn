@@ -5,19 +5,19 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    PxFile* file = pxFileReserve(&arena);
+    PFile* file = pFileReserve(&arena);
 
-    pxFileConsoleInput(file);
+    pFileConsoleInput(file);
 
-    u8 buffer[256];
+    U8 buffer[256];
 
-    pxMemorySet(buffer, sizeof buffer, 0x00);
+    pMemorySet(buffer, sizeof buffer, 0x00);
 
-    ssize size = pxFileRead(file, buffer, 0, sizeof buffer);
+    Int size = pFileRead(file, buffer, 0, sizeof buffer);
 
-    printf("%.*s\n", ((int) size), buffer);
+    printf("%.*s\n", (int) size, buffer);
 
-    pxFileDestroy(file);
+    pFileDestroy(file);
 }

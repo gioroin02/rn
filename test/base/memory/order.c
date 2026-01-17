@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    if (pxHostByteOrderIsNetwork() != 0)
+    if (pHostByteOrderIsNetwork() != 0)
         printf("network\n");
     else
         printf("reverse\n");

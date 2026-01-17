@@ -5,7 +5,7 @@ set "compiler=zig cc"
 set "impl=%impl% src\base\export.c"
 set "impl=%impl% src\base\memory\export.c"
 set "impl=%impl% src\system\memory\export.c"
-set "impl=%impl% src\system\async\export.c"
+set "impl=%impl% src\system\asyncio\export.c"
 set "impl=%impl% src\system\network\export.c"
 set "impl=%impl% src\system\network\async\export.c"
 

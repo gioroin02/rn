@@ -1,0 +1,6 @@
+#ifndef P_SYSTEM_WIN32_STORAGE_EXPORT_H
+#define P_SYSTEM_WIN32_STORAGE_EXPORT_H
+
+#include "file.h"
+
+#endif // P_SYSTEM_WIN32_STORAGE_EXPORT_H

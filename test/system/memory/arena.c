@@ -4,8 +4,8 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(16);
+    PMemoryArena arena = pSystemMemoryReserve(16);
 
     printf("0x%llx, %lli\n",
-        ((usize) pxMemoryArenaPntr(&arena)), pxMemoryArenaSize(&arena));
+        (Uint) pMemoryArenaPntr(&arena), pMemoryArenaSize(&arena));
 }

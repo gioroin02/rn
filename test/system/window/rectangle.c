@@ -5,9 +5,9 @@
 
 typedef struct Context
 {
-    PxWindow* window;
-    PxBitmap* bitmap;
-    PxClock*  clock;
+    PWindow* window;
+    PBitmap* bitmap;
+    PClock*  clock;
 
     f32 ticks;
     f32 time;
@@ -17,22 +17,22 @@ Context;
 
 void contextUpdate(Context* self)
 {
-    f32 elapsed = pxClockElapsed(self->clock);
+    f32 elapsed = pClockElapsed(self->clock);
 
-    ssize width  = pxBitmapWidth(self->bitmap);
-    ssize height = pxBitmapHeight(self->bitmap);
-    ssize x      = pxWindowWidthGet(self->window) / 2 - width / 2;
-    ssize y      = pxWindowHeightGet(self->window) / 2 - height / 2;
+    ssize width  = pBitmapWidth(self->bitmap);
+    ssize height = pBitmapHeight(self->bitmap);
+    ssize x      = pWindowWidthGet(self->window) / 2 - width / 2;
+    ssize y      = pWindowHeightGet(self->window) / 2 - height / 2;
 
     self->ticks += elapsed;
     self->time  += elapsed;
 
-    pxWindowClear(self->window, 0x0F, 0x0F, 0x0F);
+    pWindowClear(self->window, 0x0F, 0x0F, 0x0F);
 
     f32 delta_sin = sin(self->ticks * 5);
     f32 delta_cos = cos(self->ticks * 5);
 
-    pxBitmapFill(self->bitmap, 0x08, 0x08, 0x08, 0xFF);
+    pBitmapFill(self->bitmap, 0x08, 0x08, 0x08, 0xFF);
 
     paintTriangle(self->bitmap,
         s64Vec2(100 + delta_sin * 5, 50 + delta_cos * 5),
@@ -56,58 +56,58 @@ void contextUpdate(Context* self)
         u8Vec4(0x14, 0x7D, 0xF5, 0xFF),
         u8Vec4(0xF5, 0x7D, 0x14, 0xFF));
 
-    pxWindowPaint(self->window, 0, 0, width, height, self->bitmap);
+    pWindowPaint(self->window, 0, 0, width, height, self->bitmap);
 
-    pxWindowFlush(self->window);
+    pWindowFlush(self->window);
 }
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(8));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(8));
 
     Context context;
 
-    pxMemorySet(&context, sizeof context, 0xAB);
+    pMemorySet(&context, sizeof context, 0xAB);
 
-    context.window = pxWindowReserve(&arena);
-    context.bitmap = pxBitmapReserve(&arena);
-    context.clock  = pxClockReserve(&arena);
+    context.window = pWindowReserve(&arena);
+    context.bitmap = pBitmapReserve(&arena);
+    context.clock  = pClockReserve(&arena);
     context.ticks  = 0;
     context.active = 1;
 
-    pxWindowCreate(context.window, pxString8("Prova"), 1600, 900);
-    pxBitmapCreate(context.bitmap, &arena, 400, 400);
-    pxClockCreate(context.clock);
+    pWindowCreate(context.window, pString8("Prova"), 1600, 900);
+    pBitmapCreate(context.bitmap, &arena, 400, 400);
+    pClockCreate(context.clock);
 
-    pxWindowPntrContextSet(context.window, &context);
-    pxWindowProcUpdateSet(context.window, contextUpdate);
-    pxWindowVisibilitySet(context.window, PxWindowVisibility_Show);
+    pWindowPntrContextSet(context.window, &context);
+    pWindowProcUpdateSet(context.window, contextUpdate);
+    pWindowVisibilitySet(context.window, PWindowVisibility_Show);
 
     while (context.active != 0) {
-        PxWindowEvent event;
+        PWindowEvent event;
 
-        pxMemorySet(&event, sizeof event, 0xAB);
+        pMemorySet(&event, sizeof event, 0xAB);
 
-        while (pxWindowPollEvent(context.window, &event) != 0) {
+        while (pWindowPollEvent(context.window, &event) != 0) {
             switch (event.kind) {
-                case PxWindowEvent_Quit: context.active = 0; break;
+                case PWindowEvent_Quit: context.active = 0; break;
 
-                case PxWindowEvent_KeyboardKey: {
-                    PxWindowKeyboardKey key     = event.keyboard_key.key;
+                case PWindowEvent_KeyboardKey: {
+                    PWindowKeyboardKey key     = event.keyboard_key.key;
                     b32                 pressed = event.keyboard_key.pressed;
 
-                    if (pressed != 0 && key == PxWindowKeyboardKey_Escape)
+                    if (pressed != 0 && key == PWindowKeyboardKey_Escape)
                         context.active = 0;
                 } break;
 
                 default: break;
             }
 
-            pxMemorySet(&event, sizeof event, 0xAB);
+            pMemorySet(&event, sizeof event, 0xAB);
         }
 
         contextUpdate(&context);
     }
 
-    pxWindowDestroy(context.window);
+    pWindowDestroy(context.window);
 }

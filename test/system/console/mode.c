@@ -5,24 +5,23 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    PxConsole* console = pxConsoleReserve(&arena);
+    PConsole* console = pConsoleReserve(&arena);
 
-    pxConsoleCreate(console);
-    pxConsoleModeSet(console, PxConsoleMode_Raw);
+    pConsoleCreate(console);
+    pConsoleModeSet(console, PConsoleMode_Raw);
 
-    PxConsoleEvent event;
+    PConsoleEvent event;
 
-    b32 active = 1;
+    Bool active = 1;
 
     while (active != 0) {
-        while (pxConsolePollEvent(console, &event) != 0) {
+        while (pConsolePollEvent(console, &event) != 0) {
             switch (event.kind) {
-                case PxConsoleEvent_KeyboardKey: {
-                    PxConsoleKeyboardKey key = event.keyboard_key.key;
-
-                    if (key == PxConsoleKeyboardKey_Escape) active = 0;
+                case PConsoleEvent_KeyboardKey: {
+                    if (event.keyboard_key.key == PConsoleKeyboard_Escape)
+                        active = 0;
                 } break;
 
                 default: break;
@@ -30,5 +29,5 @@ int main(int argc, char** argv)
         }
     }
 
-    pxConsoleDestroy(console);
+    pConsoleDestroy(console);
 }

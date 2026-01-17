@@ -1,19 +1,19 @@
-#ifndef PX_SYSTEM_CONSOLE_EVENT_C
-#define PX_SYSTEM_CONSOLE_EVENT_C
+#ifndef P_SYSTEM_CONSOLE_EVENT_C
+#define P_SYSTEM_CONSOLE_EVENT_C
 
 #include "event.h"
 
-PxConsoleEvent
-pxConsoleEventKeyboardKey(PxConsoleKeyboardKey key)
+PConsoleEvent
+pConsoleEventKeyboardKey(PConsoleKeyboardKey key)
 {
-    PxConsoleEvent result;
+    PConsoleEvent result;
 
-    pxMemorySet(&result, sizeof result, 0xAB);
+    pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind             = PxConsoleEvent_KeyboardKey;
+    result.kind             = PConsoleEvent_KeyboardKey;
     result.keyboard_key.key = key;
 
     return result;
 }
 
-#endif // PX_SYSTEM_CONSOLE_EVENT_C
+#endif // P_SYSTEM_CONSOLE_EVENT_C

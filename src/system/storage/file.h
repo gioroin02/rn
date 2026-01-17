@@ -1,22 +1,16 @@
-#ifndef PX_SYSTEM_STORAGE_FILE_H
-#define PX_SYSTEM_STORAGE_FILE_H
+#ifndef P_SYSTEM_STORAGE_FILE_H
+#define P_SYSTEM_STORAGE_FILE_H
 
 #include "import.h"
 
-typedef void PxFile;
+typedef struct PFile { U8 __private__; } PFile;
 
-PxFile* pxFileReserve(PxMemoryArena* arena);
+PFile* pFileReserve(PMemoryArena* arena);
 
-b32 pxFileConsoleInput(PxFile* self);
+void pFileDestroy(PFile* self);
 
-b32 pxFileConsoleOutput(PxFile* self);
+Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop);
 
-b32 pxFileConsoleError(PxFile* self);
+Int pFileRead(PFile* self, U8* pntr, Int start, Int stop);
 
-void pxFileDestroy(PxFile* self);
-
-ssize pxFileWrite(PxFile* self, u8* pntr, ssize start, ssize stop);
-
-ssize pxFileRead(PxFile* self, u8* pntr, ssize start, ssize stop);
-
-#endif // PX_SYSTEM_STORAGE_FILE_H
+#endif // P_SYSTEM_STORAGE_FILE_H

@@ -1,53 +1,53 @@
-#ifndef PX_SYSTEM_WINDOW_WINDOW_H
-#define PX_SYSTEM_WINDOW_WINDOW_H
+#ifndef P_SYSTEM_WINDOW_WINDOW_H
+#define P_SYSTEM_WINDOW_WINDOW_H
 
 #include "event.h"
 #include "bitmap.h"
 
-typedef enum PxWindowVisibility
+typedef enum PWindowVisibility
 {
-    PxWindowVisibility_None,
-    PxWindowVisibility_Hide,
-    PxWindowVisibility_Show,
+    PWindowVisibility_None,
+    PWindowVisibility_Hide,
+    PWindowVisibility_Show,
 }
-PxWindowVisibility;
+PWindowVisibility;
 
-typedef void PxWindow;
+typedef void PWindow;
 
-typedef void (PxWindowProcUpdate) (PxWindow*);
+typedef void (PWindowProcUpdate) (PWindow*);
 
-PxWindow* pxWindowReserve(PxMemoryArena* arena);
+PWindow* pWindowReserve(PMemoryArena* arena);
 
-b32 pxWindowCreate(PxWindow* self, PxString8 title, ssize width, ssize height);
+b32 pWindowCreate(PWindow* self, PString8 title, ssize width, ssize height);
 
-void pxWindowDestroy(PxWindow* self);
+void pWindowDestroy(PWindow* self);
 
-void pxWindowClear(PxWindow* self, u8 red, u8 green, u8 blue);
+void pWindowClear(PWindow* self, u8 red, u8 green, u8 blue);
 
-void pxWindowPaint(PxWindow* self, ssize x, ssize y, ssize width, ssize height, PxBitmap* bitmap);
+void pWindowPaint(PWindow* self, ssize x, ssize y, ssize width, ssize height, PBitmap* bitmap);
 
-void pxWindowFlush(PxWindow* self);
+void pWindowFlush(PWindow* self);
 
-b32 pxWindowPollEvent(PxWindow* self, PxWindowEvent* event);
+b32 pWindowPollEvent(PWindow* self, PWindowEvent* event);
 
-ssize pxWindowWidthSet(PxWindow* self, ssize width);
+ssize pWindowWidthSet(PWindow* self, ssize width);
 
-ssize pxWindowWidthGet(PxWindow* self);
+ssize pWindowWidthGet(PWindow* self);
 
-ssize pxWindowHeightSet(PxWindow* self, ssize height);
+ssize pWindowHeightSet(PWindow* self, ssize height);
 
-ssize pxWindowHeightGet(PxWindow* self);
+ssize pWindowHeightGet(PWindow* self);
 
-void* pxWindowPntrContextSet(PxWindow* self, void* ctxt);
+void* pWindowPntrContextSet(PWindow* self, void* ctxt);
 
-void* pxWindowPntrContextGet(PxWindow* self);
+void* pWindowPntrContextGet(PWindow* self);
 
-void* pxWindowProcUpdateSet(PxWindow* self, void* proc);
+void* pWindowProcUpdateSet(PWindow* self, void* proc);
 
-void* pxWindowProcUpdateGet(PxWindow* self);
+void* pWindowProcUpdateGet(PWindow* self);
 
-b32 pxWindowVisibilitySet(PxWindow* self, PxWindowVisibility visibility);
+b32 pWindowVisibilitySet(PWindow* self, PWindowVisibility visibility);
 
-PxWindowVisibility pxWindowVisibilityGet(PxWindow* self);
+PWindowVisibility pWindowVisibilityGet(PWindow* self);
 
-#endif // PX_SYSTEM_WINDOW_WINDOW_H
+#endif // P_SYSTEM_WINDOW_WINDOW_H

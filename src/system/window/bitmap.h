@@ -1,22 +1,22 @@
-#ifndef PX_SYSTEM_BITMAP_H
-#define PX_SYSTEM_BITMAP_H
+#ifndef P_SYSTEM_BITMAP_H
+#define P_SYSTEM_BITMAP_H
 
 #include "import.h"
 
-typedef void PxBitmap;
+typedef void PBitmap;
 
-PxBitmap* pxBitmapReserve(PxMemoryArena* arena);
+PBitmap* pBitmapReserve(PMemoryArena* arena);
 
-b32 pxBitmapCreate(PxBitmap* self, PxMemoryArena* arena, ssize width, ssize height);
+b32 pBitmapCreate(PBitmap* self, PMemoryArena* arena, ssize width, ssize height);
 
-ssize pxBitmapWidth(PxBitmap* self);
+ssize pBitmapWidth(PBitmap* self);
 
-ssize pxBitmapHeight(PxBitmap* self);
+ssize pBitmapHeight(PBitmap* self);
 
-void pxBitmapFill(PxBitmap* self, u8 red, u8 green, u8 blue, u8 alpha);
+void pBitmapFill(PBitmap* self, u8 red, u8 green, u8 blue, u8 alpha);
 
-b32 pxBitmapPixelSet(PxBitmap* self, ssize x, ssize y, u8 red, u8 green, u8 blue, u8 alpha);
+b32 pBitmapPixelSet(PBitmap* self, ssize x, ssize y, u8 red, u8 green, u8 blue, u8 alpha);
 
-b32 pxBitmapPixelGet(PxBitmap* self, ssize x, ssize y, u8* red, u8* green, u8* blue, u8* alpha);
+b32 pBitmapPixelGet(PBitmap* self, ssize x, ssize y, u8* red, u8* green, u8* blue, u8* alpha);
 
-#endif // PX_SYSTEM_BITMAP_H
+#endif // P_SYSTEM_BITMAP_H

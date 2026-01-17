@@ -5,26 +5,27 @@
 
 int main(int argc, char** argv)
 {
-    PxMemoryArena arena = pxSystemMemoryReserve(pxMemoryMIB(2));
+    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    PxSocketUdp* socket = pxSocketUdpReserve(&arena);
+    PSocketUdp* socket = pSocketUdpReserve(&arena);
 
-    pxSocketUdpCreate(socket, pxAddressIp4Empty(), 0);
+    pSocketUdpCreate(socket, pHostIpMake(pAddressIp4Any(), 0));
 
-    u8 buffer[256];
+    U8 buffer[256];
 
-    pxMemorySet(buffer, sizeof buffer, 0x00);
+    pMemorySet(buffer, sizeof buffer, 0x00);
 
-    ssize size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
+    Int size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
 
-    pxSocketUdpWrite(socket, buffer,
-        0, size, pxAddressIp4Local(), 50000);
+    PHostIp host = pHostIpMake(pAddressIp4Self(), 50000);
 
-    pxMemorySet(buffer, sizeof buffer, 0x00);
+    pSocketUdpWrite(socket, buffer, 0, size, host);
 
-    size = pxSocketUdpRead(socket, buffer, 0, sizeof buffer, 0, 0);
+    pMemorySet(buffer, sizeof buffer, 0x00);
+
+    size = pSocketUdpRead(socket, buffer, 0, sizeof buffer, &host);
 
     printf("%.*s\n", ((int) size), buffer);
 
-    pxSocketUdpDestroy(socket);
+    pSocketUdpDestroy(socket);
 }
