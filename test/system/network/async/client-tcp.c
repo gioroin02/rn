@@ -7,8 +7,6 @@
 
 typedef struct Client
 {
-    PMemoryArena* arena;
-
     PAsyncIoQueue* queue;
     PSocketTcp*    socket;
 
@@ -16,42 +14,33 @@ typedef struct Client
 }
 Client;
 
-void clientOnTcpConnect(Client* self, PSocketTcp* socket, PHostIp host, Bool status);
-
-void clientOnTcpWrite(Client* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes);
-
-void clientOnTcpRead(Client* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes);
-
-void clientOnTcpConnect(Client* self, PSocketTcp* socket, PHostIp host, Bool status)
+void clientOnTcpConnect(Client* self, PMemoryArena* arena, PSocketTcpEventConnect event)
 {
-    if (status != 0) {
+    if (event.status != 0) {
         printf("[DEBUG] Connected!\n");
 
-        U8* buffer = pMemoryArenaReserveManyOf(self->arena, U8, 256);
-        Int stop   = snprintf((I8*) buffer, 256, "%s", "Ciao");
+        U8* buffer = pMemoryArenaReserveManyOf(arena, U8, 256);
+        Int count  = snprintf((I8*) buffer, 256, "%s", "Ciao");
 
-        self->active = pSocketTcpWriteAsync(socket, buffer, 0, stop,
-            self->queue, self, clientOnTcpWrite);
+        self->active = pSocketTcpWriteAsync(
+            self->socket, buffer, 0, count, self->queue, NULL);
     }
     else self->active = 0;
 }
 
-void clientOnTcpWrite(Client* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes)
+void clientOnTcpWrite(Client* self, PMemoryArena* arena, PSocketTcpEventWrite event)
 {
-    U8* buffer = pMemoryArenaReserveManyOf(self->arena, U8, 256);
+    U8* buffer = pMemoryArenaReserveManyOf(arena, U8, 256);
 
-    self->active = pSocketTcpReadAsync(socket, buffer, 0, 256,
-        self->queue, self, clientOnTcpRead);
+    self->active = pSocketTcpReadAsync(
+        event.socket, buffer, 0, 256, self->queue, NULL);
 
     printf("[DEBUG] Wrote!\n");
 }
 
-void clientOnTcpRead(Client* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes)
+void clientOnTcpRead(Client* self, PMemoryArena* arena, PSocketTcpEventRead event)
 {
-    printf("[DEBUG] Read '%.*s'!\n", ((int) bytes), pntr + start);
-
-    pSocketTcpDestroy(self->socket);
-    pAsyncIoQueueDestroy(self->queue);
+    printf("[DEBUG] Read '%.*s'!\n", ((int) event.bytes), event.pntr + event.start);
 
     self->active = 0;
 }
@@ -62,7 +51,6 @@ int main(int argc, char** argv)
 
     Client client;
 
-    client.arena  = &arena;
     client.queue  = pAsyncIoQueueReserve(&arena);
     client.socket = pSocketTcpReserve(&arena);
 
@@ -77,11 +65,34 @@ int main(int argc, char** argv)
 
     PHostIp server = pHostIpMake(pAddressIp4Self(), 50000);
 
-    client.active = pSocketTcpConnectAsync(client.socket, server,
-        client.queue, &client, clientOnTcpConnect);
+    client.active = pSocketTcpConnectAsync(client.socket, server, client.queue, NULL);
 
-    while (client.active != 0)
-        pAsyncIoQueuePollEvents(client.queue, 10);
+    while (client.active != 0) {
+        void*             marker = pMemoryArenaTell(&arena);
+        PAsyncIoEvent*    event  = NULL;
+        PAsyncIoEventKind kind   = pAsyncIoQueuePollEvent(client.queue, 10, &arena, &event);
+
+        if (kind == PAsyncIoEvent_None) continue;
+
+        switch (kind) {
+            case PAsyncIoEvent_Tcp: {
+                PSocketTcpEvent event_tcp = *(PSocketTcpEvent*) event;
+
+                pMemoryArenaRewind(&arena, marker);
+
+                switch (event_tcp.kind) {
+                    case PSocketTcpEvent_Connect: clientOnTcpConnect(&client, &arena, event_tcp.connect); break;
+                    case PSocketTcpEvent_Write:   clientOnTcpWrite(&client, &arena, event_tcp.write); break;
+                    case PSocketTcpEvent_Read:    clientOnTcpRead(&client, &arena, event_tcp.read); break;
+
+                    default: break;
+                }
+            } break;
+
+            default: break;
+        }
+    }
 
     pSocketTcpDestroy(client.socket);
+    pAsyncIoQueueDestroy(client.queue);
 }

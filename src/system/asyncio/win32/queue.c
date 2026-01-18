@@ -87,29 +87,29 @@ void pWin32AsyncIoQueueDestroy(PWin32AsyncIoQueue* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-void pWin32AsyncIoQueuePollEvents(PWin32AsyncIoQueue* self, Int timeout)
+PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event)
 {
     Int time = timeout >= 0 ? timeout : INFINITE;
+
+    PAsyncIoEventKind result = PAsyncIoEvent_None;
 
     OVERLAPPED* overlap = NULL;
     Int         bytes   = 0;
     Uint*       key     = 0;
-    BOOL        status  = 1;
 
-    while (status != 0) {
-        status = GetQueuedCompletionStatus(self->handle,
-            (DWORD*) &bytes, (ULONG_PTR*) &key, &overlap, time);
+    BOOL status = GetQueuedCompletionStatus(self->handle,
+        (DWORD*) &bytes, (ULONG_PTR*) &key, &overlap, time);
 
-        if (status == 0 && GetLastError() != WAIT_TIMEOUT) break;
+    if (status == 0 && GetLastError() != WAIT_TIMEOUT) return result;
 
-        PWin32AsyncIoTask* value =
-            pWin32AsyncIoQueueRemoveByOverlapped(self, overlap);
+    PWin32AsyncIoTask* value = pWin32AsyncIoQueueRemoveByOverlapped(self, overlap);
 
-        if (value != NULL && value->callback != NULL)
-            ((PWin32AsyncIoProc*) value->callback)(value, bytes);
+    if (value != NULL && value->callback != NULL)
+        result = ((PWin32AsyncIoProc*) value->callback)(value, bytes, arena, event);
 
-        pMemoryPoolRelease(&self->pool, value);
-    }
+    pMemoryPoolRelease(&self->pool, value);
+
+    return result;
 }
 
 Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value)

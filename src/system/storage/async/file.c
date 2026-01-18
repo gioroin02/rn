@@ -19,14 +19,48 @@
 
 #endif
 
-Bool pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt, void* proc)
+PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    return __pFileWriteAsync__(self, pntr, start, stop, queue, proc, ctxt);
+    PFileEvent result;
+
+    pMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind        = PFileEvent_Write;
+    result.ctxt        = ctxt;
+    result.write.file  = self;
+    result.write.pntr  = pntr;
+    result.write.start = start;
+    result.write.stop  = stop;
+    result.write.bytes = bytes;
+
+    return result;
 }
 
-Bool pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt, void* proc)
+PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    return __pFileReadAsync__(self, pntr, start, stop, queue, proc, ctxt);
+    PFileEvent result;
+
+    pMemorySet(&result, sizeof result, 0xAB);
+
+    result.kind       = PFileEvent_Read;
+    result.ctxt       = ctxt;
+    result.read.file  = self;
+    result.read.pntr  = pntr;
+    result.read.start = start;
+    result.read.stop  = stop;
+    result.read.bytes = bytes;
+
+    return result;
+}
+
+Bool pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+{
+    return __pFileWriteAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
+}
+
+Bool pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+{
+    return __pFileReadAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
 #endif // P_SYSTEM_STORAGE_ASYNC_FILE_C

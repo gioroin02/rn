@@ -9,10 +9,10 @@
 
     #define __PAsyncIoQueue__ PWin32AsyncIoQueue
 
-    #define __pAsyncIoQueueReserve__    pWin32AsyncIoQueueReserve
-    #define __pAsyncIoQueueCreate__     pWin32AsyncIoQueueCreate
-    #define __pAsyncIoQueueDestroy__    pWin32AsyncIoQueueDestroy
-    #define __pAsyncIoQueuePollEvents__ pWin32AsyncIoQueuePollEvents
+    #define __pAsyncIoQueueReserve__   pWin32AsyncIoQueueReserve
+    #define __pAsyncIoQueueCreate__    pWin32AsyncIoQueueCreate
+    #define __pAsyncIoQueueDestroy__   pWin32AsyncIoQueueDestroy
+    #define __pAsyncIoQueuePollEvent__ pWin32AsyncIoQueuePollEvent
 
 #else
 
@@ -35,9 +35,9 @@ void pAsyncIoQueueDestroy(PAsyncIoQueue* self)
     return __pAsyncIoQueueDestroy__((__PAsyncIoQueue__*) self);
 }
 
-void pAsyncIoQueuePollEvents(PAsyncIoQueue* self, Int timeout)
+PAsyncIoEventKind pAsyncIoQueuePollEvent(PAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event)
 {
-    return __pAsyncIoQueuePollEvents__((__PAsyncIoQueue__*) self, timeout);
+    return __pAsyncIoQueuePollEvent__((__PAsyncIoQueue__*) self, timeout, arena, event);
 }
 
 #endif // P_SYSTEM_ASYNCIO_QUEUE_C

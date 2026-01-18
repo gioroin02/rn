@@ -27,17 +27,25 @@ static Bool pWin32FileWriteBegin(PWin32FileWrite* task, PWin32AsyncIoQueue* queu
     return 1;
 }
 
-static void pWin32FileWriteEnd(PWin32FileWrite* task, Int bytes)
+static PAsyncIoEventKind pWin32FileWriteEnd(PWin32FileWrite* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
 {
     PWin32File* self  = task->self;
     U8*         pntr  = task->pntr;
     Int         start = task->start;
     Int         stop  = task->stop;
 
-    if (task->pntr_proc != NULL) {
-        ((PFileWriteProc*) task->pntr_proc)(task->pntr_ctxt,
-            (PFile*) self, pntr, start, stop, bytes);
+    PFileEvent* result = pMemoryArenaReserveOneOf(arena, PFileEvent);
+
+    if (result != NULL) {
+        *result = pFileEventWrite((PFile*) self,
+            pntr, start, stop, bytes, task->ctxt);
+
+        if (event != NULL) *event = (PAsyncIoEvent*) result;
+
+        return PAsyncIoEvent_File;
     }
+
+    return PAsyncIoEvent_None;
 }
 
 static Bool pWin32FileReadBegin(PWin32FileRead* task, PWin32AsyncIoQueue* queue)
@@ -56,20 +64,28 @@ static Bool pWin32FileReadBegin(PWin32FileRead* task, PWin32AsyncIoQueue* queue)
     return 1;
 }
 
-static void pWin32FileReadEnd(PWin32FileRead* task, Int bytes)
+static PAsyncIoEventKind pWin32FileReadEnd(PWin32FileRead* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
 {
     PWin32File* self  = task->self;
     U8*         pntr  = task->pntr;
     Int         start = task->start;
     Int         stop  = task->stop;
 
-    if (task->pntr_proc != NULL) {
-        ((PFileReadProc*) task->pntr_proc)(task->pntr_ctxt,
-            (PFile*) self, pntr, start, stop, bytes);
+    PFileEvent* result = pMemoryArenaReserveOneOf(arena, PFileEvent);
+
+    if (result != NULL) {
+        *result = pFileEventRead((PFile*) self,
+            pntr, start, stop, bytes, task->ctxt);
+
+        if (event != NULL) *event = (PAsyncIoEvent*) result;
+
+        return PAsyncIoEvent_File;
     }
+
+    return PAsyncIoEvent_None;
 }
 
-Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt, void* proc)
+Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
 {
     PWin32FileWrite* result =
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileWrite);
@@ -81,8 +97,7 @@ Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin3
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
-        result->pntr_ctxt = ctxt;
-        result->pntr_proc = proc;
+        result->ctxt      = ctxt;
         result->callback  = pWin32FileWriteEnd;
         result->list_next = NULL;
 
@@ -95,7 +110,7 @@ Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin3
     return 0;
 }
 
-Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt, void* proc)
+Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
 {
     PWin32FileRead* result =
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileRead);
@@ -107,8 +122,7 @@ Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
-        result->pntr_ctxt = ctxt;
-        result->pntr_proc = proc;
+        result->ctxt      = ctxt;
         result->callback  = pWin32FileReadEnd;
         result->list_next = NULL;
 

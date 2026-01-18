@@ -39,7 +39,7 @@ typedef struct PWin32AsyncIoQueue
 }
 PWin32AsyncIoQueue;
 
-typedef void (PWin32AsyncIoProc) (void*, Int);
+typedef PAsyncIoEventKind (PWin32AsyncIoProc) (void*, Int, PMemoryArena*, PAsyncIoEvent** event);
 
 PWin32AsyncIoQueue* pWin32AsyncIoQueueReserve(PMemoryArena* arena);
 
@@ -47,7 +47,7 @@ Bool pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool);
 
 void pWin32AsyncIoQueueDestroy(PWin32AsyncIoQueue* self);
 
-void pWin32AsyncIoQueuePollEvents(PWin32AsyncIoQueue* self, Int timeout);
+PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
 
 Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value);
 

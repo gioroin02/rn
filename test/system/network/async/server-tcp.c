@@ -7,8 +7,6 @@
 
 typedef struct Server
 {
-    PMemoryArena* arena;
-
     PAsyncIoQueue* queue;
     PSocketTcp*    socket;
 
@@ -16,43 +14,37 @@ typedef struct Server
 }
 Server;
 
-void serverOnTcpAccept(Server* self, PSocketTcp* socket, PSocketTcp* value);
-
-void serverOnTcpWrite(Server* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes);
-
-void serverOnTcpRead(Server* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes);
-
-void serverOnTcpAccept(Server* self, PSocketTcp* socket, PSocketTcp* value)
+void serverOnTcpAccept(Server* self, PMemoryArena* arena, PSocketTcpEventAccept event)
 {
     printf("[DEBUG] Accepted!\n");
 
-    U8* buffer = pMemoryArenaReserveManyOf(self->arena, U8, 256);
+    U8* buffer = pMemoryArenaReserveManyOf(arena, U8, 256);
 
-    self->active = pSocketTcpReadAsync(value, buffer, 0, sizeof buffer,
-        self->queue, self, serverOnTcpRead);
+    self->active = pSocketTcpReadAsync(
+        event.value, buffer, 0, sizeof buffer, self->queue, NULL);
 
-    PSocketTcp* other = pSocketTcpReserve(self->arena);
+    PSocketTcp* other = pSocketTcpReserve(arena);
 
     if (other != NULL) {
-        self->active = pSocketTcpAcceptAsync(self->socket, other,
-            self->queue, self, serverOnTcpAccept);
+        self->active = pSocketTcpAcceptAsync(
+            self->socket, other, self->queue, NULL);
     }
     else self->active = 0;
 }
 
-void serverOnTcpWrite(Server* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes)
+void serverOnTcpWrite(Server* self, PMemoryArena* arena, PSocketTcpEventWrite event)
 {
     printf("[DEBUG] Wrote!\n");
 
-    pSocketTcpDestroy(socket);
+    pSocketTcpDestroy(event.socket);
 }
 
-void serverOnTcpRead(Server* self, PSocketTcp* socket, U8* pntr, Int start, Int stop, Int bytes)
+void serverOnTcpRead(Server* self, PMemoryArena* arena, PSocketTcpEventRead event)
 {
-    printf("[DEBUG] Read '%.*s'!\n", ((int) bytes), pntr + start);
+    printf("[DEBUG] Read '%.*s'!\n", ((int) event.bytes), event.pntr + event.start);
 
-    self->active = pSocketTcpWriteAsync(socket, pntr, start, bytes,
-        self->queue, self, serverOnTcpWrite);
+    self->active = pSocketTcpWriteAsync(event.socket, event.pntr,
+        event.start, event.bytes, self->queue, NULL);
 }
 
 int main(int argc, char** argv)
@@ -61,7 +53,6 @@ int main(int argc, char** argv)
 
     Server server;
 
-    server.arena  = &arena;
     server.queue  = pAsyncIoQueueReserve(&arena);
     server.socket = pSocketTcpReserve(&arena);
 
@@ -75,15 +66,39 @@ int main(int argc, char** argv)
     pSocketTcpBind(server.socket);
     pSocketTcpListen(server.socket);
 
-    PSocketTcp* socket = pSocketTcpReserve(&arena);
-
     server.active = 1;
 
-    server.active = pSocketTcpAcceptAsync(server.socket, socket,
-        server.queue, &server, serverOnTcpAccept);
+    PSocketTcp* other = pSocketTcpReserve(&arena);
 
-    while (server.active != 0)
-        pAsyncIoQueuePollEvents(server.queue, 10);
+    server.active = pSocketTcpAcceptAsync(server.socket, other, server.queue, NULL);
+
+    while (server.active != 0) {
+        void*             marker = pMemoryArenaTell(&arena);
+        PAsyncIoEvent*    event  = NULL;
+        PAsyncIoEventKind kind   = pAsyncIoQueuePollEvent(server.queue, 10, &arena, &event);
+
+        if (kind == PAsyncIoEvent_None) continue;
+
+        switch (kind) {
+
+            case PAsyncIoEvent_Tcp: {
+                PSocketTcpEvent event_tcp = *(PSocketTcpEvent*) event;
+
+                pMemoryArenaRewind(&arena, marker);
+
+                switch (event_tcp.kind) {
+                    case PSocketTcpEvent_Accept: serverOnTcpAccept(&server, &arena, event_tcp.accept); break;
+                    case PSocketTcpEvent_Write:  serverOnTcpWrite(&server, &arena, event_tcp.write); break;
+                    case PSocketTcpEvent_Read:   serverOnTcpRead(&server, &arena, event_tcp.read); break;
+
+                    default: break;
+                }
+            } break;
+
+            default: break;
+        }
+    }
 
     pSocketTcpDestroy(server.socket);
+    pAsyncIoQueueDestroy(server.queue);
 }

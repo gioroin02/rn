@@ -7,10 +7,8 @@ typedef struct PWin32FileWrite
 {
     __PWin32AsyncIoTaskTag__;
 
-    void* pntr_ctxt;
-    void* pntr_proc;
-
     PWin32File* self;
+    void*       ctxt;
 
     U8* pntr;
     Int start;
@@ -22,10 +20,8 @@ typedef struct PWin32FileRead
 {
     __PWin32AsyncIoTaskTag__;
 
-    void* pntr_ctxt;
-    void* pntr_proc;
-
     PWin32File* self;
+    void*       ctxt;
 
     U8* pntr;
     Int start;
@@ -33,8 +29,8 @@ typedef struct PWin32FileRead
 }
 PWin32FileRead;
 
-Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt, void* proc);
+Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
 
-Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt, void* proc);
+Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
 
 #endif // P_SYSTEM_WIN32_STORAGE_ASYNC_FILE_H
