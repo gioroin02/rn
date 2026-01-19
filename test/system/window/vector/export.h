@@ -1,7 +1,7 @@
 #ifndef VECTOR_EXPORT_H
 #define VECTOR_EXPORT_H
 
-#include "signed.h"
+#include "integer.h"
 #include "unsigned.h"
 #include "floating.h"
 

@@ -15,6 +15,7 @@ PSocketTcpEventKind;
 
 typedef struct PSocketTcpEventAccept
 {
+    void*       ctxt;
     PSocketTcp* socket;
     PSocketTcp* value;
 }
@@ -22,6 +23,7 @@ PSocketTcpEventAccept;
 
 typedef struct PSocketTcpEventConnect
 {
+    void*       ctxt;
     PSocketTcp* socket;
     PHostIp     host;
     Bool        status;
@@ -30,6 +32,7 @@ PSocketTcpEventConnect;
 
 typedef struct PSocketTcpEventWrite
 {
+    void*       ctxt;
     PSocketTcp* socket;
     U8*         pntr;
     Int         start;
@@ -40,6 +43,7 @@ PSocketTcpEventWrite;
 
 typedef struct PSocketTcpEventRead
 {
+    void*       ctxt;
     PSocketTcp* socket;
     U8*         pntr;
     Int         start;
@@ -51,8 +55,6 @@ PSocketTcpEventRead;
 typedef struct PSocketTcpEvent
 {
     PSocketTcpEventKind kind;
-
-    void* ctxt;
 
     union
     {

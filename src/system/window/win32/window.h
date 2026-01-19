@@ -1,51 +1,54 @@
 #ifndef P_SYSTEM_WIN32_WINDOW_WINDOW_H
 #define P_SYSTEM_WIN32_WINDOW_WINDOW_H
 
-#include "bitmap.h"
+#include "frame_buffer.h"
 
 typedef struct PWin32Window
 {
-    HWND    handle;
-    HDC     front_context;
-    HBITMAP front_buffer;
-    HDC     back_context;
-    HBITMAP back_buffer;
-    u32     draw_color;
-    void*   ctxt;
-    void*   proc_update;
-    ssize   width_max;
-    ssize   width_min;
-    ssize   height_max;
-    ssize   height_min;
+    HWND handle;
+    HDC  context;
+
+    PWin32FrameBuffer buffer_front;
+    PWin32FrameBuffer buffer_back;
+
+    Int width_max;
+    Int width_min;
+    Int height_max;
+    Int height_min;
+
+    void* paint_ctxt;
+    void* paint_proc;
 }
 PWin32Window;
 
 PWin32Window* pWin32WindowReserve(PMemoryArena* arena);
 
-b32 pWin32WindowCreate(PWin32Window* self, PString8 title, ssize width, ssize height);
+Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height);
 
 void pWin32WindowDestroy(PWin32Window* self);
 
-void pWin32WindowClear(PWin32Window* self, u8 red, u8 green, u8 blue);
+Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
 
-void pWin32WindowPaint(PWin32Window* self, ssize x, ssize y, ssize width, ssize height, PWin32Bitmap* bitmap);
+PWin32FrameBuffer* pWin32WindowGetBuffer(PWin32Window* self);
 
-void pWin32WindowFlush(PWin32Window* self);
+void pWin32WindowFlushBuffer(PWin32Window* self);
 
-b32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
+Bool pWin32WindowSetVisibility(PWin32Window* self, PWindowVisibility visibility);
 
-ssize pWin32windowWidthSet(PWin32Window* self, ssize width);
+PWindowVisibility pWin32WindowGetVisibility(PWin32Window* self);
 
-ssize pWin32WindowWidthGet(PWin32Window* self);
+Bool pWin32WindowSetCallback(PWin32Window* self, void* ctxt, void* proc);
 
-ssize pWin32windowHeightSet(PWin32Window* self, ssize height);
+void* pWin32WindowGetCallback(PWin32Window* self);
 
-ssize pWin32WindowHeightGet(PWin32Window* self);
+/*
+Int pWin32windowWidthSet(PWin32Window* self, Int width);
 
-void* pWin32WindowPntrContextSet(PWin32Window* self, void* ctxt);
+Int pWin32WindowWidthGet(PWin32Window* self);
 
-void* pWin32WindowProcUpdateSet(PWin32Window* self, void* proc);
+Int pWin32windowHeightSet(PWin32Window* self, Int height);
 
-b32 pWin32WindowVisibilitySet(PWin32Window* self, PWindowVisibility visibility);
+Int pWin32WindowHeightGet(PWin32Window* self);
+*/
 
 #endif // P_SYSTEM_WIN32_WINDOW_WINDOW_H

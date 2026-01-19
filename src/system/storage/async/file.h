@@ -13,6 +13,7 @@ PFileEventKind;
 
 typedef struct PFileEventWrite
 {
+    void*  ctxt;
     PFile* file;
     U8*    pntr;
     Int    start;
@@ -23,6 +24,7 @@ PFileEventWrite;
 
 typedef struct PFileEventRead
 {
+    void*  ctxt;
     PFile* file;
     U8*    pntr;
     Int    start;
@@ -34,8 +36,6 @@ PFileEventRead;
 typedef struct PFileEvent
 {
     PFileEventKind kind;
-
-    void* ctxt;
 
     union
     {

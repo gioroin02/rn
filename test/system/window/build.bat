@@ -14,4 +14,4 @@ set "impl=%impl% test\system\window\rasterize.c"
 
 set "test_rectangle=test\system\window\rectangle.c"
 
-%compiler% --std=c89 %impl% %test_rectangle% -lgdi32 -o bin\system_window_rectangle.exe
+%compiler% --std=c89 %impl% %test_rectangle% -lgdi32 -lm -o bin\system_window_rectangle.exe

@@ -3,11 +3,11 @@
 
 #include "common.h"
 
-extern ssize pWin32WindowProc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
+extern Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
 
 static volatile LONG p_win32_winclass_count = 0;
 
-b32 pWin32WindowStart()
+Bool pWin32WindowStart()
 {
     if (InterlockedIncrement(&p_win32_winclass_count) == 1)
         return pWin32WindowStartImpl();
@@ -15,7 +15,7 @@ b32 pWin32WindowStart()
     return 1;
 }
 
-b32 pWin32WindowStartImpl()
+Bool pWin32WindowStartImpl()
 {
     WNDCLASSEXW window_class;
 
@@ -23,7 +23,7 @@ b32 pWin32WindowStartImpl()
 
     window_class.cbSize        = sizeof window_class;
     window_class.style         = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc   = pWin32WindowProc;
+    window_class.lpfnWndProc   = pWin32WindowProcRegular;
     window_class.hInstance     = GetModuleHandle(NULL);
     window_class.lpszClassName = L"PWindowRegular";
     window_class.hCursor       = LoadCursor(NULL, IDC_ARROW);

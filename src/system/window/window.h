@@ -2,7 +2,7 @@
 #define P_SYSTEM_WINDOW_WINDOW_H
 
 #include "event.h"
-#include "bitmap.h"
+#include "frame_buffer.h"
 
 typedef enum PWindowVisibility
 {
@@ -12,42 +12,38 @@ typedef enum PWindowVisibility
 }
 PWindowVisibility;
 
-typedef void PWindow;
+typedef struct PWindow { U8 __private__; } PWindow;
 
-typedef void (PWindowProcUpdate) (PWindow*);
+typedef void (PWindowCallback) (void*, PWindow*, PFrameBuffer*);
 
 PWindow* pWindowReserve(PMemoryArena* arena);
 
-b32 pWindowCreate(PWindow* self, PString8 title, ssize width, ssize height);
+Bool pWindowCreate(PWindow* self, PString8 title, Int width, Int height);
 
 void pWindowDestroy(PWindow* self);
 
-void pWindowClear(PWindow* self, u8 red, u8 green, u8 blue);
+Bool pWindowPollEvent(PWindow* self, PWindowEvent* event);
 
-void pWindowPaint(PWindow* self, ssize x, ssize y, ssize width, ssize height, PBitmap* bitmap);
+PFrameBuffer* pWindowGetBuffer(PWindow* self);
 
-void pWindowFlush(PWindow* self);
+void pWindowFlushBuffer(PWindow* self);
 
-b32 pWindowPollEvent(PWindow* self, PWindowEvent* event);
+Bool pWindowSetVisibility(PWindow* self, PWindowVisibility visibility);
 
-ssize pWindowWidthSet(PWindow* self, ssize width);
+PWindowVisibility pWindowGetVisibility(PWindow* self);
 
-ssize pWindowWidthGet(PWindow* self);
+Bool pWindowSetCallback(PWindow* self, void* ctxt, void* proc);
 
-ssize pWindowHeightSet(PWindow* self, ssize height);
+void* pWindowGetCallback(PWindow* self);
 
-ssize pWindowHeightGet(PWindow* self);
+/*
+Int pWindowWidthSet(PWindow* self, Int width);
 
-void* pWindowPntrContextSet(PWindow* self, void* ctxt);
+Int pWindowWidthGet(PWindow* self);
 
-void* pWindowPntrContextGet(PWindow* self);
+Int pWindowHeightSet(PWindow* self, Int height);
 
-void* pWindowProcUpdateSet(PWindow* self, void* proc);
-
-void* pWindowProcUpdateGet(PWindow* self);
-
-b32 pWindowVisibilitySet(PWindow* self, PWindowVisibility visibility);
-
-PWindowVisibility pWindowVisibilityGet(PWindow* self);
+Int pWindowHeightGet(PWindow* self);
+*/
 
 #endif // P_SYSTEM_WINDOW_WINDOW_H

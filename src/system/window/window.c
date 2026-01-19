@@ -5,26 +5,29 @@
 
 #if P_SYSTEM == P_SYSTEM_WINDOWS
 
-    #include "../win32/window/export.c"
+    #include "win32/export.c"
 
-    #define __pWindowReserve__        pWin32WindowReserve
-    #define __pWindowCreate__         pWin32WindowCreate
-    #define __pWindowDestroy__        pWin32WindowDestroy
-    #define __pWindowClear__          pWin32WindowClear
-    #define __pWindowPaint__          pWin32WindowPaint
-    #define __pWindowFlush__          pWin32WindowFlush
-    #define __pWindowPollEvent__      pWin32WindowPollEvent
+    #define __PWindow__ PWin32Window
 
-    #define __pWindowWidthSet__       pWin32WindowWidthSet
-    #define __pWindowWidthGet__       pWin32WindowWidthGet
-    #define __pWindowHeightSet__      pWin32WindowHeightSet
-    #define __pWindowHeightGet__      pWin32WindowHeightGet
-    #define __pWindowPntrContextSet__ pWin32WindowPntrContextSet
-    #define __pWindowPntrContextGet__ pWin32WindowPntrContextGet
-    #define __pWindowProcUpdateSet__  pWin32WindowProcUpdateSet
-    #define __pWindowProcUpdateGet__  pWin32WindowProcUpdateGet
-    #define __pWindowVisibilitySet__  pWin32WindowVisibilitySet
-    #define __pWindowVisibilityGet__  pWin32WindowVisibilityGet
+    #define __pWindowReserve__     pWin32WindowReserve
+    #define __pWindowCreate__      pWin32WindowCreate
+    #define __pWindowDestroy__     pWin32WindowDestroy
+    #define __pWindowPollEvent__   pWin32WindowPollEvent
+    #define __pWindowGetBuffer__   pWin32WindowGetBuffer
+    #define __pWindowFlushBuffer__ pWin32WindowFlushBuffer
+
+    #define __pWindowSetVisibility__  pWin32WindowSetVisibility
+    #define __pWindowGetVisibility__  pWin32WindowGetVisibility
+
+    #define __pWindowSetCallback__ pWin32WindowSetCallback
+    #define __pWindowGetCallback__ pWin32WindowGetCallback
+
+    /*
+    #define __pWindowSetWidth__       pWin32WindowWidthSet
+    #define __pWindowGetWidth__       pWin32WindowWidthGet
+    #define __pWindowSetHeight__      pWin32WindowHeightSet
+    #define __pWindowGetHeight__      pWin32WindowHeightGet
+    */
 
 #else
 
@@ -34,87 +37,74 @@
 
 PWindow* pWindowReserve(PMemoryArena* arena)
 {
-    return __pWindowReserve__(arena);
+    return (PWindow*) __pWindowReserve__(arena);
 }
 
-b32 pWindowCreate(PWindow* self, PString8 title, ssize width, ssize height)
+Bool pWindowCreate(PWindow* self, PString8 title, Int width, Int height)
 {
-    return __pWindowCreate__(self, title, width, height);
+    return __pWindowCreate__((__PWindow__*) self, title, width, height);
 }
 
 void pWindowDestroy(PWindow* self)
 {
-    return __pWindowDestroy__(self);
+    return __pWindowDestroy__((__PWindow__*) self);
 }
 
-void pWindowClear(PWindow* self, u8 red, u8 green, u8 blue)
+Bool pWindowPollEvent(PWindow* self, PWindowEvent* event)
 {
-    return __pWindowClear__(self, red, green, blue);
+    return __pWindowPollEvent__((__PWindow__*) self, event);
 }
 
-void pWindowPaint(PWindow* self, ssize x, ssize y, ssize width, ssize height, PBitmap* bitmap)
+PFrameBuffer* pWindowGetBuffer(PWindow* self)
 {
-    return __pWindowPaint__(self, x, y, width, height, bitmap);
+    return (PFrameBuffer*) __pWindowGetBuffer__((__PWindow__*) self);
 }
 
-void pWindowFlush(PWindow* self)
+void pWindowFlushBuffer(PWindow* self)
 {
-    return __pWindowFlush__(self);
+    return __pWindowFlushBuffer__((__PWindow__*) self);
 }
 
-b32 pWindowPollEvent(PWindow* self, PWindowEvent* event)
+Bool pWindowSetVisibility(PWindow* self, PWindowVisibility visibility)
 {
-    return __pWindowPollEvent__(self, event);
+    return __pWindowSetVisibility__((__PWindow__*) self, visibility);
 }
 
-ssize pWindowWidthSet(PWindow* self, ssize width)
+PWindowVisibility pWindowGetVisibility(PWindow* self)
 {
-    return __pWindowWidthSet__(self, width);
+    return __pWindowGetVisibility__((__PWindow__*) self);
 }
 
-ssize pWindowWidthGet(PWindow* self)
+Bool pWindowSetCallback(PWindow* self, void* ctxt, void* proc)
 {
-    return __pWindowWidthGet__(self);
+    return __pWindowSetCallback__((__PWindow__*) self, ctxt ,proc);
 }
 
-ssize pWindowHeightSet(PWindow* self, ssize height)
+void* pWindowGetCallback(PWindow* self)
 {
-    return __pWindowHeightSet__(self, height);
+    return __pWindowGetCallback__((__PWindow__*) self);
 }
 
-ssize pWindowHeightGet(PWindow* self)
+/*
+Int pWindowWidthSet(PWindow* self, Int width)
 {
-    return __pWindowHeightGet__(self);
+    return __pWindowWidthSet__((__PWindow__*) self, width);
 }
 
-void* pWindowPntrContextSet(PWindow* self, void* ctxt)
+Int pWindowWidthGet(PWindow* self)
 {
-    return __pWindowPntrContextSet__(self, ctxt);
+    return __pWindowWidthGet__((__PWindow__*) self);
 }
 
-void* pWindowPntrContextGet(PWindow* self)
+Int pWindowHeightSet(PWindow* self, Int height)
 {
-    return __pWindowPntrContextGet__(self);
+    return __pWindowHeightSet__((__PWindow__*) self, height);
 }
 
-void* pWindowProcUpdateSet(PWindow* self, void* proc)
+Int pWindowHeightGet(PWindow* self)
 {
-    return __pWindowProcUpdateSet__(self, proc);
+    return __pWindowHeightGet__((__PWindow__*) self);
 }
-
-void* pWindowProcUpdateGet(PWindow* self)
-{
-    return __pWindowProcUpdateGet__(self);
-}
-
-b32 pWindowVisibilitySet(PWindow* self, PWindowVisibility visibility)
-{
-    return __pWindowVisibilitySet__(self, visibility);
-}
-
-PWindowVisibility pWindowVisibilityGet(PWindow* self)
-{
-    return __pWindowVisibilityGet__(self);
-}
+*/
 
 #endif // P_SYSTEM_WINDOW_WINDOW_C

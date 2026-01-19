@@ -28,7 +28,7 @@ PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void*
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind          = PSocketTcpEvent_Accept;
-    result.ctxt          = ctxt;
+    result.accept.ctxt   = ctxt;
     result.accept.socket = self;
     result.accept.value  = value;
 
@@ -42,7 +42,7 @@ PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, Bool stat
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind           = PSocketTcpEvent_Connect;
-    result.ctxt           = ctxt;
+    result.connect.ctxt   = ctxt;
     result.connect.socket = self;
     result.connect.host   = host;
     result.connect.status = status;
@@ -57,7 +57,7 @@ PSocketTcpEvent pSocketTcpEventWrite(PSocketTcp* self, U8* pntr, Int start, Int 
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind         = PSocketTcpEvent_Write;
-    result.ctxt         = ctxt;
+    result.write.ctxt   = ctxt;
     result.write.socket = self;
     result.write.pntr   = pntr;
     result.write.start  = start;
@@ -74,7 +74,7 @@ PSocketTcpEvent pSocketTcpEventRead(PSocketTcp* self, U8* pntr, Int start, Int s
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind        = PSocketTcpEvent_Read;
-    result.ctxt        = ctxt;
+    result.read.ctxt   = ctxt;
     result.read.socket = self;
     result.read.pntr   = pntr;
     result.read.start  = start;

@@ -3,94 +3,90 @@
 
 #include "import.h"
 
+#define f32v2(x, y)       ((F32Vec2) {(x), (y)})
+#define f32v3(x, y, z)    ((F32Vec3) {(x), (y), (z)})
+#define f32v4(x, y, z, w) ((F32Vec4) {(x), (y), (z), (w)})
+
+#define f64v2(x, y)       ((F64Vec2) {(x), (y)})
+#define f64v3(x, y, z)    ((F64Vec3) {(x), (y), (z)})
+#define f64v4(x, y, z, w) ((F64Vec4) {(x), (y), (z), (w)})
+
 typedef union F32Vec2
 {
-    f32 values[2];
+    F32 values[2];
 
-    struct { f32  x,  y; };
-    struct { f32  r,  g; };
-    struct { f32 v0, v1; };
+    struct { F32  x,  y; };
+    struct { F32  r,  g; };
+    struct { F32 v0, v1; };
 }
 F32Vec2;
 
 typedef union F32Vec3
 {
-    f32 values[3];
+    F32 values[3];
 
-    struct { F32Vec2 xy; f32 _1; };
-    struct { f32 _2; F32Vec2 yz; };
+    struct { F32Vec2 xy; F32 _1; };
+    struct { F32 _2; F32Vec2 yz; };
 
-    struct { f32  x,  y,  z; };
-    struct { f32  r,  g,  b; };
-    struct { f32 v0, v1, v2; };
+    struct { F32  x,  y,  z; };
+    struct { F32  r,  g,  b; };
+    struct { F32 v0, v1, v2; };
 }
 F32Vec3;
 
 typedef union F32Vec4
 {
-    f32 values[4];
+    F32 values[4];
 
     struct { F32Vec2 xy; F32Vec2 zw; };
-    struct { f32 _1; F32Vec2 yz; f32 _2; };
+    struct { F32 _1; F32Vec2 yz; F32 _2; };
 
-    struct { F32Vec3 xyz; f32 _3; };
-    struct { f32 _4; F32Vec3 yzw; };
+    struct { F32Vec3 xyz; F32 _3; };
+    struct { F32 _4; F32Vec3 yzw; };
 
-    struct { f32  x,  y,  z,  w; };
-    struct { f32  r,  g,  b,  a; };
-    struct { f32 v0, v1, v2, v3; };
+    struct { F32  x,  y,  z,  w; };
+    struct { F32  r,  g,  b,  a; };
+    struct { F32 v0, v1, v2, v3; };
 }
 F32Vec4;
 
 typedef union F64Vec2
 {
-    f64 values[2];
+    F64 values[2];
 
-    struct { f64  x,  y; };
-    struct { f64  r,  g; };
-    struct { f64 v0, v1; };
+    struct { F64  x,  y; };
+    struct { F64  r,  g; };
+    struct { F64 v0, v1; };
 }
 F64Vec2;
 
 typedef union F64Vec3
 {
-    f64 values[3];
+    F64 values[3];
 
-    struct { F64Vec2 xy; f64 _1; };
-    struct { f64 _2; F64Vec2 yz; };
+    struct { F64Vec2 xy; F64 _1; };
+    struct { F64 _2; F64Vec2 yz; };
 
-    struct { f64  x,  y,  z; };
-    struct { f64  r,  g,  b; };
-    struct { f64 v0, v1, v2; };
+    struct { F64  x,  y,  z; };
+    struct { F64  r,  g,  b; };
+    struct { F64 v0, v1, v2; };
 }
 F64Vec3;
 
 typedef union F64Vec4
 {
-    f64 values[4];
+    F64 values[4];
 
     struct { F64Vec2 xy; F64Vec2 zw; };
-    struct { f64 _1; F64Vec2 yz; f64 _2; };
+    struct { F64 _1; F64Vec2 yz; F64 _2; };
 
-    struct { F64Vec3 xyz; f64 _3; };
-    struct { f64 _4; F64Vec3 yzw; };
+    struct { F64Vec3 xyz; F64 _3; };
+    struct { F64 _4; F64Vec3 yzw; };
 
-    struct { f64  x,  y,  z,  w; };
-    struct { f64  r,  g,  b,  a; };
-    struct { f64 v0, v1, v2, v3; };
+    struct { F64  x,  y,  z,  w; };
+    struct { F64  r,  g,  b,  a; };
+    struct { F64 v0, v1, v2, v3; };
 }
 F64Vec4;
-
-F32Vec2 f32Vec2(f32 v0, f32 v1);
-
-F32Vec3 f32Vec3(f32 v0, f32 v1, f32 v2);
-
-F32Vec4 f32Vec4(f32 v0, f32 v1, f32 v2, f32 v3);
-
-F64Vec2 f64Vec2(f64 v0, f64 v1);
-
-F64Vec3 f64Vec3(f64 v0, f64 v1, f64 v2);
-
-F64Vec4 f64Vec4(f64 v0, f64 v1, f64 v2, f64 v3);
 
 #endif // VECTOR_FLOATING_H

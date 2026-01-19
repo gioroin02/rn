@@ -93,12 +93,32 @@ typedef enum PWindowEventKind
 }
 PWindowEventKind;
 
+typedef struct PWindowEventQuit
+{
+    void* window;
+}
+PWindowEventQuit;
+
+typedef struct PWindowEventWindowCreate
+{
+    void* window;
+}
+PWindowEventWindowCreate;
+
+typedef struct PWindowEventWindowDestroy
+{
+    void* window;
+}
+PWindowEventWindowDestroy;
+
 typedef struct PWindowEventKeyboardKey
 {
+    void* window;
+
     PWindowKeyboardKey key;
 
-    b32   pressed;
-    ssize scan;
+    Bool pressed;
+    Int  scan;
 }
 PWindowEventKeyboardKey;
 
@@ -106,11 +126,12 @@ typedef struct PWindowEvent
 {
     PWindowEventKind kind;
 
-    void* self;
-
     union
     {
-        PWindowEventKeyboardKey keyboard_key;
+        PWindowEventQuit          quit;
+        PWindowEventWindowCreate  window_create;
+        PWindowEventWindowDestroy window_destroy;
+        PWindowEventKeyboardKey   keyboard_key;
     };
 }
 PWindowEvent;
@@ -119,15 +140,15 @@ PWindowEvent
 pWindowEventNone();
 
 PWindowEvent
-pWindowEventQuit(void* self);
+pWindowEventQuit(void* window);
 
 PWindowEvent
-pWindowEventWindowCreate(void* self);
+pWindowEventWindowCreate(void* window);
 
 PWindowEvent
-pWindowEventWindowDestroy(void* self);
+pWindowEventWindowDestroy(void* window);
 
 PWindowEvent
-pWindowEventKeyboardKey(void* self, PWindowKeyboardKey key, b32 pressed, ssize scan);
+pWindowEventKeyboardKey(void* window, PWindowKeyboardKey key, Bool pressed, Int scan);
 
 #endif // P_SYSTEM_WINDOW_EVENT_H

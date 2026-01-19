@@ -26,7 +26,7 @@ PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind        = PFileEvent_Write;
-    result.ctxt        = ctxt;
+    result.write.ctxt  = ctxt;
     result.write.file  = self;
     result.write.pntr  = pntr;
     result.write.start = start;
@@ -43,7 +43,7 @@ PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes,
     pMemorySet(&result, sizeof result, 0xAB);
 
     result.kind       = PFileEvent_Read;
-    result.ctxt       = ctxt;
+    result.read.ctxt  = ctxt;
     result.read.file  = self;
     result.read.pntr  = pntr;
     result.read.start = start;
