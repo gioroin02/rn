@@ -1,25 +1,22 @@
 #ifndef P_SYSTEM_WIN32_WINDOW_WINDOW_H
 #define P_SYSTEM_WIN32_WINDOW_WINDOW_H
 
-#include "frame_buffer.h"
+#include "common.h"
 
 typedef struct PWin32Window
 {
-    HWND handle;
-    HDC  context;
+    HWND  handle;
+    HDC   device;
+    HGLRC opengl;
 
-    PWin32FrameBuffer buffer_front;
-    PWin32FrameBuffer buffer_back;
-
-    Int width_max;
-    Int width_min;
-    Int height_max;
-    Int height_min;
+    PWindowAttribs attribs;
 
     void* paint_ctxt;
     void* paint_proc;
 }
 PWin32Window;
+
+void* pWin32OpenglProcAddress(const char* name);
 
 PWin32Window* pWin32WindowReserve(PMemoryArena* arena);
 
@@ -29,26 +26,14 @@ void pWin32WindowDestroy(PWin32Window* self);
 
 Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
 
-PWin32FrameBuffer* pWin32WindowGetBuffer(PWin32Window* self);
+void pWin32WindowSwapBuffers(PWin32Window* self);
 
-void pWin32WindowFlushBuffer(PWin32Window* self);
+Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs);
 
-Bool pWin32WindowSetVisibility(PWin32Window* self, PWindowVisibility visibility);
-
-PWindowVisibility pWin32WindowGetVisibility(PWin32Window* self);
+PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self);
 
 Bool pWin32WindowSetCallback(PWin32Window* self, void* ctxt, void* proc);
 
 void* pWin32WindowGetCallback(PWin32Window* self);
-
-/*
-Int pWin32windowWidthSet(PWin32Window* self, Int width);
-
-Int pWin32WindowWidthGet(PWin32Window* self);
-
-Int pWin32windowHeightSet(PWin32Window* self, Int height);
-
-Int pWin32WindowHeightGet(PWin32Window* self);
-*/
 
 #endif // P_SYSTEM_WIN32_WINDOW_WINDOW_H

@@ -2,9 +2,6 @@
 #define P_SYSTEM_WINDOW_EXPORT_H
 
 #include "event.h"
-
-#include "frame_buffer.h"
-
 #include "window.h"
 
 #endif // P_SYSTEM_WINDOW_EXPORT_H

@@ -2,7 +2,6 @@
 #define P_SYSTEM_WINDOW_WINDOW_H
 
 #include "event.h"
-#include "frame_buffer.h"
 
 typedef enum PWindowVisibility
 {
@@ -12,9 +11,28 @@ typedef enum PWindowVisibility
 }
 PWindowVisibility;
 
+typedef struct PWindowAttribs
+{
+    PWindowVisibility visibility;
+
+    Int coords_x;
+    Int coords_y;
+
+    Int width;
+    Int width_max;
+    Int width_min;
+
+    Int height;
+    Int height_max;
+    Int height_min;
+}
+PWindowAttribs;
+
 typedef struct PWindow { U8 __private__; } PWindow;
 
-typedef void (PWindowCallback) (void*, PWindow*, PFrameBuffer*);
+typedef void (PWindowCallback) (void*, PWindow*);
+
+void* pOpenglProcAddress(const char* name);
 
 PWindow* pWindowReserve(PMemoryArena* arena);
 
@@ -24,26 +42,14 @@ void pWindowDestroy(PWindow* self);
 
 Bool pWindowPollEvent(PWindow* self, PWindowEvent* event);
 
-PFrameBuffer* pWindowGetBuffer(PWindow* self);
+void pWindowSwapBuffers(PWindow* self);
 
-void pWindowFlushBuffer(PWindow* self);
+Bool pWindowSetAttribs(PWindow* self, PWindowAttribs attribs);
 
-Bool pWindowSetVisibility(PWindow* self, PWindowVisibility visibility);
-
-PWindowVisibility pWindowGetVisibility(PWindow* self);
+PWindowAttribs pWindowGetAttribs(PWindow* self);
 
 Bool pWindowSetCallback(PWindow* self, void* ctxt, void* proc);
 
 void* pWindowGetCallback(PWindow* self);
-
-/*
-Int pWindowWidthSet(PWindow* self, Int width);
-
-Int pWindowWidthGet(PWindow* self);
-
-Int pWindowHeightSet(PWindow* self, Int height);
-
-Int pWindowHeightGet(PWindow* self);
-*/
 
 #endif // P_SYSTEM_WINDOW_WINDOW_H

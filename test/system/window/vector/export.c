@@ -1,4 +1,0 @@
-#ifndef VECTOR_EXPORT_C
-#define VECTOR_EXPORT_C
-
-#endif // VECTOR_EXPORT_C

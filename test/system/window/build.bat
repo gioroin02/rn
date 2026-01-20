@@ -9,9 +9,8 @@ set "impl=%impl% src\system\memory\export.c"
 set "impl=%impl% src\system\time\export.c"
 set "impl=%impl% src\system\window\export.c"
 
-set "impl=%impl% test\system\window\vector\export.c"
-set "impl=%impl% test\system\window\rasterize.c"
+set "impl=%impl% test\system\window\glad.c"
 
-set "test_rectangle=test\system\window\rectangle.c"
+set "test_opengl=test\system\window\opengl.c"
 
-%compiler% --std=c89 %impl% %test_rectangle% -lgdi32 -lm -o bin\system_window_rectangle.exe
+%compiler% --std=c89 %impl% %test_opengl% -lgdi32 -lopengl32 -lm -o bin\system_window_opengl.exe

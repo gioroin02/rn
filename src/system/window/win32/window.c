@@ -5,93 +5,6 @@
 
 #define P_SYSTEM_WIN32_TIMER_RESIZE ((Int) 1)
 
-static POINT pWin32Point(Int x, Int y)
-{
-    POINT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    result.x = x;
-    result.y = y;
-
-    return result;
-}
-
-static POINT pWin32CursorPoint(HWND handle)
-{
-    POINT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    GetCursorPos(&result);
-
-    return result;
-}
-
-static RECT pWin32Rect(Int x, Int y, Int w, Int h)
-{
-    RECT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    result.left   = x;
-    result.top    = y;
-    result.right  = x + w;
-    result.bottom = y + h;
-
-    return result;
-}
-
-static RECT pWin32RectAdjusted(Int x, Int y, Int w, Int h)
-{
-    RECT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    result.left   = x;
-    result.top    = y;
-    result.right  = x + w;
-    result.bottom = y + h;
-
-    AdjustWindowRect(&result, 0, 0);
-
-    return result;
-}
-
-static RECT pWin32WindowRect(HWND handle)
-{
-    RECT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    GetWindowRect(handle, &result);
-
-    return result;
-}
-
-static RECT pWin32ClientRect(HWND handle)
-{
-    RECT result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    GetClientRect(handle, &result);
-
-    return result;
-}
-
-static PString16 pWin32Str8ToStr16(U16* pntr, Int size, PString8 string)
-{
-    PString16 result = pString16Make(NULL, 0);
-
-     size = MultiByteToWideChar(CP_UTF8, 0,
-        (char*) string.values, string.size, (LPWSTR) pntr, size);
-
-     if (size > 0) result = pString16Make(pntr, size);
-
-     return result;
-}
-
 static PWindowKeyboardKey pWin32WindowConvertKey(WORD key_code)
 {
     switch (key_code) {
@@ -176,6 +89,106 @@ static PWindowKeyboardKey pWin32WindowConvertKey(WORD key_code)
     return PWindowKeyboardKey_None;
 }
 
+#define WGL_TYPE_RGBA_ARB (1)
+
+#define WGL_CONTEXT_DEBUG_BIT_ARB    (0x0001)
+#define WGL_CONTEXT_PROFILE_CORE_ARB (0x0001)
+
+#define WGL_DRAW_TO_WINDOW_ARB (0x2001)
+#define WGL_SUPPORT_OPENGL_ARB (0x2010)
+#define WGL_DOUBLE_BUFFER_ARB  (0x2011)
+#define WGL_PIXEL_TYPE_ARB     (0x2013)
+#define WGL_COLOR_BITS_ARB     (0x2014)
+#define WGL_DEPTH_BITS_ARB     (0x2022)
+#define WGL_STENCIL_BITS_ARB   (0x2023)
+#define WGL_SAMPLE_BUFFERS_ARB (0x2041)
+#define WGL_SAMPLES_ARB        (0x2042)
+
+#define WGL_CONTEXT_MAJOR_VERSION_ARB (0x2091)
+#define WGL_CONTEXT_MINOR_VERSION_ARB (0x2092)
+#define WGL_CONTEXT_FLAGS_ARB         (0x2094)
+#define WGL_CONTEXT_PROFILE_MASK_ARB  (0x9126)
+
+static HGLRC pWin32CreateOpenGlContextCore33(PWin32Window* self)
+{
+    int attribs_pixel[] = {
+        WGL_DRAW_TO_WINDOW_ARB, 1,
+        WGL_SUPPORT_OPENGL_ARB, 1,
+        WGL_DOUBLE_BUFFER_ARB,  1,
+        WGL_PIXEL_TYPE_ARB,     WGL_TYPE_RGBA_ARB,
+        WGL_COLOR_BITS_ARB,     24,
+        WGL_DEPTH_BITS_ARB,     24,
+        WGL_STENCIL_BITS_ARB,   8,
+        0
+    };
+
+    int attribs_context[] = {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 3,
+        WGL_CONTEXT_PROFILE_MASK_ARB,  WGL_CONTEXT_PROFILE_CORE_ARB,
+        WGL_CONTEXT_FLAGS_ARB,         WGL_CONTEXT_DEBUG_BIT_ARB,
+        0,
+    };
+
+    PIXELFORMATDESCRIPTOR descr;
+
+    pMemorySet(&descr, sizeof descr, 0x00);
+
+    descr.nSize      = sizeof descr;
+    descr.nVersion   = 1;
+    descr.dwFlags    = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    descr.iPixelType = PFD_TYPE_RGBA;
+    descr.iLayerType = PFD_MAIN_PLANE;
+    descr.cColorBits = 24;
+    descr.cColorBits = 24;
+
+    int  format_array[16] = {0};
+    Uint format_count     = 0;
+
+    BOOL status = wglChoosePixelFormatARB(self->device,
+        attribs_pixel, NULL, 1, format_array, (UINT*) &format_count);
+
+    if (status != 0 && format_count > 0) {
+        pMemorySet(&descr, sizeof descr, 0x00);
+
+        DescribePixelFormat(self->device, format_array[0],
+            sizeof descr, &descr);
+
+        SetPixelFormat(self->device, format_array[0], &descr);
+    }
+    else {
+        int format = ChoosePixelFormat(self->device, &descr);
+
+        if (format == 0 || SetPixelFormat(self->device, format, &descr) == 0)
+            return NULL;
+    }
+
+    HGLRC context = wglCreateContextAttribsARB(self->device, 0, attribs_context);
+
+    if (context == NULL) return NULL;
+
+    if (wglMakeCurrent(self->device, context) != 0)
+        return context;
+
+    wglDeleteContext(context);
+
+    return NULL;
+}
+
+void* pWin32OpenglProcAddress(const char* name)
+{
+    HMODULE opengl = GetModuleHandle("opengl32.dll");
+    void*   result = wglGetProcAddress(name);
+
+    if (result != NULL) return result;
+
+    result = GetProcAddress(opengl, name);
+
+    int error = GetLastError();
+
+    return result;
+}
+
 Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 {
     PWin32Window* self = (PWin32Window*) GetWindowLongPtr(handle, GWLP_USERDATA);
@@ -186,7 +199,7 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
 
     switch (kind) {
         case WM_ENTERSIZEMOVE:
-            SetTimer(handle, P_SYSTEM_WIN32_TIMER_RESIZE, 10, NULL);
+            SetTimer(handle, P_SYSTEM_WIN32_TIMER_RESIZE, 20, NULL);
         break;
 
         case WM_EXITSIZEMOVE:
@@ -194,25 +207,35 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
         break;
 
         case WM_TIMER: {
-            if (wparam == P_SYSTEM_WIN32_TIMER_RESIZE) {
-                if (self->paint_proc != NULL) {
-                    PWin32FrameBuffer* buffer = pWin32WindowGetBuffer(self);
-
-                    ((PWindowCallback*) self->paint_proc)(
-                        self->paint_ctxt, (PWindow*) self, (PFrameBuffer*) buffer);
-
-                    pWin32WindowFlushBuffer(self);
-                }
-            }
+            if (wparam == P_SYSTEM_WIN32_TIMER_RESIZE)
+                InvalidateRect(self->handle, NULL, 1);
         } break;
 
         case WM_GETMINMAXINFO: {
             MINMAXINFO* info = (MINMAXINFO*) lparam;
 
-            info->ptMinTrackSize.x = self->width_min;
-            info->ptMaxTrackSize.x = self->width_max;
-            info->ptMinTrackSize.y = self->height_min;
-            info->ptMaxTrackSize.y = self->height_max;
+            info->ptMinTrackSize.x = self->attribs.width_min;
+            info->ptMaxTrackSize.x = self->attribs.width_max;
+            info->ptMinTrackSize.y = self->attribs.height_min;
+            info->ptMaxTrackSize.y = self->attribs.height_max;
+        } break;
+
+        case WM_SIZE: {
+            WINDOWPLACEMENT placement;
+
+            GetWindowPlacement(self->handle, &placement);
+
+            self->attribs.coords_x = placement.rcNormalPosition.left;
+            self->attribs.coords_y = placement.rcNormalPosition.top;
+            self->attribs.width    = placement.rcNormalPosition.right - placement.rcNormalPosition.left;
+            self->attribs.height   = placement.rcNormalPosition.bottom - placement.rcNormalPosition.top;
+
+            switch (placement.showCmd) {
+                case SW_HIDE: self->attribs.visibility = PWindowVisibility_Hide; break;
+                case SW_SHOW: self->attribs.visibility = PWindowVisibility_Show; break;
+
+                default: break;
+            }
         } break;
 
         case WM_ERASEBKGND: result = 1; break;
@@ -220,17 +243,14 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
         case WM_PAINT: {
             PAINTSTRUCT paint;
 
-            HDC context = BeginPaint(handle, &paint);
+            HDC device = BeginPaint(self->handle, &paint);
 
-            Int left   = paint.rcPaint.left;
-            Int top    = paint.rcPaint.top;
-            Int width  = paint.rcPaint.right - paint.rcPaint.left;
-            Int height = paint.rcPaint.bottom - paint.rcPaint.top;
+            if (self->paint_proc != NULL) {
+                ((PWindowCallback*) self->paint_proc)(
+                    self->paint_ctxt, (PWindow*) self);
+            }
 
-            BitBlt(context, left, top, width, height,
-                self->context, left, top, SRCCOPY);
-
-            EndPaint(handle, &paint);
+            EndPaint(self->handle, &paint);
         } break;
 
         case WM_CLOSE: PostQuitMessage(0); break;
@@ -259,43 +279,39 @@ Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int heigh
 
     if (string.size <= 0 || pWin32WindowStart() == 0) return 0;
 
+    Int style = WS_OVERLAPPEDWINDOW;
+    Int x     = 100;
+    Int y     = 100;
+
     width  = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
-    HDC context = CreateCompatibleDC(NULL);
-
-    if (context == NULL) return 0;
-
-    HWND handle = CreateWindowW(L"PWindowRegular", string.values, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, NULL, NULL);
+    HWND handle = CreateWindowW(L"PWindowRegular", string.values,
+        style, x, y, width, height, NULL, NULL, NULL, NULL);
 
     if (handle != NULL) {
-        self->handle     = handle;
-        self->context    = context;
-        self->width_max  = 1920;
-        self->width_min  = 320;
-        self->height_max = 1080;
-        self->height_min = 180;
-        self->paint_ctxt = NULL;
-        self->paint_proc = NULL;
+        self->handle = handle;
+        self->device = GetDC(handle);
+        self->opengl = pWin32CreateOpenGlContextCore33(self);
 
-        pWin32FrameBufferCreate(&self->buffer_front,
-            self->width_max, self->height_max);
-
-        pWin32FrameBufferCreate(&self->buffer_back,
-            self->width_max, self->height_max);
-
-        SelectObject(self->context, self->buffer_front.bitmap);
+        self->attribs.visibility = PWindowVisibility_None;
+        self->attribs.coords_x   = x;
+        self->attribs.coords_y   = y;
+        self->attribs.width      = width;
+        self->attribs.width_max  = 1920;
+        self->attribs.width_min  = 400;
+        self->attribs.height     = height;
+        self->attribs.height_max = 1080;
+        self->attribs.height_min = 300;
+        self->paint_ctxt         = NULL;
+        self->paint_proc         = NULL;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
 
-        InvalidateRect(self->handle, NULL, 0);
-        UpdateWindow(self->handle);
+        InvalidateRect(self->handle, NULL, 1);
 
         return 1;
     }
-
-    DeleteDC(context);
 
     pWin32WindowStop();
 
@@ -305,10 +321,7 @@ Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int heigh
 void pWin32WindowDestroy(PWin32Window* self)
 {
     if (self->handle != NULL) {
-        pWin32FrameBufferDestroy(&self->buffer_back);
-        pWin32FrameBufferDestroy(&self->buffer_front);
-
-        DeleteDC(self->context);
+        DeleteDC(self->device);
 
         DestroyWindow(self->handle);
     }
@@ -353,39 +366,38 @@ Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
     return 0;
 }
 
-PWin32FrameBuffer* pWin32WindowGetBuffer(PWin32Window* self)
+void pWin32WindowSwapBuffers(PWin32Window* self)
 {
-    return &self->buffer_back;
+    SwapBuffers(self->device);
 }
 
-void pWin32WindowFlushBuffer(PWin32Window* self)
+Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
 {
-    PWin32FrameBuffer temp = self->buffer_front;
+    self->attribs = attribs;
 
-    self->buffer_front = self->buffer_back;
-    self->buffer_back  = temp;
+    WINDOWPLACEMENT placement;
 
-    SelectObject(self->context, self->buffer_front.bitmap);
+    placement.length                  = sizeof placement;
+    placement.rcNormalPosition.left   = attribs.coords_x;
+    placement.rcNormalPosition.top    = attribs.coords_y;
+    placement.rcNormalPosition.right  = attribs.coords_x + attribs.width;
+    placement.rcNormalPosition.bottom = attribs.coords_y + attribs.height;
 
-    InvalidateRect(self->handle, NULL, 0);
-    UpdateWindow(self->handle);
-}
+    switch (attribs.visibility) {
+        case PWindowVisibility_Hide: placement.showCmd = SW_HIDE; break;
+        case PWindowVisibility_Show: placement.showCmd = SW_SHOW; break;
 
-Bool pWin32WindowSetVisibility(PWin32Window* self, PWindowVisibility visibility)
-{
-    switch (visibility) {
-        case PWindowVisibility_Hide: ShowWindow(self->handle, SW_HIDE); break;
-        case PWindowVisibility_Show: ShowWindow(self->handle, SW_SHOW); break;
-
-        default: return 0;
+        default: break;
     }
+
+    SetWindowPlacement(self->handle, &placement);
 
     return 1;
 }
 
- PWindowVisibility pWin32WindowGetVisibility(PWin32Window* self)
+ PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
 {
-    return PWindowVisibility_None;
+    return self->attribs;
 }
 
 Bool pWin32WindowSetCallback(PWin32Window* self, void* ctxt, void* proc)
@@ -400,49 +412,5 @@ void* pWin32WindowGetCallback(PWin32Window* self)
 {
     return self->paint_proc;
 }
-
-/*
-Int pWin32WindowWidthSet(PWin32Window* self, Int width)
-{
-    RECT rect = pWin32WindowRect(self->handle);
-
-    Int result = rect.right - rect.left;
-
-    width = pClamp(width, self->width_min, self->width_max);
-
-    MoveWindow(self->handle, rect.left, rect.top,
-        width, rect.bottom - rect.top, 1);
-
-    return result;
-}
-
-Int pWin32WindowWidthGet(PWin32Window* self)
-{
-    RECT rect = pWin32ClientRect(self->handle);
-
-    return rect.right - rect.left;
-}
-
-Int pWin32WindowHeightSet(PWin32Window* self, Int height)
-{
-    RECT rect = pWin32WindowRect(self->handle);
-
-    Int result = rect.bottom - rect.top;
-
-    height = pClamp(height, self->height_min, self->height_max);
-
-    MoveWindow(self->handle, rect.left, rect.top,
-        rect.right - rect.left, height, 1);
-
-    return result;
-}
-
-Int pWin32WindowHeightGet(PWin32Window* self)
-{
-    RECT rect = pWin32ClientRect(self->handle);
-
-    return rect.bottom - rect.top;
-}
-*/
 
 #endif // P_WI32_WINDOW_WINDOW_C

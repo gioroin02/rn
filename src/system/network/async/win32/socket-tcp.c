@@ -3,9 +3,6 @@
 
 #include "socket-tcp.h"
 
-extern LPFN_CONNECTEX WSAConnectEx;
-extern LPFN_ACCEPTEX  WSAAcceptEx;
-
 static Bool pWin32AsyncIoQueueBindSocketTcp(PWin32AsyncIoQueue* self, PWin32SocketTcp* socket)
 {
     HANDLE handle = ((HANDLE) socket->handle);
