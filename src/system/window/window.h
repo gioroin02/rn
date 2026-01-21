@@ -15,8 +15,8 @@ typedef struct PWindowAttribs
 {
     PWindowVisibility visibility;
 
-    Int coords_x;
-    Int coords_y;
+    Int coord_x;
+    Int coord_y;
 
     Int width;
     Int width_max;

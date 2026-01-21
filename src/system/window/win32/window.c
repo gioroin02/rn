@@ -182,11 +182,7 @@ void* pWin32OpenglProcAddress(const char* name)
 
     if (result != NULL) return result;
 
-    result = GetProcAddress(opengl, name);
-
-    int error = GetLastError();
-
-    return result;
+    return GetProcAddress(opengl, name);
 }
 
 Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
@@ -218,24 +214,6 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
             info->ptMaxTrackSize.x = self->attribs.width_max;
             info->ptMinTrackSize.y = self->attribs.height_min;
             info->ptMaxTrackSize.y = self->attribs.height_max;
-        } break;
-
-        case WM_SIZE: {
-            WINDOWPLACEMENT placement;
-
-            GetWindowPlacement(self->handle, &placement);
-
-            self->attribs.coords_x = placement.rcNormalPosition.left;
-            self->attribs.coords_y = placement.rcNormalPosition.top;
-            self->attribs.width    = placement.rcNormalPosition.right - placement.rcNormalPosition.left;
-            self->attribs.height   = placement.rcNormalPosition.bottom - placement.rcNormalPosition.top;
-
-            switch (placement.showCmd) {
-                case SW_HIDE: self->attribs.visibility = PWindowVisibility_Hide; break;
-                case SW_SHOW: self->attribs.visibility = PWindowVisibility_Show; break;
-
-                default: break;
-            }
         } break;
 
         case WM_ERASEBKGND: result = 1; break;
@@ -295,8 +273,8 @@ Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int heigh
         self->opengl = pWin32CreateOpenGlContextCore33(self);
 
         self->attribs.visibility = PWindowVisibility_None;
-        self->attribs.coords_x   = x;
-        self->attribs.coords_y   = y;
+        self->attribs.coord_x    = x;
+        self->attribs.coord_y    = y;
         self->attribs.width      = width;
         self->attribs.width_max  = 1920;
         self->attribs.width_min  = 400;
@@ -378,10 +356,10 @@ Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
     WINDOWPLACEMENT placement;
 
     placement.length                  = sizeof placement;
-    placement.rcNormalPosition.left   = attribs.coords_x;
-    placement.rcNormalPosition.top    = attribs.coords_y;
-    placement.rcNormalPosition.right  = attribs.coords_x + attribs.width;
-    placement.rcNormalPosition.bottom = attribs.coords_y + attribs.height;
+    placement.rcNormalPosition.left   = attribs.coord_x;
+    placement.rcNormalPosition.top    = attribs.coord_y;
+    placement.rcNormalPosition.right  = attribs.coord_x + attribs.width;
+    placement.rcNormalPosition.bottom = attribs.coord_y + attribs.height;
 
     switch (attribs.visibility) {
         case PWindowVisibility_Hide: placement.showCmd = SW_HIDE; break;
@@ -395,8 +373,26 @@ Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
     return 1;
 }
 
- PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
+PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
 {
+    WINDOWPLACEMENT placement;
+
+    GetWindowPlacement(self->handle, &placement);
+
+    RECT rect = pWin32WindowRect(self->handle);
+
+    self->attribs.coord_x = rect.left;
+    self->attribs.coord_y = rect.top;
+    self->attribs.width   = rect.right - rect.left;
+    self->attribs.height  = rect.bottom - rect.top;
+
+    switch (placement.showCmd) {
+        case SW_HIDE: self->attribs.visibility = PWindowVisibility_Hide; break;
+        case SW_SHOW: self->attribs.visibility = PWindowVisibility_Show; break;
+
+        default: break;
+    }
+
     return self->attribs;
 }
 

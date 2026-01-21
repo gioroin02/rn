@@ -3,9 +3,9 @@
 
 #include "import.h"
 
-#define pString8(arr)  pString8Make(((U8*) arr),   sizeof (arr) / sizeof *(arr))
-#define pString16(arr) pString16Make(((U16*) arr), sizeof (arr) / sizeof *(arr))
-#define pString32(arr) pString32Make(((U32*) arr), sizeof (arr) / sizeof *(arr))
+#define pString8(arr)  pString8Make(((U8*) arr),   sizeof (arr) / sizeof *(arr) - 1)
+#define pString16(arr) pString16Make(((U16*) arr), sizeof (arr) / sizeof *(arr) - 1)
+#define pString32(arr) pString32Make(((U32*) arr), sizeof (arr) / sizeof *(arr) - 1)
 
 typedef struct PString8
 {

@@ -4,9 +4,11 @@
 #define pMin(v0, v1) ((v0) < (v1) ? (v0) : (v1))
 #define pMax(v0, v1) ((v0) < (v1) ? (v1) : (v0))
 
-#define pClampTop(value, max) pMin(value, max)
-#define pClampBot(value, min) pMax(value, min)
+#define pClampTop(val, max) pMin(val, max)
+#define pClampBot(val, min) pMax(val, min)
 
-#define pClamp(value, min, max) pMax(min, pMin(value, max))
+#define pClamp(val, min, max) pMax(min, pMin(val, max))
+
+#define pOffsetOf(self, mem) ((char*) &((self)->mem) - (char*) (self))
 
 #endif // P_BASE_DEFINE_H

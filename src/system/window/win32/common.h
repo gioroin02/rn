@@ -14,7 +14,7 @@
 #include <GL/gl.h>
 
 typedef HGLRC (WINAPI* LPFN_wglCreateContextAttribsARB) (HDC, HGLRC, const int*);
-typedef BOOL  (WINAPI* LPFN_wglChoosePixelFormatARB)    (HDC, const int*, const FLOAT*, UINT, int*, UINT*n);
+typedef BOOL  (WINAPI* LPFN_wglChoosePixelFormatARB)    (HDC, const int*, const FLOAT*, UINT, int*, UINT*);
 
 static LPFN_wglCreateContextAttribsARB wglCreateContextAttribsARB = (LPFN_wglCreateContextAttribsARB) NULL;
 static LPFN_wglChoosePixelFormatARB    wglChoosePixelFormatARB    = (LPFN_wglChoosePixelFormatARB) NULL;
