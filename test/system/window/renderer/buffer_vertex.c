@@ -1,20 +1,27 @@
-#ifndef P_GRAPHICS_OPENGL_BUFFER_C
-#define P_GRAPHICS_OPENGL_BUFFER_C
+#ifndef P_GRAPHICS_BUFFER_VERTEX_C
+#define P_GRAPHICS_BUFFER_VERTEX_C
 
-#include "buffer.h"
+#include "buffer_vertex.h"
 
-#include "glad.h"
+#include "gl.h"
 
-Bool pOglBufferVertexCreate(POglBufferVertex* self, Int count, Int size)
+Bool pBufferVertexCreate(PBufferVertex* self, Int count, Int size)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
     if (count < 0 || size < 0 || count > P_INT_MAX / size)
         return 0;
 
-    glGenBuffers(1, (GLuint*) &self->handle);
+    Int handle = 0;
+    Int bytes  = count * size;
 
-    Int bytes = count * size;
+    glGenBuffers(1, (GLuint*) &handle);
+
+    if (handle == 0) return 0;
+
+    self->handle = handle;
+    self->size   = count;
+    self->stride = size;
 
     glBindBuffer(GL_ARRAY_BUFFER, self->handle);
 
@@ -23,21 +30,18 @@ Bool pOglBufferVertexCreate(POglBufferVertex* self, Int count, Int size)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    self->size   = count;
-    self->stride = size;
-
     return 1;
 }
 
-void pOglBufferVertexDestroy(POglBufferVertex* self)
+void pBufferVertexDestroy(PBufferVertex* self)
 {
-    if (glIsBuffer(self->handle) != 0)
+    if (self->handle != 0)
         glDeleteBuffers(1, (GLuint*) &self->handle);
 
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Int pOglBufferVertexWrite(POglBufferVertex* self, U8* pntr, Int start, Int stop)
+Int pBufferVertexWrite(PBufferVertex* self, U8* pntr, Int start, Int stop)
 {
     if (start < 0 || start >= self->size * self->stride) return 0;
     if (stop  < 0 || stop  >= self->size * self->stride) return 0;
@@ -53,4 +57,4 @@ Int pOglBufferVertexWrite(POglBufferVertex* self, U8* pntr, Int start, Int stop)
     return stop - start;
 }
 
-#endif // P_GRAPHICS_OPENGL_BUFFER_C
+#endif // P_GRAPHICS_BUFFER_VERTEX_C

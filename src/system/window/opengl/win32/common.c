@@ -1,0 +1,82 @@
+#ifndef P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C
+#define P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C
+
+#include "common.h"
+
+static volatile LONG p_win32_opengl_count = 0;
+
+WglCreateContextAttribsARB wglCreateContextAttribsARB = (WglCreateContextAttribsARB) NULL;
+WglChoosePixelFormatARB    wglChoosePixelFormatARB    = (WglChoosePixelFormatARB)    NULL;
+
+Bool pWin32WindowOpenglStart()
+{
+    if (InterlockedIncrement(&p_win32_opengl_count) == 1)
+        return pWin32WindowOpenglStartImpl();
+
+    return 1;
+}
+
+Bool pWin32WindowOpenglStartImpl()
+{
+    HWND window = CreateWindowW(L"PWindowRegular", L"WindowDummy",
+        0, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
+
+    if (window == NULL) return 0;
+
+    PIXELFORMATDESCRIPTOR descr;
+
+    pMemorySet(&descr, sizeof descr, 0x00);
+
+    descr.nSize      = sizeof descr;
+    descr.nVersion   = 1;
+    descr.dwFlags    = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    descr.iPixelType = PFD_TYPE_RGBA;
+    descr.iLayerType = PFD_MAIN_PLANE;
+    descr.cColorBits = 24;
+    descr.cColorBits = 24;
+
+    HDC device = GetDC(window);
+    int format = ChoosePixelFormat(device, &descr);
+
+    HGLRC dummy = NULL;
+
+    if (format != 0 && SetPixelFormat(device, format, &descr) != 0) {
+        HGLRC context = wglCreateContext(device);
+
+        if (wglMakeCurrent(device, context) == 0)
+            wglDeleteContext(context);
+        else
+            dummy = context;
+    }
+
+    if (dummy != NULL) {
+        wglCreateContextAttribsARB = (WglCreateContextAttribsARB)
+            wglGetProcAddress("wglCreateContextAttribsARB");
+
+        wglChoosePixelFormatARB = (WglChoosePixelFormatARB)
+            wglGetProcAddress("wglChoosePixelFormatARB");
+
+        wglDeleteContext(dummy);
+    }
+
+    DestroyWindow(window);
+
+    if (wglCreateContextAttribsARB != NULL && wglChoosePixelFormatARB != NULL)
+        return 1;
+
+    return 0;
+}
+
+void pWin32WindowOpenglStop()
+{
+    if (InterlockedDecrement(&p_win32_opengl_count) == 0)
+        pWin32WindowOpenglStopImpl();
+}
+
+void pWin32WindowOpenglStopImpl()
+{
+    wglChoosePixelFormatARB    = NULL;
+    wglCreateContextAttribsARB = NULL;
+}
+
+#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C

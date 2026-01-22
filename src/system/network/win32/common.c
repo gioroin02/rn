@@ -3,10 +3,10 @@
 
 #include "common.h"
 
-LPFN_CONNECTEX WSAConnectEx = NULL;
-LPFN_ACCEPTEX  WSAAcceptEx  = NULL;
-
 static volatile LONG p_win32_winsock_count = 0;
+
+LPFN_CONNECTEX WSAConnectEx = (LPFN_CONNECTEX) NULL;
+LPFN_ACCEPTEX  WSAAcceptEx  = (LPFN_ACCEPTEX)  NULL;
 
 Bool pWin32NetworkStart()
 {

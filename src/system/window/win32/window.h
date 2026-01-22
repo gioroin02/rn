@@ -1,7 +1,7 @@
 #ifndef P_SYSTEM_WIN32_WINDOW_WINDOW_H
 #define P_SYSTEM_WIN32_WINDOW_WINDOW_H
 
-#include "common.h"
+#include "event.h"
 
 typedef struct PWin32Window
 {
@@ -15,8 +15,6 @@ typedef struct PWin32Window
     void* paint_proc;
 }
 PWin32Window;
-
-void* pWin32OpenglProcAddress(const char* name);
 
 PWin32Window* pWin32WindowReserve(PMemoryArena* arena);
 

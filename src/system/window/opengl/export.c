@@ -1,0 +1,6 @@
+#ifndef P_SYSTEM_WINDOW_OPENGL_EXPORT_C
+#define P_SYSTEM_WINDOW_OPENGL_EXPORT_C
+
+#include "window.c"
+
+#endif // P_SYSTEM_WINDOW_OPENGL_EXPORT_C

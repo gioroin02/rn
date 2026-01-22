@@ -16,8 +16,8 @@ typedef struct sockaddr         PWin32Addr;
 typedef struct sockaddr_in      PWin32AddrIp4;
 typedef struct sockaddr_in6     PWin32AddrIp6;
 
-static LPFN_CONNECTEX WSAConnectEx = (LPFN_CONNECTEX) NULL;
-static LPFN_ACCEPTEX  WSAAcceptEx  = (LPFN_ACCEPTEX) NULL;
+extern LPFN_CONNECTEX WSAConnectEx;
+extern LPFN_ACCEPTEX  WSAAcceptEx;
 
 Bool pWin32NetworkStart();
 

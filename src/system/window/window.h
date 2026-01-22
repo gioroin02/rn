@@ -32,8 +32,6 @@ typedef struct PWindow { U8 __private__; } PWindow;
 
 typedef void (PWindowCallback) (void*, PWindow*);
 
-void* pOpenglProcAddress(const char* name);
-
 PWindow* pWindowReserve(PMemoryArena* arena);
 
 Bool pWindowCreate(PWindow* self, PString8 title, Int width, Int height);

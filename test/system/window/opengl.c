@@ -4,7 +4,7 @@
 #include "../../../src/system/window/export.h"
 #include "../../../src/graphics/opengl/export.h"
 
-#include "../../../src/graphics/opengl/glad.h"
+#include "renderer/export.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -16,27 +16,31 @@ typedef struct Vertex
 }
 Vertex;
 
-#define SOURCE_VERTEX                                    \
-    "#version 330 core\n"                                \
-    "\n"                                                 \
-    "layout (location = 0) in vec2 layout_vert_coord;\n" \
-    "layout (location = 1) in vec3 layout_vert_color;\n" \
-    "\n"                                                 \
-    "out vec3 vert_color;\n"                             \
-    "\n"                                                 \
-    "void main() {\n"                                    \
-    "    vert_color  = layout_vert_color;\n"             \
-    "    gl_Position = vec4(layout_vert_coord, 1, 1);\n" \
+#define SOURCE_VERTEX                             \
+    "#version 330 core\n"                         \
+    "\n"                                          \
+    "layout (location = 0) in vec2 vert_coord;\n" \
+    "layout (location = 1) in vec3 vert_color;\n" \
+    "\n"                                          \
+    "out vec3 frag_color;\n"                      \
+    "\n"                                          \
+    "void main() {\n"                             \
+    "    frag_color  = vert_color;\n"             \
+    "    gl_Position = vec4(vert_coord, 1, 1);\n" \
     "}\n"
 
-#define SOURCE_FRAGMENT                       \
-    "#version 330 core\n"                     \
-    "\n"                                      \
-    "in  vec3 vert_color;\n"                  \
-    "out vec4 frag_color;\n"                  \
-    "\n"                                      \
-    "void main() {\n"                         \
-    "    frag_color = vec4(vert_color, 1);\n" \
+#define SOURCE_FRAGMENT                                  \
+    "#version 330 core\n"                                \
+    "\n"                                                 \
+    "in  vec3 frag_color;\n"                             \
+    "out vec3  out_color;\n"                             \
+    "\n"                                                 \
+    "void main() {\n"                                    \
+    "    float gamma_r = pow(frag_color.r, 0.80);\n"     \
+    "    float gamma_g = pow(frag_color.g, 0.80);\n"     \
+    "    float gamma_b = pow(frag_color.b, 0.80);\n"     \
+    "\n"                                                 \
+    "    out_color = vec3(gamma_r, gamma_g, gamma_b);\n" \
     "}\n"
 
 typedef struct Context
@@ -44,10 +48,11 @@ typedef struct Context
     PWindow* window;
     PClock*  clock;
 
-    POglShader       shader;
-    POglBufferVertex buff_vertex;
+    PShader       shader;
+    PBufferVertex buff_vertex;
+    PBufferIndex  buff_index;
 
-    Int layout;
+    PVertexDescr descriptor;
 
     F32 time;
 }
@@ -73,32 +78,13 @@ void windowPaintCallback(Context* self, PWindow* window)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBindVertexArray(self->layout);
     glUseProgram(self->shader.handle);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
+    glBindVertexArray(self->descriptor.handle);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     pWindowSwapBuffers(self->window);
-}
-
-void layoutApplyVertex(Int layout, POglBufferVertex* buffer, Vertex* item)
-{
-    glBindVertexArray(layout);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffer->handle);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-        sizeof *item, (void*) pOffsetOf(item, coord));
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
-        sizeof *item, (void*) pOffsetOf(item, color));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
 }
 
 int main(int argc, char** argv)
@@ -113,42 +99,59 @@ int main(int argc, char** argv)
 
     pWindowCreate(context.window, pString8("Prova"), 800, 600);
 
-    gladLoadGLLoader(pOpenglProcAddress);
+    POpenglContextAttribs opengl;
 
-    POglShaderSchedule schedule;
+    opengl.profile       = POpenglProfile_Core;
+    opengl.version_major = 3;
+    opengl.version_minor = 3;
+    opengl.flag          = POpenglContextFlag_Debug;
+
+    pWindowOpenglCreate(context.window, opengl);
+
+    PShaderSchedule schedule;
 
     PString8 source_vertex = pString8(SOURCE_VERTEX);
 
-    pOglShaderScheduleCreate(&schedule, POglShaderStage_Vertex);
+    pShaderScheduleCreate(&schedule, PShaderStage_Vertex);
 
-    Bool status_vertex = pOglShaderScheduleCompile(&schedule,
-        POglShaderStage_Vertex, pString8(SOURCE_VERTEX));
+    Bool status_vertex = pShaderScheduleCompile(&schedule,
+        PShaderStage_Vertex, pString8(SOURCE_VERTEX));
 
-    pOglShaderScheduleCreate(&schedule, POglShaderStage_Fragment);
+    pShaderScheduleCreate(&schedule, PShaderStage_Fragment);
 
-    Bool status_fragment = pOglShaderScheduleCompile(&schedule,
-        POglShaderStage_Fragment, pString8(SOURCE_FRAGMENT));
+    Bool status_fragment = pShaderScheduleCompile(&schedule,
+        PShaderStage_Fragment, pString8(SOURCE_FRAGMENT));
 
-    pOglShaderCreate(&context.shader);
+    pShaderCreate(&context.shader);
 
-    pOglShaderLink(&context.shader, &schedule);
+    pShaderLink(&context.shader, &schedule);
 
-    pOglBufferVertexCreateOf(&context.buff_vertex, Vertex, 32);
+    PVertexLayout layout;
 
-    Vertex vert_data[3] = {
-        (Vertex) {.coord = {-0.50, -0.33}, .color = {1, 0, 0}},
-        (Vertex) {.coord = {    0,  0.50}, .color = {0, 1, 0}},
-        (Vertex) {.coord = {+0.50, -0.33}, .color = {0, 0, 1}},
+    pVertexLayoutClear(&layout);
+
+    pVertexLayoutPush(&layout, PVertexField_F32, 2);
+    pVertexLayoutPush(&layout, PVertexField_F32, 3);
+
+    Vertex vertex_data[] = {
+        (Vertex) {.coord = {-0.75, -0.75}, .color = {1, 0, 0}},
+        (Vertex) {.coord = {+0.75, -0.75}, .color = {0, 1, 0}},
+        (Vertex) {.coord = {-0.75, +0.75}, .color = {0, 0, 0}},
+        (Vertex) {.coord = {+0.75, +0.75}, .color = {0, 0, 1}},
     };
 
-    pOglBufferVertexWrite(&context.buff_vertex,
-        (U8*) vert_data, 0, sizeof vert_data);
+    U32 index_data[] = {0, 1, 2, 1, 2, 3};
 
-    context.layout = 0;
+    pBufferVertexCreateOf(&context.buff_vertex, Vertex, 32);
+    pBufferIndexCreateOf(&context.buff_index, U32, 256);
 
-    glGenVertexArrays(1, (GLuint*) &context.layout);
+    pBufferVertexWrite(&context.buff_vertex, (U8*) vertex_data, 0, sizeof vertex_data);
+    pBufferIndexWrite(&context.buff_index,   (U8*)  index_data, 0,  sizeof index_data);
 
-    layoutApplyVertex(context.layout, &context.buff_vertex, vert_data);
+    pVertexDescrCreate(&context.descriptor);
+
+    pVertexDescrApplyLayout(&context.descriptor, &layout,
+        &context.buff_vertex, &context.buff_index);
 
     Bool active = 1;
 

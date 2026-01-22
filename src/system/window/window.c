@@ -9,8 +9,6 @@
 
     #define __PWindow__ PWin32Window
 
-    #define __POpenglProcAddress__ pWin32OpenglProcAddress
-
     #define __pWindowReserve__     pWin32WindowReserve
     #define __pWindowCreate__      pWin32WindowCreate
     #define __pWindowDestroy__     pWin32WindowDestroy
@@ -26,11 +24,6 @@
     #error "Unknown platform"
 
 #endif
-
-void* pOpenglProcAddress(const char* name)
-{
-    return __POpenglProcAddress__(name);
-}
 
 PWindow* pWindowReserve(PMemoryArena* arena)
 {
