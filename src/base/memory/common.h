@@ -50,4 +50,4 @@ void* pMemoryAlignPntr(void* pntr, Uint align);
 
 Int pMemoryAlignSize(Int size, Uint align);
 
-#endif // P_BASE_MEMORY_COMMON_H
+#endif

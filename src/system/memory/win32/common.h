@@ -14,4 +14,4 @@ PMemoryArena pWin32MemoryReserve(Int size);
 
 Bool pWin32MemoryRelease(PMemoryArena* arena);
 
-#endif // P_SYSTEM_WIN32_MEMORY_COMMON_H
+#endif

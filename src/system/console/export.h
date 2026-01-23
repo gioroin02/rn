@@ -4,4 +4,4 @@
 #include "event.h"
 #include "console.h"
 
-#endif // P_SYSTEM_CONSOLE_EXPORT_H
+#endif

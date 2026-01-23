@@ -20,4 +20,4 @@ void pBufferIndexDestroy(PBufferIndex* self);
 
 Int pBufferIndexWrite(PBufferIndex* self, U8* pntr, Int start, Int stop);
 
-#endif // P_GRAPHICS_BUFFER_INDEX_H
+#endif

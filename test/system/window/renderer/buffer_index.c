@@ -57,4 +57,4 @@ Int pBufferIndexWrite(PBufferIndex* self, U8* pntr, Int start, Int stop)
     return stop - start;
 }
 
-#endif // P_GRAPHICS_BUFFER_INDEX_C
+#endif

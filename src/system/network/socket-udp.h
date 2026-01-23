@@ -21,4 +21,4 @@ Int pSocketUdpRead(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* hos
 
 PHostIp pSocketUdpGetHost(PSocketUdp* self);
 
-#endif // P_SYSTEM_NETWORK_SOCKET_UDP_H
+#endif

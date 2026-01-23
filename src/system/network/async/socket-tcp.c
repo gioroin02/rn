@@ -15,6 +15,19 @@
     #define __pSocketTcpWriteAsync__   pWin32SocketTcpWriteAsync
     #define __pSocketTcpReadAsync__    pWin32SocketTcpReadAsync
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PAsyncIoQueue__ PLinuxAsyncIoQueue
+    #define __PSocketTcp__    PLinuxSocketTcp
+
+    #define __pSocketTcpAcceptAsync__  pLinuxSocketTcpAcceptAsync
+    #define __pSocketTcpConnectAsync__ pLinuxSocketTcpConnectAsync
+    #define __pSocketTcpWriteAsync__   pLinuxSocketTcpWriteAsync
+    #define __pSocketTcpReadAsync__    pLinuxSocketTcpReadAsync
+
+
 #else
 
     #error "Unknown platform"
@@ -104,4 +117,4 @@ Bool pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsync
     return __pSocketTcpReadAsync__((__PSocketTcp__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
-#endif // P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_C
+#endif

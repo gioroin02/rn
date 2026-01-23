@@ -6,4 +6,4 @@
 
 #include "type.h"
 
-#endif // P_BASE_EXPORT_H
+#endif

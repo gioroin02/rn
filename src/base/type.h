@@ -82,4 +82,4 @@ typedef U64 B64;
 
 #endif
 
-#endif // P_BASE_TYPE_H
+#endif

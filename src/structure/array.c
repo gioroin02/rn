@@ -105,4 +105,4 @@ Bool __pArraySlotClose__(PArrayTag* self, void* values, Int index)
     return 1;
 }
 
-#endif // P_STRUCTURE_ARRAY_C
+#endif

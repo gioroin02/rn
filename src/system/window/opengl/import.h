@@ -5,4 +5,4 @@
 
 #include "../../../graphics/opengl/export.h"
 
-#endif // P_SYSTEM_WINDOW_OPENGL_IMPORT_H
+#endif

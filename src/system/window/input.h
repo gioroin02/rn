@@ -36,4 +36,4 @@ void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, Bool state);
 
 PWindowKeybdKeyState pWindowKeybdGet(PWindowKeybd* self, PWindowKeybdKey key);
 
-#endif // P_SYSTEM_WINDOW_INPUT_H
+#endif

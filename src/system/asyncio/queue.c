@@ -14,6 +14,18 @@
     #define __pAsyncIoQueueDestroy__   pWin32AsyncIoQueueDestroy
     #define __pAsyncIoQueuePollEvent__ pWin32AsyncIoQueuePollEvent
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PAsyncIoQueue__ PLinuxAsyncIoQueue
+
+    #define __pAsyncIoQueueReserve__   pLinuxAsyncIoQueueReserve
+    #define __pAsyncIoQueueCreate__    pLinuxAsyncIoQueueCreate
+    #define __pAsyncIoQueueDestroy__   pLinuxAsyncIoQueueDestroy
+    #define __pAsyncIoQueuePollEvent__ pLinuxAsyncIoQueuePollEvent
+
+
 #else
 
     #error "Unknown platform"
@@ -40,4 +52,4 @@ PAsyncIoEventKind pAsyncIoQueuePollEvent(PAsyncIoQueue* self, Int timeout, PMemo
     return __pAsyncIoQueuePollEvent__((__PAsyncIoQueue__*) self, timeout, arena, event);
 }
 
-#endif // P_SYSTEM_ASYNCIO_QUEUE_C
+#endif

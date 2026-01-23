@@ -15,4 +15,4 @@ void* pWin32OpenglLoader(void* symbol)
     return GetProcAddress(module, (LPCSTR) symbol);
 }
 
-#endif // P_GRAPHICS_WIN32_OPENGL_COMMON_C
+#endif

@@ -29,4 +29,4 @@ Int pConsoleRead(PConsole* self, U8* pntr, Int start, Int stop);
 
 Bool pConsolePollEvent(PConsole* self, PConsoleEvent* event);
 
-#endif // P_SYSTEM_CONSOLE_CONSOLE_H
+#endif

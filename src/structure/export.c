@@ -4,4 +4,4 @@
 #include "array.c"
 #include "map.c"
 
-#endif // P_STRUCTURE_EXPORT_C
+#endif

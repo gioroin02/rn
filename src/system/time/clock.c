@@ -51,4 +51,4 @@ F32 pClockElapsed(PClock* self)
     return __pClockElapsed__((__PClock__*) self);
 }
 
-#endif // P_SYSTEM_TIME_CLOCK_C
+#endif

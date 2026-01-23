@@ -153,4 +153,4 @@ Bool pWin32WindowOpenglEnable(PWin32Window* self, Bool state)
     return 0;
 }
 
-#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_WINDOW_C
+#endif

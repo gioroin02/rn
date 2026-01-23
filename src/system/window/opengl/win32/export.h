@@ -4,4 +4,4 @@
 #include "common.h"
 #include "window.h"
 
-#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_EXPORT_H
+#endif

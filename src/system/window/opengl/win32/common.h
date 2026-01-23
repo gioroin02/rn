@@ -24,4 +24,4 @@ void pWin32WindowOpenglStop();
 
 void pWin32WindowOpenglStopImpl();
 
-#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_H
+#endif

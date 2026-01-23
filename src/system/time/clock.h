@@ -13,4 +13,4 @@ void pClockDestroy(PClock* self);
 
 F32 pClockElapsed(PClock* self);
 
-#endif // P_SYSTEM_TIME_CLOCK_H
+#endif

@@ -41,4 +41,4 @@ Int pFileRead(PFile* self, U8* pntr, Int start, Int stop)
     return __pFileRead__((__PFile__*) self, pntr, start, stop);
 }
 
-#endif // P_SYSTEM_STORAGE_FILE_C
+#endif

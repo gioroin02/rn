@@ -157,4 +157,4 @@ Bool __pMapSlotOpen__(PMapTag* self, void* keys, void* key)
     return 1;
 }
 
-#endif // P_STRUCTURE_MAP_C
+#endif

@@ -14,6 +14,7 @@ Bool pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
 
     PLinuxAddrStorage storage;
     Int               length = 0;
+    int               option = 1;
 
     storage = pLinuxAddrStorageMake(host.address, host.port, &length);
 
@@ -22,11 +23,18 @@ Bool pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
     Int handle = socket(storage.ss_family, SOCK_DGRAM, IPPROTO_UDP);
 
     if (handle != -1) {
-        self->handle  = handle;
-        self->storage = storage;
+        int status = setsockopt(handle, SOL_SOCKET,
+            SO_REUSEADDR, &option, sizeof option);
 
-        return 1;
+        if (status != -1) {
+            self->handle  = handle;
+            self->storage = storage;
+
+            return 1;
+        }
     }
+
+    close(handle);
 
     return 0;
 }
@@ -137,4 +145,4 @@ PHostIp pLinuxSocketUdpGetHost(PLinuxSocketUdp* self)
         pLinuxAddrStorageGetPort(&self->storage));
 }
 
-#endif // P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_C
+#endif

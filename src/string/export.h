@@ -3,4 +3,4 @@
 
 #include "type.h"
 
-#endif // P_BASE_STRING_EXPORT_H
+#endif

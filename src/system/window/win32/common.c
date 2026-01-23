@@ -56,4 +56,4 @@ PString16 pWin32Str8ToStr16(U16* pntr, Int size, PString8 string)
      return result;
 }
 
-#endif // P_SYSTEM_WIN32_WINDOW_COMMON_C
+#endif

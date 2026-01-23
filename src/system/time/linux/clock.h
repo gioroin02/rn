@@ -24,4 +24,4 @@ void pLinuxClockDestroy(PLinuxClock* self);
 
 F32 pLinuxClockElapsed(PLinuxClock* self);
 
-#endif // P_SYSTEM_LINUX_TIME_CLOCK_H
+#endif

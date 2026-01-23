@@ -16,4 +16,4 @@ PMemoryArena pLinuxMemoryReserve(Int size);
 
 Bool pLinuxMemoryRelease(PMemoryArena* arena);
 
-#endif // P_SYSTEM_LINUX_MEMORY_COMMON_H
+#endif

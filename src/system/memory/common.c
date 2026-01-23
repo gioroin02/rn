@@ -40,4 +40,4 @@ Bool pSystemMemoryRelease(PMemoryArena* arena)
     return __pSystemMemoryRelease__(arena);
 }
 
-#endif // P_SYSTEM_MEMORY_COMMON_C
+#endif

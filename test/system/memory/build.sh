@@ -1,4 +1,4 @@
-compiler="gcc -Wno-endif-labels"
+compiler="gcc"
 
 impl="$impl src/base/export.c"
 impl="$impl src/base/memory/export.c"

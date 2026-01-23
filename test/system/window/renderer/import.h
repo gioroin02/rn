@@ -3,4 +3,4 @@
 
 #include "../../../../src/string/export.h"
 
-#endif // P_GRAPHICS_IMPORT_H
+#endif

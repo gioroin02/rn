@@ -97,4 +97,4 @@ void __pMapClear__(PMapTag* self);
 
 Bool __pMapSlotOpen__(PMapTag* self, void* keys, void* key);
 
-#endif // P_STRUCTURE_MAP_H
+#endif

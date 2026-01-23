@@ -6,4 +6,4 @@
 #include "socket-tcp.c"
 #include "socket-udp.c"
 
-#endif // P_SYSTEM_WIN32_NETWORK_EXPORT_C
+#endif

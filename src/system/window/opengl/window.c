@@ -34,4 +34,4 @@ Bool pWindowOpenglEnable(PWindow* self, Bool state)
     return __pWindowOpenglEnable__((__PWindow__*) self, state);
 }
 
-#endif // P_SYSTEM_WINDOW_OPENGL_WINDOW_C
+#endif

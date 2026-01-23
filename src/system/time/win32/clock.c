@@ -35,4 +35,4 @@ F32 pWin32ClockElapsed(PWin32Clock* self)
     return (F32) diff / (F32) freq;
 }
 
-#endif // P_SYSTEM_WIN32_TIME_CLOCK_C
+#endif

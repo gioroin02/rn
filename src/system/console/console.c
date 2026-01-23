@@ -64,4 +64,4 @@ Bool pConsolePollEvent(PConsole* self, PConsoleEvent* event)
     return __pConsolePollEvent__((__PConsole__*) self, event);
 }
 
-#endif // P_SYSTEM_CONSOLE_CONSOLE_C
+#endif

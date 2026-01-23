@@ -32,4 +32,4 @@ Int pWin32SocketTcpRead(PWin32SocketTcp* self, U8* pntr, Int start, Int stop);
 
 PHostIp pWin32SocketTcpGetHost(PWin32SocketTcp* self);
 
-#endif // P_SYSTEM_WIN32_NETWORK_SOCKET_TCP_H
+#endif

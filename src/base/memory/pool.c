@@ -119,4 +119,4 @@ Bool pMemoryPoolRelease(PMemoryPool* self, void* pntr)
     return 1;
 }
 
-#endif // P_BASE_MEMORY_POOL_C
+#endif

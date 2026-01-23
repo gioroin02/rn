@@ -3,4 +3,4 @@
 
 #include "console.c"
 
-#endif // P_SYSTEM_WIN32_CONSOLE_EXPORT_C
+#endif

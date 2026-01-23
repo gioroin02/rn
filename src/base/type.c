@@ -3,4 +3,4 @@
 
 #include "type.h"
 
-#endif // P_BASE_TYPE_C
+#endif

@@ -79,4 +79,4 @@ void pWin32WindowOpenglStopImpl()
     wglCreateContextAttribsARB = NULL;
 }
 
-#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C
+#endif

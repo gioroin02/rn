@@ -3,4 +3,4 @@
 
 #include "type.c"
 
-#endif // P_STRING_EXPORT_C
+#endif

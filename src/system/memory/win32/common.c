@@ -50,4 +50,4 @@ Bool pWin32MemoryRelease(PMemoryArena* arena)
     return 1;
 }
 
-#endif // P_SYSTEM_WIN32_MEMORY_COMMON_C
+#endif

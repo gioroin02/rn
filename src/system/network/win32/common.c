@@ -190,4 +190,4 @@ U16 pWin32AddrStorageGetPort(PWin32AddrStorage* self)
 
     return 0;
 }
-#endif // P_SYSTEM_WIN32_NETWORK_COMMON_C
+#endif

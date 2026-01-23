@@ -134,4 +134,4 @@ U16 pLinuxAddrStorageGetPort(PLinuxAddrStorage* self)
 
     return 0;
 }
-#endif // P_SYSTEM_LINUX_NETWORK_COMMON_C
+#endif

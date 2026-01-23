@@ -23,4 +23,4 @@ Int pWin32FileWrite(PWin32File* self, U8* pntr, Int start, Int stop);
 
 Int pWin32FileRead(PWin32File* self, U8* pntr, Int start, Int stop);
 
-#endif // P_SYSTEM_WIN32_STORAGE_FILE_H
+#endif

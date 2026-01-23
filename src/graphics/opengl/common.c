@@ -20,4 +20,4 @@ void* pOpenglLoader(void* symbol)
     return __pOpenglLoader__(symbol);
 }
 
-#endif // P_GRAPHICS_OPENGL_COMMON_C
+#endif

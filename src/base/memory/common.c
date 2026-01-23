@@ -126,4 +126,4 @@ Int pMemoryAlignSize(Int size, Uint align)
     return size;
 }
 
-#endif // P_BASE_MEMORY_COMMON_C
+#endif

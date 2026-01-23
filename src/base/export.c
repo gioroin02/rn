@@ -3,4 +3,4 @@
 
 #include "type.c"
 
-#endif // P_BASE_EXPORT_C
+#endif

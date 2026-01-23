@@ -9,4 +9,4 @@ PMemoryArena pSystemMemoryReserve(Int size);
 
 Bool pSystemMemoryRelease(PMemoryArena* arena);
 
-#endif // P_SYSTEM_MEMORY_COMMON_H
+#endif

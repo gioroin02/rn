@@ -11,4 +11,4 @@
 
 #define pOffsetOf(self, mem) ((char*) &((self)->mem) - (char*) (self))
 
-#endif // P_BASE_DEFINE_H
+#endif

@@ -37,4 +37,4 @@ PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self);
 
 U16 pWin32AddrStorageGetPort(PWin32AddrStorage* self);
 
-#endif // P_SYSTEM_WIN32_NETWORK_COMMON_H
+#endif

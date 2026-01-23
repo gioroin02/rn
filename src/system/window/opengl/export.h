@@ -3,4 +3,4 @@
 
 #include "window.h"
 
-#endif // P_SYSTEM_WINDOW_OPENGL_EXPORT_H
+#endif

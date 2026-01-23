@@ -5,4 +5,4 @@
 #include "window.h"
 #include "input.h"
 
-#endif // P_SYSTEM_WINDOW_EXPORT_H
+#endif

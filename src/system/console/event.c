@@ -16,4 +16,4 @@ pConsoleEventKeybdKey(PConsoleKeybdKey key)
     return result;
 }
 
-#endif // P_SYSTEM_CONSOLE_EVENT_C
+#endif

@@ -23,4 +23,4 @@ void pAsyncIoQueueDestroy(PAsyncIoQueue* self);
 
 PAsyncIoEventKind pAsyncIoQueuePollEvent(PAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
 
-#endif // P_SYSTEM_ASYNCIO_QUEUE_H
+#endif

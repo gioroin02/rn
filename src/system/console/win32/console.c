@@ -230,4 +230,4 @@ Bool pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event)
     return 0;
 }
 
-#endif // P_CONSOLE_CONSOLE_C
+#endif

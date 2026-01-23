@@ -3,4 +3,4 @@
 
 #include "common.h"
 
-#endif // P_GRAPHICS_WIN32_OPENGL_EXPORT_H
+#endif

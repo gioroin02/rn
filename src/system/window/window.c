@@ -70,4 +70,4 @@ void* pWindowGetTimerCallback(PWindow* self)
     return __pWindowGetTimerCallback__((__PWindow__*) self);
 }
 
-#endif // P_SYSTEM_WINDOW_WINDOW_C
+#endif

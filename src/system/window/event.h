@@ -151,4 +151,4 @@ pWindowEventWindowDestroy(void* window);
 PWindowEvent
 pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan);
 
-#endif // P_SYSTEM_WINDOW_EVENT_H
+#endif

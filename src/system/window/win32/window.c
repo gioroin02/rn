@@ -241,4 +241,4 @@ void* pWin32WindowGetTimerCallback(PWin32Window* self)
     return self->timer_proc;
 }
 
-#endif // P_WI32_WINDOW_WINDOW_C
+#endif

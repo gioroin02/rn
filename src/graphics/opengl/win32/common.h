@@ -18,4 +18,4 @@ static WglChoosePixelFormatARB    wglChoosePixelFormatARB;
 
 void* pWin32OpenglLoader(void* symbol);
 
-#endif // P_GRAPHICS_WIN32_OPENGL_COMMON_H
+#endif

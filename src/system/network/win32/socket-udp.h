@@ -26,4 +26,4 @@ Int pWin32SocketUdpRead(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PH
 
 PHostIp pWin32SocketUdpGetHost(PWin32SocketUdp* self);
 
-#endif // P_SYSTEM_WIN32_NETWORK_SOCKET_UDP_H
+#endif

@@ -57,4 +57,4 @@ Bool pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc);
 
 void* pWindowGetTimerCallback(PWindow* self);
 
-#endif // P_SYSTEM_WINDOW_WINDOW_H
+#endif

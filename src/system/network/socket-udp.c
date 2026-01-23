@@ -79,4 +79,4 @@ PHostIp pSocketUdpGetHost(PSocketUdp* self)
     return __pSocketUdpGetHost__((__PSocketUdp__*) self);
 }
 
-#endif // P_SYSTEM_NETWORK_SOCKET_UDP_C
+#endif

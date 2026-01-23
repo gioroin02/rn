@@ -87,4 +87,4 @@ PWindowKeybdKey pWin32WindowConvertKey(WORD key_code)
     return PWindowKeybd_None;
 }
 
-#endif // P_SYSTEM_WIN32_WINDOW_EVENT_C
+#endif

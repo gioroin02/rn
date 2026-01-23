@@ -63,4 +63,4 @@ PWindowKeybdKeyState pWindowKeybdGet(PWindowKeybd* self, PWindowKeybdKey key)
     return PWindowKeybdKeyState_None;
 }
 
-#endif // P_SYSTEM_WINDOW_INPUT_C
+#endif

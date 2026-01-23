@@ -101,4 +101,4 @@ PHostIp pSocketTcpGetHost(PSocketTcp* self)
     return __pSocketTcpGetHost__((__PSocketTcp__*) self);
 }
 
-#endif // P_SYSTEM_NETWORK_SOCKET_TCP_C
+#endif

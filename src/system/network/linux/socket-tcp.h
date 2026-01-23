@@ -32,4 +32,4 @@ Int pLinuxSocketTcpRead(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop);
 
 PHostIp pLinuxSocketTcpGetHost(PLinuxSocketTcp* self);
 
-#endif // P_SYSTEM_LINUX_NETWORK_SOCKET_TCP_H
+#endif

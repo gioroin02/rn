@@ -26,4 +26,4 @@ Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PH
 
 PHostIp pLinuxSocketUdpGetHost(PLinuxSocketUdp* self);
 
-#endif // P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_H
+#endif

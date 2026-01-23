@@ -5,7 +5,7 @@
 
 static Bool pWin32AsyncIoQueueBindSocketTcp(PWin32AsyncIoQueue* self, PWin32SocketTcp* socket)
 {
-    HANDLE handle = ((HANDLE) socket->handle);
+    HANDLE handle = (HANDLE) socket->handle;
     HANDLE result = CreateIoCompletionPort(handle, self->handle, 0, 0);
 
     return result != NULL ? 1 : 0;
@@ -303,4 +303,4 @@ Bool pWin32SocketTcpReadAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int st
     return 0;
 }
 
-#endif // P_SYSTEM_WIN32_NETWORK_ASYNC_SOCKET_TCP_C
+#endif

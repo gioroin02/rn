@@ -21,4 +21,4 @@ Bool pWin32ClockCreate(PWin32Clock* self);
 
 F32 pWin32ClockElapsed(PWin32Clock* self);
 
-#endif // P_SYSTEM_WIN32_TIME_CLOCK_H
+#endif

@@ -24,4 +24,4 @@ PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self);
 
 U16 pLinuxAddrStorageGetPort(PLinuxAddrStorage* self);
 
-#endif // P_SYSTEM_LINUX_NETWORK_COMMON_H
+#endif

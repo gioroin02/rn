@@ -34,4 +34,4 @@ Bool pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc);
 
 void* pWin32WindowGetTimerCallback(PWin32Window* self);
 
-#endif // P_SYSTEM_WIN32_WINDOW_WINDOW_H
+#endif

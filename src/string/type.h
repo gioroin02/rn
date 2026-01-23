@@ -34,4 +34,4 @@ PString16 pString16Make(U16* values, Int size);
 
 PString32 pString32Make(U32* values, Int size);
 
-#endif // P_BASE_STRING_TYPE_H
+#endif

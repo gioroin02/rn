@@ -9,4 +9,4 @@ void pWin32WindowOpenglDestroy(PWin32Window* self);
 
 Bool pWin32WindowOpenglEnable(PWin32Window* self, Bool state);
 
-#endif // P_SYSTEM_WIN32_WINDOW_OPENGL_WINDOW_H
+#endif

@@ -143,4 +143,4 @@ Bool __pArraySlotOpen__(PArrayTag* self, void* values, Int index);
 
 Bool __pArraySlotClose__(PArrayTag* self, void* values, Int index);
 
-#endif // P_STRUCTURE_ARRAY_H
+#endif

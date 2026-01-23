@@ -6,4 +6,4 @@
 #include "event.c"
 #include "window.c"
 
-#endif // P_SYSTEM_WIN32_WINDOW_EXPORT_C
+#endif

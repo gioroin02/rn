@@ -27,4 +27,4 @@ Int pSocketTcpRead(PSocketTcp* self, U8* pntr, Int start, Int stop);
 
 PHostIp pSocketTcpGetHost(PSocketTcp* self);
 
-#endif // P_SYSTEM_NETWORK_SOCKET_TCP_H
+#endif

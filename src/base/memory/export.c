@@ -6,4 +6,4 @@
 #include "arena.c"
 #include "pool.c"
 
-#endif // P_BASE_MEMORY_EXPORT_C
+#endif

@@ -31,4 +31,4 @@ void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size);
 
 Bool pMemoryPoolRelease(PMemoryPool* self, void* pntr);
 
-#endif // P_BASE_MEMORY_POOL_H
+#endif

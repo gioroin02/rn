@@ -54,4 +54,4 @@ Bool pLinuxMemoryRelease(PMemoryArena* arena)
     return 1;
 }
 
-#endif // P_SYSTEM_LINUX_MEMORY_COMMON_C
+#endif

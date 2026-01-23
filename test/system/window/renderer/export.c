@@ -10,4 +10,4 @@
 
 #include "shader.c"
 
-#endif // P_GRAPHICS_EXPORT_C
+#endif

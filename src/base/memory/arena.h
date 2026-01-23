@@ -33,4 +33,4 @@ Bool pMemoryArenaRewind(PMemoryArena* self, void* pntr);
 
 void* pMemoryArenaTell(PMemoryArena* self);
 
-#endif // P_BASE_MEMORY_ARENA_H
+#endif

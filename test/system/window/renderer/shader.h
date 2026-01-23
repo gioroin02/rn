@@ -52,4 +52,4 @@ void pShaderDestroy(PShader* self);
 
 Bool pShaderLink(PShader* self, PShaderSchedule* schedule);
 
-#endif // P_GRAPHICS_SHADER_H
+#endif

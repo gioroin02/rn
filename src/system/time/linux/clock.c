@@ -35,4 +35,4 @@ F32 pLinuxClockElapsed(PLinuxClock* self)
     return (F32) diff_sec + (F32) diff_nsec / (F32) 1.0e9;
 }
 
-#endif // P_SYSTEM_LINUX_TIME_CLOCK_C
+#endif

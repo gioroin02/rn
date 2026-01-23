@@ -75,4 +75,4 @@ Bool pAddressIpIsEqual(PAddressIp self, PAddressIp value);
 
 PHostIp pHostIpMake(PAddressIp address, U16 port);
 
-#endif // P_SYSTEM_NETWORK_ADDRESS_IP_H
+#endif

@@ -144,4 +144,4 @@ Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
     return 1;
 }
 
-#endif // P_GRAPHICS_VERTEX_DESCR_C
+#endif

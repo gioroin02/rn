@@ -3,4 +3,4 @@
 
 #include "clock.c"
 
-#endif // P_SYSTEM_WIN32_TIME_EXPORT_C
+#endif

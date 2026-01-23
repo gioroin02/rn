@@ -31,4 +31,4 @@ POpenglContextAttribs;
 
 void* pOpenglLoader(void* symbol);
 
-#endif // P_GRAPHICS_OPENGL_COMMON_H
+#endif

@@ -57,4 +57,4 @@ Int pBufferVertexWrite(PBufferVertex* self, U8* pntr, Int start, Int stop)
     return stop - start;
 }
 
-#endif // P_GRAPHICS_BUFFER_VERTEX_C
+#endif

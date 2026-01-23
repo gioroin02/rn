@@ -91,14 +91,11 @@ PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int time
 {
     Int time = timeout >= 0 ? timeout : INFINITE;
 
-    PAsyncIoEventKind result = PAsyncIoEvent_None;
+    PAsyncIoEventKind result  = PAsyncIoEvent_None;
+    Int               bytes   = 0;
+    OVERLAPPED*       overlap = NULL;
 
-    OVERLAPPED* overlap = NULL;
-    Int         bytes   = 0;
-    Uint*       key     = 0;
-
-    BOOL status = GetQueuedCompletionStatus(self->handle,
-        (DWORD*) &bytes, (ULONG_PTR*) &key, &overlap, time);
+    BOOL status = GetQueuedCompletionStatus(self->handle, (DWORD*) &bytes, NULL, &overlap, time);
 
     if (status == 0 && GetLastError() != WAIT_TIMEOUT) return result;
 
@@ -121,4 +118,4 @@ Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value
     return 1;
 }
 
-#endif // P_SYSTEM_WIN32_ASYNCIO_QUEUE_C
+#endif

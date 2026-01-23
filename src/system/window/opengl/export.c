@@ -3,4 +3,4 @@
 
 #include "window.c"
 
-#endif // P_SYSTEM_WINDOW_OPENGL_EXPORT_C
+#endif

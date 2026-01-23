@@ -70,4 +70,4 @@ pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan)
     return result;
 }
 
-#endif // P_SYSTEM_WINDOW_EVENT_C
+#endif

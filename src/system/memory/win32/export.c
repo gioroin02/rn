@@ -3,4 +3,4 @@
 
 #include "common.c"
 
-#endif // P_SYSTEM_WIN32_MEMORY_EXPORT_C
+#endif

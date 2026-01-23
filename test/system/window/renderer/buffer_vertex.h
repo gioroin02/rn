@@ -20,4 +20,4 @@ void pBufferVertexDestroy(PBufferVertex* self);
 
 Int pBufferVertexWrite(PBufferVertex* self, U8* pntr, Int start, Int stop);
 
-#endif // P_GRAPHICS_BUFFER_VERTEX_H
+#endif

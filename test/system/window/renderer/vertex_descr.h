@@ -56,4 +56,4 @@ void pVertexDescrDestroy(PVertexDescr* self);
 Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
     PBufferVertex* buff_vertex, PBufferIndex* buff_index);
 
-#endif // P_GRAPHICS_VERTEX_DESCR_H
+#endif

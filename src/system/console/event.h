@@ -110,4 +110,4 @@ PConsoleEvent;
 PConsoleEvent
 pConsoleEventKeybdKey(PConsoleKeybdKey key);
 
-#endif // P_SYSTEM_CONSOLE_EVENT_H
+#endif

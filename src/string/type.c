@@ -54,4 +54,4 @@ PString32 pString32Make(U32* values, Int size)
     return result;
 }
 
-#endif // P_BASE_STRING_TYPE_C
+#endif

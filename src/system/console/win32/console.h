@@ -33,4 +33,4 @@ Int pWin32ConsoleRead(PWin32Console* self, U8* pntr, Int start, Int stop);
 
 Bool pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event);
 
-#endif // P_SYSTEM_WIN32_CONSOLE_CONSOLE_H
+#endif

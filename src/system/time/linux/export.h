@@ -3,4 +3,4 @@
 
 #include "clock.h"
 
-#endif // P_SYSTEM_LINUX_TIME_EXPORT_H
+#endif

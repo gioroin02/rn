@@ -51,4 +51,4 @@ PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int time
 
 Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value);
 
-#endif // P_SYSTEM_WIN32_ASYNCIO_QUEUE_H
+#endif
