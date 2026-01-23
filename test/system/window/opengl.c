@@ -2,7 +2,7 @@
 #include "../../../src/system/memory/export.h"
 #include "../../../src/system/time/export.h"
 #include "../../../src/system/window/export.h"
-#include "../../../src/graphics/opengl/export.h"
+#include "../../../src/system/window/opengl/export.h"
 
 #include "renderer/export.h"
 
@@ -48,25 +48,31 @@ typedef struct Context
     PWindow* window;
     PClock*  clock;
 
+    PWindowKeybd keyboard;
+
     PShader       shader;
     PBufferVertex buff_vertex;
     PBufferIndex  buff_index;
 
     PVertexDescr descriptor;
 
+    B32 active;
     F32 time;
 }
 Context;
 
-void windowPaintCallback(Context* self, PWindow* window)
+void contextUpdate(Context* self)
 {
+    if (pWindowKeybdIsReleased(&self->keyboard, PWindowKeybd_Escape) != 0)
+        self->active = 0;
+
     F32 elapsed = pClockElapsed(self->clock);
 
     printf("\x1b\x63%.3f Hz\n", 1.0 / elapsed);
 
     self->time += elapsed;
 
-    PWindowAttribs attribs = pWindowGetAttribs(window);
+    PWindowAttribs attribs = pWindowGetAttribs(self->window);
 
     glViewport(0, 0, attribs.width, attribs.height);
 
@@ -87,6 +93,11 @@ void windowPaintCallback(Context* self, PWindow* window)
     pWindowSwapBuffers(self->window);
 }
 
+void windowTimerCallback(Context* self, PWindow* window)
+{
+    contextUpdate(self);
+}
+
 int main(int argc, char** argv)
 {
     PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(8));
@@ -95,7 +106,10 @@ int main(int argc, char** argv)
 
     pMemorySet(&context, sizeof context, 0xAB);
 
-    context.window = pWindowReserve(&arena);
+    context.window   = pWindowReserve(&arena);
+    context.clock    = pClockReserve(&arena);
+    context.keyboard = pWindowKeybdMake();
+    context.active   = 1;
 
     pWindowCreate(context.window, pString8("Prova"), 800, 600);
 
@@ -107,6 +121,8 @@ int main(int argc, char** argv)
     opengl.flag          = POpenglContextFlag_Debug;
 
     pWindowOpenglCreate(context.window, opengl);
+
+    pClockCreate(context.clock);
 
     PShaderSchedule schedule;
 
@@ -153,35 +169,27 @@ int main(int argc, char** argv)
     pVertexDescrApplyLayout(&context.descriptor, &layout,
         &context.buff_vertex, &context.buff_index);
 
-    Bool active = 1;
-
     PWindowAttribs attribs = pWindowGetAttribs(context.window);
 
     attribs.visibility = PWindowVisibility_Show;
 
-    pWindowSetCallback(context.window, &context, windowPaintCallback);
+    pWindowSetTimerCallback(context.window,
+        &context, windowTimerCallback);
+
     pWindowSetAttribs(context.window, attribs);
 
-    context.clock = pClockReserve(&arena);
-
-    pClockCreate(context.clock);
-
-    while (active != 0) {
+    while (context.active != 0) {
         PWindowEvent event;
 
         pMemorySet(&event, sizeof event, 0xAB);
 
         while (pWindowPollEvent(context.window, &event) != 0) {
             switch (event.kind) {
-                case PWindowEvent_Quit: active = 0; break;
+                case PWindowEvent_Quit: context.active = 0; break;
 
-                case PWindowEvent_KeyboardKey: {
-                    PWindowKeyboardKey key     = event.keyboard_key.key;
-                    Bool               pressed = event.keyboard_key.pressed;
-
-                    if (pressed != 0 && key == PWindowKeyboardKey_Escape)
-                        active = 0;
-                } break;
+                case PWindowEvent_KeybdKey:
+                    pWindowKeybdUpdate(&context.keyboard, event.keybd_key);
+                break;
 
                 default: break;
             }
@@ -189,7 +197,7 @@ int main(int argc, char** argv)
             pMemorySet(&event, sizeof event, 0xAB);
         }
 
-        windowPaintCallback(&context, context.window);
+        contextUpdate(&context);
     }
 
     pWindowDestroy(context.window);

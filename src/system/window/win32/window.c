@@ -3,7 +3,7 @@
 
 #include "window.h"
 
-#define P_SYSTEM_WIN32_TIMER_RESIZE ((Int) 1)
+#define P_SYSTEM_WIN32_TIMER_PAINT ((Int) PWindowTimer_Paint)
 
 static RECT pWin32AdjustWindowRect(Int left, Int top, Int right, Int bottom)
 {
@@ -27,15 +27,15 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
 
     switch (kind) {
         case WM_ENTERSIZEMOVE:
-            SetTimer(handle, P_SYSTEM_WIN32_TIMER_RESIZE, 20, NULL);
+            SetTimer(handle, P_SYSTEM_WIN32_TIMER_PAINT, 20, NULL);
         break;
 
         case WM_EXITSIZEMOVE:
-            KillTimer(handle, P_SYSTEM_WIN32_TIMER_RESIZE);
+            KillTimer(handle, P_SYSTEM_WIN32_TIMER_PAINT);
         break;
 
         case WM_TIMER: {
-            if (wparam == P_SYSTEM_WIN32_TIMER_RESIZE)
+            if (wparam == P_SYSTEM_WIN32_TIMER_PAINT)
                 InvalidateRect(self->handle, NULL, 1);
         } break;
 
@@ -55,9 +55,9 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
 
             HDC device = BeginPaint(self->handle, &paint);
 
-            if (self->paint_proc != NULL) {
-                ((PWindowCallback*) self->paint_proc)(
-                    self->paint_ctxt, (PWindow*) self);
+            if (self->timer_proc != NULL) {
+                ((PWindowTimerCallback*) self->timer_proc)(
+                    self->timer_ctxt, (PWindow*) self, PWindowTimer_Paint);
             }
 
             EndPaint(self->handle, &paint);
@@ -113,8 +113,8 @@ Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int heigh
         self->attribs.height     = height;
         self->attribs.height_max = 1080;
         self->attribs.height_min = 300;
-        self->paint_ctxt         = NULL;
-        self->paint_proc         = NULL;
+        self->timer_ctxt         = NULL;
+        self->timer_proc         = NULL;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
 
@@ -156,17 +156,17 @@ Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
             case WM_DESTROY: *event = pWindowEventWindowDestroy((PWindow*) self); return 1;
 
             case WM_KEYDOWN: {
-                PWindowKeyboardKey key  = pWin32WindowConvertKey(message.wParam);
-                Int               scan = (message.lParam >> 16) & 0xff;
+                PWindowKeybdKey key  = pWin32WindowConvertKey(message.wParam);
+                Int             scan = (message.lParam >> 16) & 0xff;
 
-                *event = pWindowEventKeyboardKey((PWindow*) self, key, 1, scan);
+                *event = pWindowEventKeybdKey((PWindow*) self, key, 1, scan);
             } return 1;
 
             case WM_KEYUP: {
-                PWindowKeyboardKey key  = pWin32WindowConvertKey(message.wParam);
-                Int               scan = (message.lParam >> 16) & 0xff;
+                PWindowKeybdKey key  = pWin32WindowConvertKey(message.wParam);
+                Int             scan = (message.lParam >> 16) & 0xff;
 
-                *event = pWindowEventKeyboardKey((PWindow*) self, key, 0, scan);
+                *event = pWindowEventKeybdKey((PWindow*) self, key, 0, scan);
             } return 1;
 
             default: break;
@@ -228,17 +228,17 @@ PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
     return self->attribs;
 }
 
-Bool pWin32WindowSetCallback(PWin32Window* self, void* ctxt, void* proc)
+Bool pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc)
 {
-    self->paint_ctxt = ctxt;
-    self->paint_proc = proc;
+    self->timer_ctxt = ctxt;
+    self->timer_proc = proc;
 
     return 1;
 }
 
-void* pWin32WindowGetCallback(PWin32Window* self)
+void* pWin32WindowGetTimerCallback(PWin32Window* self)
 {
-    return self->paint_proc;
+    return self->timer_proc;
 }
 
 #endif // P_WI32_WINDOW_WINDOW_C

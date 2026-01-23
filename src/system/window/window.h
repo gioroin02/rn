@@ -11,6 +11,13 @@ typedef enum PWindowVisibility
 }
 PWindowVisibility;
 
+typedef enum PWindowTimer
+{
+    PWindowTimer_None,
+    PWindowTimer_Paint,
+}
+PWindowTimer;
+
 typedef struct PWindowAttribs
 {
     PWindowVisibility visibility;
@@ -30,7 +37,7 @@ PWindowAttribs;
 
 typedef struct PWindow { U8 __private__; } PWindow;
 
-typedef void (PWindowCallback) (void*, PWindow*);
+typedef void (PWindowTimerCallback) (void*, PWindow*, PWindowTimer);
 
 PWindow* pWindowReserve(PMemoryArena* arena);
 
@@ -46,8 +53,8 @@ Bool pWindowSetAttribs(PWindow* self, PWindowAttribs attribs);
 
 PWindowAttribs pWindowGetAttribs(PWindow* self);
 
-Bool pWindowSetCallback(PWindow* self, void* ctxt, void* proc);
+Bool pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc);
 
-void* pWindowGetCallback(PWindow* self);
+void* pWindowGetTimerCallback(PWindow* self);
 
 #endif // P_SYSTEM_WINDOW_WINDOW_H

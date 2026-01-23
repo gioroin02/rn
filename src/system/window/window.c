@@ -9,15 +9,15 @@
 
     #define __PWindow__ PWin32Window
 
-    #define __pWindowReserve__     pWin32WindowReserve
-    #define __pWindowCreate__      pWin32WindowCreate
-    #define __pWindowDestroy__     pWin32WindowDestroy
-    #define __pWindowPollEvent__   pWin32WindowPollEvent
-    #define __pWindowSwapBuffers__ pWin32WindowSwapBuffers
-    #define __pWindowSetAttribs__  pWin32WindowSetAttribs
-    #define __pWindowGetAttribs__  pWin32WindowGetAttribs
-    #define __pWindowSetCallback__ pWin32WindowSetCallback
-    #define __pWindowGetCallback__ pWin32WindowGetCallback
+    #define __pWindowReserve__          pWin32WindowReserve
+    #define __pWindowCreate__           pWin32WindowCreate
+    #define __pWindowDestroy__          pWin32WindowDestroy
+    #define __pWindowPollEvent__        pWin32WindowPollEvent
+    #define __pWindowSwapBuffers__      pWin32WindowSwapBuffers
+    #define __pWindowSetAttribs__       pWin32WindowSetAttribs
+    #define __pWindowGetAttribs__       pWin32WindowGetAttribs
+    #define __pWindowSetTimerCallback__ pWin32WindowSetTimerCallback
+    #define __pWindowGetTimerCallback__ pWin32WindowGetTimerCallback
 
 #else
 
@@ -60,14 +60,14 @@ PWindowAttribs pWindowGetAttribs(PWindow* self)
     return __pWindowGetAttribs__((__PWindow__*) self);
 }
 
-Bool pWindowSetCallback(PWindow* self, void* ctxt, void* proc)
+Bool pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc)
 {
-    return __pWindowSetCallback__((__PWindow__*) self, ctxt, proc);
+    return __pWindowSetTimerCallback__((__PWindow__*) self, ctxt, proc);
 }
 
-void* pWindowGetCallback(PWindow* self)
+void* pWindowGetTimerCallback(PWindow* self)
 {
-    return __pWindowGetCallback__((__PWindow__*) self);
+    return __pWindowGetTimerCallback__((__PWindow__*) self);
 }
 
 #endif // P_SYSTEM_WINDOW_WINDOW_C

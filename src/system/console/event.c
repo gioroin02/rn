@@ -4,14 +4,14 @@
 #include "event.h"
 
 PConsoleEvent
-pConsoleEventKeyboardKey(PConsoleKeyboardKey key)
+pConsoleEventKeybdKey(PConsoleKeybdKey key)
 {
     PConsoleEvent result;
 
     pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind             = PConsoleEvent_KeyboardKey;
-    result.keyboard_key.key = key;
+    result.kind          = PConsoleEvent_KeybdKey;
+    result.keybd_key.key = key;
 
     return result;
 }

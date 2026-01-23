@@ -19,8 +19,8 @@ int main(int argc, char** argv)
     while (active != 0) {
         while (pConsolePollEvent(console, &event) != 0) {
             switch (event.kind) {
-                case PConsoleEvent_KeyboardKey: {
-                    if (event.keyboard_key.key == PConsoleKeyboard_Escape)
+                case PConsoleEvent_KeybdKey: {
+                    if (event.keybd_key.key == PConsoleKeybd_Escape)
                         active = 0;
                 } break;
 

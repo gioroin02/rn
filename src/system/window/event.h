@@ -3,85 +3,85 @@
 
 #include "import.h"
 
-typedef enum PWindowKeyboardKey
+typedef enum PWindowKeybdKey
 {
-    PWindowKeyboardKey_None,
-    PWindowKeyboardKey_A,
-    PWindowKeyboardKey_B,
-    PWindowKeyboardKey_C,
-    PWindowKeyboardKey_D,
-    PWindowKeyboardKey_E,
-    PWindowKeyboardKey_F,
-    PWindowKeyboardKey_G,
-    PWindowKeyboardKey_H,
-    PWindowKeyboardKey_I,
-    PWindowKeyboardKey_J,
-    PWindowKeyboardKey_K,
-    PWindowKeyboardKey_L,
-    PWindowKeyboardKey_M,
-    PWindowKeyboardKey_N,
-    PWindowKeyboardKey_O,
-    PWindowKeyboardKey_P,
-    PWindowKeyboardKey_Q,
-    PWindowKeyboardKey_R,
-    PWindowKeyboardKey_S,
-    PWindowKeyboardKey_T,
-    PWindowKeyboardKey_U,
-    PWindowKeyboardKey_V,
-    PWindowKeyboardKey_W,
-    PWindowKeyboardKey_X,
-    PWindowKeyboardKey_Y,
-    PWindowKeyboardKey_Z,
-    PWindowKeyboardKey_0,
-    PWindowKeyboardKey_1,
-    PWindowKeyboardKey_2,
-    PWindowKeyboardKey_3,
-    PWindowKeyboardKey_4,
-    PWindowKeyboardKey_5,
-    PWindowKeyboardKey_6,
-    PWindowKeyboardKey_7,
-    PWindowKeyboardKey_8,
-    PWindowKeyboardKey_9,
-    PWindowKeyboardKey_Space,
-    PWindowKeyboardKey_Minus,
-    PWindowKeyboardKey_Equal,
-    PWindowKeyboardKey_SquareLeft,
-    PWindowKeyboardKey_SquareRight,
-    PWindowKeyboardKey_BackSlash,
-    PWindowKeyboardKey_SemiColon,
-    PWindowKeyboardKey_Apostrophe,
-    PWindowKeyboardKey_Grave,
-    PWindowKeyboardKey_Comma,
-    PWindowKeyboardKey_Period,
-    PWindowKeyboardKey_Slash,
-    PWindowKeyboardKey_Up,
-    PWindowKeyboardKey_Down,
-    PWindowKeyboardKey_Left,
-    PWindowKeyboardKey_Right,
-    PWindowKeyboardKey_Home,
-    PWindowKeyboardKey_End,
-    PWindowKeyboardKey_PageUp,
-    PWindowKeyboardKey_PageDown,
-    PWindowKeyboardKey_Insert,
-    PWindowKeyboardKey_Delete,
-    PWindowKeyboardKey_F1,
-    PWindowKeyboardKey_F2,
-    PWindowKeyboardKey_F3,
-    PWindowKeyboardKey_F4,
-    PWindowKeyboardKey_F5,
-    PWindowKeyboardKey_F6,
-    PWindowKeyboardKey_F7,
-    PWindowKeyboardKey_F8,
-    PWindowKeyboardKey_F9,
-    PWindowKeyboardKey_F10,
-    PWindowKeyboardKey_F11,
-    PWindowKeyboardKey_F12,
-    PWindowKeyboardKey_Enter,
-    PWindowKeyboardKey_Escape,
-    PWindowKeyboardKey_BackSpace,
-    PWindowKeyboardKey_Tab,
+    PWindowKeybd_None,
+    PWindowKeybd_A,
+    PWindowKeybd_B,
+    PWindowKeybd_C,
+    PWindowKeybd_D,
+    PWindowKeybd_E,
+    PWindowKeybd_F,
+    PWindowKeybd_G,
+    PWindowKeybd_H,
+    PWindowKeybd_I,
+    PWindowKeybd_J,
+    PWindowKeybd_K,
+    PWindowKeybd_L,
+    PWindowKeybd_M,
+    PWindowKeybd_N,
+    PWindowKeybd_O,
+    PWindowKeybd_P,
+    PWindowKeybd_Q,
+    PWindowKeybd_R,
+    PWindowKeybd_S,
+    PWindowKeybd_T,
+    PWindowKeybd_U,
+    PWindowKeybd_V,
+    PWindowKeybd_W,
+    PWindowKeybd_X,
+    PWindowKeybd_Y,
+    PWindowKeybd_Z,
+    PWindowKeybd_0,
+    PWindowKeybd_1,
+    PWindowKeybd_2,
+    PWindowKeybd_3,
+    PWindowKeybd_4,
+    PWindowKeybd_5,
+    PWindowKeybd_6,
+    PWindowKeybd_7,
+    PWindowKeybd_8,
+    PWindowKeybd_9,
+    PWindowKeybd_Space,
+    PWindowKeybd_Minus,
+    PWindowKeybd_Equal,
+    PWindowKeybd_SquareLeft,
+    PWindowKeybd_SquareRight,
+    PWindowKeybd_BackSlash,
+    PWindowKeybd_SemiColon,
+    PWindowKeybd_Apostrophe,
+    PWindowKeybd_Grave,
+    PWindowKeybd_Comma,
+    PWindowKeybd_Period,
+    PWindowKeybd_Slash,
+    PWindowKeybd_Up,
+    PWindowKeybd_Down,
+    PWindowKeybd_Left,
+    PWindowKeybd_Right,
+    PWindowKeybd_Home,
+    PWindowKeybd_End,
+    PWindowKeybd_PageUp,
+    PWindowKeybd_PageDown,
+    PWindowKeybd_Insert,
+    PWindowKeybd_Delete,
+    PWindowKeybd_F1,
+    PWindowKeybd_F2,
+    PWindowKeybd_F3,
+    PWindowKeybd_F4,
+    PWindowKeybd_F5,
+    PWindowKeybd_F6,
+    PWindowKeybd_F7,
+    PWindowKeybd_F8,
+    PWindowKeybd_F9,
+    PWindowKeybd_F10,
+    PWindowKeybd_F11,
+    PWindowKeybd_F12,
+    PWindowKeybd_Enter,
+    PWindowKeybd_Escape,
+    PWindowKeybd_BackSpace,
+    PWindowKeybd_Tab,
 }
-PWindowKeyboardKey;
+PWindowKeybdKey;
 
 typedef enum PWindowEventKind
 {
@@ -89,7 +89,7 @@ typedef enum PWindowEventKind
     PWindowEvent_Quit,
     PWindowEvent_WindowCreate,
     PWindowEvent_WindowDestroy,
-    PWindowEvent_KeyboardKey,
+    PWindowEvent_KeybdKey,
 }
 PWindowEventKind;
 
@@ -111,16 +111,16 @@ typedef struct PWindowEventWindowDestroy
 }
 PWindowEventWindowDestroy;
 
-typedef struct PWindowEventKeyboardKey
+typedef struct PWindowEventKeybdKey
 {
     void* window;
 
-    PWindowKeyboardKey key;
+    PWindowKeybdKey key;
 
     Bool pressed;
     Int  scan;
 }
-PWindowEventKeyboardKey;
+PWindowEventKeybdKey;
 
 typedef struct PWindowEvent
 {
@@ -131,7 +131,7 @@ typedef struct PWindowEvent
         PWindowEventQuit          quit;
         PWindowEventWindowCreate  window_create;
         PWindowEventWindowDestroy window_destroy;
-        PWindowEventKeyboardKey   keyboard_key;
+        PWindowEventKeybdKey      keybd_key;
     };
 }
 PWindowEvent;
@@ -149,6 +149,6 @@ PWindowEvent
 pWindowEventWindowDestroy(void* window);
 
 PWindowEvent
-pWindowEventKeyboardKey(void* window, PWindowKeyboardKey key, Bool pressed, Int scan);
+pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan);
 
 #endif // P_SYSTEM_WINDOW_EVENT_H

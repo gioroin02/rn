@@ -3,98 +3,98 @@
 
 #include "import.h"
 
-typedef enum PConsoleKeyboardKey
+typedef enum PConsoleKeybdKey
 {
-    PConsoleKeyboard_None,
-    PConsoleKeyboard_A,
-    PConsoleKeyboard_B,
-    PConsoleKeyboard_C,
-    PConsoleKeyboard_D,
-    PConsoleKeyboard_E,
-    PConsoleKeyboard_F,
-    PConsoleKeyboard_G,
-    PConsoleKeyboard_H,
-    PConsoleKeyboard_I,
-    PConsoleKeyboard_J,
-    PConsoleKeyboard_K,
-    PConsoleKeyboard_L,
-    PConsoleKeyboard_M,
-    PConsoleKeyboard_N,
-    PConsoleKeyboard_O,
-    PConsoleKeyboard_P,
-    PConsoleKeyboard_Q,
-    PConsoleKeyboard_R,
-    PConsoleKeyboard_S,
-    PConsoleKeyboard_T,
-    PConsoleKeyboard_U,
-    PConsoleKeyboard_V,
-    PConsoleKeyboard_W,
-    PConsoleKeyboard_X,
-    PConsoleKeyboard_Y,
-    PConsoleKeyboard_Z,
-    PConsoleKeyboard_0,
-    PConsoleKeyboard_1,
-    PConsoleKeyboard_2,
-    PConsoleKeyboard_3,
-    PConsoleKeyboard_4,
-    PConsoleKeyboard_5,
-    PConsoleKeyboard_6,
-    PConsoleKeyboard_7,
-    PConsoleKeyboard_8,
-    PConsoleKeyboard_9,
-    PConsoleKeyboard_Space,
-    PConsoleKeyboard_Minus,
-    PConsoleKeyboard_Equal,
-    PConsoleKeyboard_SquareLeft,
-    PConsoleKeyboard_SquareRight,
-    PConsoleKeyboard_BackSlash,
-    PConsoleKeyboard_SemiColon,
-    PConsoleKeyboard_Apostrophe,
-    PConsoleKeyboard_Grave,
-    PConsoleKeyboard_Comma,
-    PConsoleKeyboard_Period,
-    PConsoleKeyboard_Slash,
-    PConsoleKeyboard_Up,
-    PConsoleKeyboard_Down,
-    PConsoleKeyboard_Left,
-    PConsoleKeyboard_Right,
-    PConsoleKeyboard_Home,
-    PConsoleKeyboard_End,
-    PConsoleKeyboard_PageUp,
-    PConsoleKeyboard_PageDown,
-    PConsoleKeyboard_Insert,
-    PConsoleKeyboard_Delete,
-    PConsoleKeyboard_F1,
-    PConsoleKeyboard_F2,
-    PConsoleKeyboard_F3,
-    PConsoleKeyboard_F4,
-    PConsoleKeyboard_F5,
-    PConsoleKeyboard_F6,
-    PConsoleKeyboard_F7,
-    PConsoleKeyboard_F8,
-    PConsoleKeyboard_F9,
-    PConsoleKeyboard_F10,
-    PConsoleKeyboard_F11,
-    PConsoleKeyboard_F12,
-    PConsoleKeyboard_Enter,
-    PConsoleKeyboard_Escape,
-    PConsoleKeyboard_BackSpace,
-    PConsoleKeyboard_Tab,
+    PConsoleKeybd_None,
+    PConsoleKeybd_A,
+    PConsoleKeybd_B,
+    PConsoleKeybd_C,
+    PConsoleKeybd_D,
+    PConsoleKeybd_E,
+    PConsoleKeybd_F,
+    PConsoleKeybd_G,
+    PConsoleKeybd_H,
+    PConsoleKeybd_I,
+    PConsoleKeybd_J,
+    PConsoleKeybd_K,
+    PConsoleKeybd_L,
+    PConsoleKeybd_M,
+    PConsoleKeybd_N,
+    PConsoleKeybd_O,
+    PConsoleKeybd_P,
+    PConsoleKeybd_Q,
+    PConsoleKeybd_R,
+    PConsoleKeybd_S,
+    PConsoleKeybd_T,
+    PConsoleKeybd_U,
+    PConsoleKeybd_V,
+    PConsoleKeybd_W,
+    PConsoleKeybd_X,
+    PConsoleKeybd_Y,
+    PConsoleKeybd_Z,
+    PConsoleKeybd_0,
+    PConsoleKeybd_1,
+    PConsoleKeybd_2,
+    PConsoleKeybd_3,
+    PConsoleKeybd_4,
+    PConsoleKeybd_5,
+    PConsoleKeybd_6,
+    PConsoleKeybd_7,
+    PConsoleKeybd_8,
+    PConsoleKeybd_9,
+    PConsoleKeybd_Space,
+    PConsoleKeybd_Minus,
+    PConsoleKeybd_Equal,
+    PConsoleKeybd_SquareLeft,
+    PConsoleKeybd_SquareRight,
+    PConsoleKeybd_BackSlash,
+    PConsoleKeybd_SemiColon,
+    PConsoleKeybd_Apostrophe,
+    PConsoleKeybd_Grave,
+    PConsoleKeybd_Comma,
+    PConsoleKeybd_Period,
+    PConsoleKeybd_Slash,
+    PConsoleKeybd_Up,
+    PConsoleKeybd_Down,
+    PConsoleKeybd_Left,
+    PConsoleKeybd_Right,
+    PConsoleKeybd_Home,
+    PConsoleKeybd_End,
+    PConsoleKeybd_PageUp,
+    PConsoleKeybd_PageDown,
+    PConsoleKeybd_Insert,
+    PConsoleKeybd_Delete,
+    PConsoleKeybd_F1,
+    PConsoleKeybd_F2,
+    PConsoleKeybd_F3,
+    PConsoleKeybd_F4,
+    PConsoleKeybd_F5,
+    PConsoleKeybd_F6,
+    PConsoleKeybd_F7,
+    PConsoleKeybd_F8,
+    PConsoleKeybd_F9,
+    PConsoleKeybd_F10,
+    PConsoleKeybd_F11,
+    PConsoleKeybd_F12,
+    PConsoleKeybd_Enter,
+    PConsoleKeybd_Escape,
+    PConsoleKeybd_BackSpace,
+    PConsoleKeybd_Tab,
 }
-PConsoleKeyboardKey;
+PConsoleKeybdKey;
 
 typedef enum PConsoleEventKind
 {
     PConsoleEvent_None,
-    PConsoleEvent_KeyboardKey,
+    PConsoleEvent_KeybdKey,
 }
 PConsoleEventKind;
 
-typedef struct PConsoleEventKeyboardKey
+typedef struct PConsoleEventKeybdKey
 {
-    PConsoleKeyboardKey key;
+    PConsoleKeybdKey key;
 }
-PConsoleEventKeyboardKey;
+PConsoleEventKeybdKey;
 
 typedef struct PConsoleEvent
 {
@@ -102,12 +102,12 @@ typedef struct PConsoleEvent
 
     union
     {
-        PConsoleEventKeyboardKey keyboard_key;
+        PConsoleEventKeybdKey keybd_key;
     };
 }
 PConsoleEvent;
 
 PConsoleEvent
-pConsoleEventKeyboardKey(PConsoleKeyboardKey key);
+pConsoleEventKeybdKey(PConsoleKeybdKey key);
 
 #endif // P_SYSTEM_CONSOLE_EVENT_H

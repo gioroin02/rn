@@ -11,8 +11,8 @@ typedef struct PWin32Window
 
     PWindowAttribs attribs;
 
-    void* paint_ctxt;
-    void* paint_proc;
+    void* timer_ctxt;
+    void* timer_proc;
 }
 PWin32Window;
 
@@ -30,8 +30,8 @@ Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs);
 
 PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self);
 
-Bool pWin32WindowSetCallback(PWin32Window* self, void* ctxt, void* proc);
+Bool pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc);
 
-void* pWin32WindowGetCallback(PWin32Window* self);
+void* pWin32WindowGetTimerCallback(PWin32Window* self);
 
 #endif // P_SYSTEM_WIN32_WINDOW_WINDOW_H

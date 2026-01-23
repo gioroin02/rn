@@ -3,93 +3,93 @@
 
 #include "console.h"
 
-static PConsoleKeyboardKey pWin32ConsoleConvertKey(WORD key_code, CHAR key_char)
+static PConsoleKeybdKey pWin32ConsoleConvertKey(WORD key_code, CHAR key_char)
 {
     switch (key_char) {
-        case 'a': return PConsoleKeyboard_A; break;
-        case 'b': return PConsoleKeyboard_B; break;
-        case 'c': return PConsoleKeyboard_C; break;
-        case 'd': return PConsoleKeyboard_D; break;
-        case 'e': return PConsoleKeyboard_E; break;
-        case 'f': return PConsoleKeyboard_F; break;
-        case 'g': return PConsoleKeyboard_G; break;
-        case 'h': return PConsoleKeyboard_H; break;
-        case 'i': return PConsoleKeyboard_I; break;
-        case 'j': return PConsoleKeyboard_J; break;
-        case 'k': return PConsoleKeyboard_K; break;
-        case 'l': return PConsoleKeyboard_L; break;
-        case 'm': return PConsoleKeyboard_M; break;
-        case 'n': return PConsoleKeyboard_N; break;
-        case 'o': return PConsoleKeyboard_O; break;
-        case 'p': return PConsoleKeyboard_P; break;
-        case 'q': return PConsoleKeyboard_Q; break;
-        case 'r': return PConsoleKeyboard_R; break;
-        case 's': return PConsoleKeyboard_S; break;
-        case 't': return PConsoleKeyboard_T; break;
-        case 'u': return PConsoleKeyboard_U; break;
-        case 'v': return PConsoleKeyboard_V; break;
-        case 'w': return PConsoleKeyboard_W; break;
-        case 'x': return PConsoleKeyboard_X; break;
-        case 'y': return PConsoleKeyboard_Y; break;
-        case 'z': return PConsoleKeyboard_Z; break;
-        case '0': return PConsoleKeyboard_0; break;
-        case '1': return PConsoleKeyboard_1; break;
-        case '2': return PConsoleKeyboard_2; break;
-        case '3': return PConsoleKeyboard_3; break;
-        case '4': return PConsoleKeyboard_4; break;
-        case '5': return PConsoleKeyboard_5; break;
-        case '6': return PConsoleKeyboard_6; break;
-        case '7': return PConsoleKeyboard_7; break;
-        case '8': return PConsoleKeyboard_8; break;
-        case '9': return PConsoleKeyboard_9; break;
+        case 'a': return PConsoleKeybd_A; break;
+        case 'b': return PConsoleKeybd_B; break;
+        case 'c': return PConsoleKeybd_C; break;
+        case 'd': return PConsoleKeybd_D; break;
+        case 'e': return PConsoleKeybd_E; break;
+        case 'f': return PConsoleKeybd_F; break;
+        case 'g': return PConsoleKeybd_G; break;
+        case 'h': return PConsoleKeybd_H; break;
+        case 'i': return PConsoleKeybd_I; break;
+        case 'j': return PConsoleKeybd_J; break;
+        case 'k': return PConsoleKeybd_K; break;
+        case 'l': return PConsoleKeybd_L; break;
+        case 'm': return PConsoleKeybd_M; break;
+        case 'n': return PConsoleKeybd_N; break;
+        case 'o': return PConsoleKeybd_O; break;
+        case 'p': return PConsoleKeybd_P; break;
+        case 'q': return PConsoleKeybd_Q; break;
+        case 'r': return PConsoleKeybd_R; break;
+        case 's': return PConsoleKeybd_S; break;
+        case 't': return PConsoleKeybd_T; break;
+        case 'u': return PConsoleKeybd_U; break;
+        case 'v': return PConsoleKeybd_V; break;
+        case 'w': return PConsoleKeybd_W; break;
+        case 'x': return PConsoleKeybd_X; break;
+        case 'y': return PConsoleKeybd_Y; break;
+        case 'z': return PConsoleKeybd_Z; break;
+        case '0': return PConsoleKeybd_0; break;
+        case '1': return PConsoleKeybd_1; break;
+        case '2': return PConsoleKeybd_2; break;
+        case '3': return PConsoleKeybd_3; break;
+        case '4': return PConsoleKeybd_4; break;
+        case '5': return PConsoleKeybd_5; break;
+        case '6': return PConsoleKeybd_6; break;
+        case '7': return PConsoleKeybd_7; break;
+        case '8': return PConsoleKeybd_8; break;
+        case '9': return PConsoleKeybd_9; break;
 
         default: break;
     }
 
     switch (key_code) {
-        case VK_SPACE:       return PConsoleKeyboard_Space;        break;
-        case VK_OEM_MINUS:   return PConsoleKeyboard_Minus;        break;
-        case VK_OEM_PLUS:    return PConsoleKeyboard_Equal;        break;
-        case VK_OEM_4:       return PConsoleKeyboard_SquareLeft;   break;
-        case VK_OEM_6:       return PConsoleKeyboard_SquareRight;  break;
-        case VK_OEM_5:       return PConsoleKeyboard_BackSlash;    break;
-        case VK_OEM_1:       return PConsoleKeyboard_SemiColon;    break;
-        case VK_OEM_7:       return PConsoleKeyboard_Apostrophe;   break;
-        case VK_OEM_3:       return PConsoleKeyboard_Grave;        break;
-        case VK_OEM_COMMA:   return PConsoleKeyboard_Comma;        break;
-        case VK_OEM_PERIOD:  return PConsoleKeyboard_Period;       break;
-        case VK_OEM_2:       return PConsoleKeyboard_Slash;        break;
-        case VK_UP:          return PConsoleKeyboard_Up;           break;
-        case VK_DOWN:        return PConsoleKeyboard_Down;         break;
-        case VK_LEFT:        return PConsoleKeyboard_Left;         break;
-        case VK_RIGHT:       return PConsoleKeyboard_Right;        break;
-        case VK_HOME:        return PConsoleKeyboard_Home;         break;
-        case VK_END:         return PConsoleKeyboard_End;          break;
-        case VK_PRIOR:       return PConsoleKeyboard_PageUp;       break;
-        case VK_NEXT:        return PConsoleKeyboard_PageDown;     break;
-        case VK_INSERT:      return PConsoleKeyboard_Insert;       break;
-        case VK_DELETE:      return PConsoleKeyboard_Delete;       break;
-        case VK_F1:          return PConsoleKeyboard_F1;           break;
-        case VK_F2:          return PConsoleKeyboard_F2;           break;
-        case VK_F3:          return PConsoleKeyboard_F3;           break;
-        case VK_F4:          return PConsoleKeyboard_F4;           break;
-        case VK_F5:          return PConsoleKeyboard_F5;           break;
-        case VK_F6:          return PConsoleKeyboard_F6;           break;
-        case VK_F7:          return PConsoleKeyboard_F7;           break;
-        case VK_F8:          return PConsoleKeyboard_F8;           break;
-        case VK_F9:          return PConsoleKeyboard_F9;           break;
-        case VK_F10:         return PConsoleKeyboard_F10;          break;
-        case VK_F11:         return PConsoleKeyboard_F11;          break;
-        case VK_F12:         return PConsoleKeyboard_F12;          break;
-        case VK_RETURN:      return PConsoleKeyboard_Enter;        break;
-        case VK_ESCAPE:      return PConsoleKeyboard_Escape;       break;
-        case VK_BACK:        return PConsoleKeyboard_BackSpace;    break;
-        case VK_TAB:         return PConsoleKeyboard_Tab;          break;
+        case VK_SPACE:       return PConsoleKeybd_Space;        break;
+        case VK_OEM_MINUS:   return PConsoleKeybd_Minus;        break;
+        case VK_OEM_PLUS:    return PConsoleKeybd_Equal;        break;
+        case VK_OEM_4:       return PConsoleKeybd_SquareLeft;   break;
+        case VK_OEM_6:       return PConsoleKeybd_SquareRight;  break;
+        case VK_OEM_5:       return PConsoleKeybd_BackSlash;    break;
+        case VK_OEM_1:       return PConsoleKeybd_SemiColon;    break;
+        case VK_OEM_7:       return PConsoleKeybd_Apostrophe;   break;
+        case VK_OEM_3:       return PConsoleKeybd_Grave;        break;
+        case VK_OEM_COMMA:   return PConsoleKeybd_Comma;        break;
+        case VK_OEM_PERIOD:  return PConsoleKeybd_Period;       break;
+        case VK_OEM_2:       return PConsoleKeybd_Slash;        break;
+        case VK_UP:          return PConsoleKeybd_Up;           break;
+        case VK_DOWN:        return PConsoleKeybd_Down;         break;
+        case VK_LEFT:        return PConsoleKeybd_Left;         break;
+        case VK_RIGHT:       return PConsoleKeybd_Right;        break;
+        case VK_HOME:        return PConsoleKeybd_Home;         break;
+        case VK_END:         return PConsoleKeybd_End;          break;
+        case VK_PRIOR:       return PConsoleKeybd_PageUp;       break;
+        case VK_NEXT:        return PConsoleKeybd_PageDown;     break;
+        case VK_INSERT:      return PConsoleKeybd_Insert;       break;
+        case VK_DELETE:      return PConsoleKeybd_Delete;       break;
+        case VK_F1:          return PConsoleKeybd_F1;           break;
+        case VK_F2:          return PConsoleKeybd_F2;           break;
+        case VK_F3:          return PConsoleKeybd_F3;           break;
+        case VK_F4:          return PConsoleKeybd_F4;           break;
+        case VK_F5:          return PConsoleKeybd_F5;           break;
+        case VK_F6:          return PConsoleKeybd_F6;           break;
+        case VK_F7:          return PConsoleKeybd_F7;           break;
+        case VK_F8:          return PConsoleKeybd_F8;           break;
+        case VK_F9:          return PConsoleKeybd_F9;           break;
+        case VK_F10:         return PConsoleKeybd_F10;          break;
+        case VK_F11:         return PConsoleKeybd_F11;          break;
+        case VK_F12:         return PConsoleKeybd_F12;          break;
+        case VK_RETURN:      return PConsoleKeybd_Enter;        break;
+        case VK_ESCAPE:      return PConsoleKeybd_Escape;       break;
+        case VK_BACK:        return PConsoleKeybd_BackSpace;    break;
+        case VK_TAB:         return PConsoleKeybd_Tab;          break;
 
         default: break;
     }
 
-    return PConsoleKeyboard_None;
+    return PConsoleKeybd_None;
 }
 
 static Bool pWin32ConsoleModeSetCooked(PWin32Console* self)
@@ -217,11 +217,11 @@ Bool pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event)
         WORD key_code  = record.Event.KeyEvent.wVirtualKeyCode;
         CHAR key_char  = record.Event.KeyEvent.uChar.AsciiChar;
 
-        PConsoleKeyboardKey key = pWin32ConsoleConvertKey(key_code, key_char);
+        PConsoleKeybdKey key = pWin32ConsoleConvertKey(key_code, key_char);
 
         if (record.Event.KeyEvent.bKeyDown != 0) {
             if (event != NULL)
-                *event = pConsoleEventKeyboardKey(key);
+                *event = pConsoleEventKeybdKey(key);
 
             return 1;
         }

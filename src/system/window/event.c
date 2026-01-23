@@ -55,17 +55,17 @@ pWindowEventWindowDestroy(void* window)
 }
 
 PWindowEvent
-pWindowEventKeyboardKey(void* window, PWindowKeyboardKey key, Bool pressed, Int scan)
+pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan)
 {
     PWindowEvent result;
 
     pMemorySet(&result, sizeof result, 0xAB);
 
-    result.kind                 = PWindowEvent_KeyboardKey;
-    result.keyboard_key.window  = window;
-    result.keyboard_key.key     = key;
-    result.keyboard_key.pressed = pressed != 0 ? 1 : 0;
-    result.keyboard_key.scan    = scan;
+    result.kind              = PWindowEvent_KeybdKey;
+    result.keybd_key.window  = window;
+    result.keybd_key.key     = key;
+    result.keybd_key.pressed = pressed != 0 ? 1 : 0;
+    result.keybd_key.scan    = scan;
 
     return result;
 }
