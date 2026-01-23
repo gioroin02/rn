@@ -18,6 +18,21 @@
     #define __pSocketUdpRead__    pWin32SocketUdpRead
     #define __pSocketUdpGetHost__ pWin32SocketUdpGetHost
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PSocketUdp__ PLinuxSocketUdp
+
+    #define __pSocketUdpReserve__ pLinuxSocketUdpReserve
+    #define __pSocketUdpCreate__  pLinuxSocketUdpCreate
+    #define __pSocketUdpDestroy__ pLinuxSocketUdpDestroy
+    #define __pSocketUdpBind__    pLinuxSocketUdpBind
+    #define __pSocketUdpBindAs__  pLinuxSocketUdpBindAs
+    #define __pSocketUdpWrite__   pLinuxSocketUdpWrite
+    #define __pSocketUdpRead__    pLinuxSocketUdpRead
+    #define __pSocketUdpGetHost__ pLinuxSocketUdpGetHost
+
 #else
 
     #error "Unknown platform"

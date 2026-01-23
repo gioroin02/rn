@@ -21,6 +21,24 @@
     #define __pSocketTcpRead__    pWin32SocketTcpRead
     #define __pSocketTcpGetHost__ pWin32SocketTcpGetHost
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PSocketTcp__ PLinuxSocketTcp
+
+    #define __pSocketTcpReserve__ pLinuxSocketTcpReserve
+    #define __pSocketTcpCreate__  pLinuxSocketTcpCreate
+    #define __pSocketTcpAccept__  pLinuxSocketTcpAccept
+    #define __pSocketTcpDestroy__ pLinuxSocketTcpDestroy
+    #define __pSocketTcpBind__    pLinuxSocketTcpBind
+    #define __pSocketTcpBindAs__  pLinuxSocketTcpBindAs
+    #define __pSocketTcpListen__  pLinuxSocketTcpListen
+    #define __pSocketTcpConnect__ pLinuxSocketTcpConnect
+    #define __pSocketTcpWrite__   pLinuxSocketTcpWrite
+    #define __pSocketTcpRead__    pLinuxSocketTcpRead
+    #define __pSocketTcpGetHost__ pLinuxSocketTcpGetHost
+
 #else
 
     #error "Unknown platform"

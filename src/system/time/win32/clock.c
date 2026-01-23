@@ -10,10 +10,17 @@ PWin32Clock* pWin32ClockReserve(PMemoryArena* arena)
 
 Bool pWin32ClockCreate(PWin32Clock* self)
 {
+    pMemorySet(self, sizeof *self, 0xAB);
+
     QueryPerformanceFrequency(&self->frequency);
     QueryPerformanceCounter(&self->counter);
 
     return 1;
+}
+
+void pWin32ClockDestroy(PWin32Clock* self)
+{
+    pMemorySet(self, sizeof *self, 0xAB);
 }
 
 F32 pWin32ClockElapsed(PWin32Clock* self)
