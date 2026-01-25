@@ -37,7 +37,7 @@ PAsyncIoQueue* pAsyncIoQueueReserve(PMemoryArena* arena)
     return (PAsyncIoQueue*) __pAsyncIoQueueReserve__(arena);
 }
 
-Bool pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool)
+B32 pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool)
 {
     return __pAsyncIoQueueCreate__((__PAsyncIoQueue__*) self, pool);
 }

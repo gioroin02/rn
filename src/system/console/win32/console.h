@@ -19,11 +19,11 @@ PWin32Console;
 
 PWin32Console* pWin32ConsoleReserve(PMemoryArena* arena);
 
-Bool pWin32ConsoleCreate(PWin32Console* self);
+B32 pWin32ConsoleCreate(PWin32Console* self);
 
 void pWin32ConsoleDestroy(PWin32Console* self);
 
-Bool pWin32ConsoleModeSet(PWin32Console* self, PConsoleMode mode);
+B32 pWin32ConsoleModeSet(PWin32Console* self, PConsoleMode mode);
 
 PConsoleMode pWin32ConsoleModeGet(PWin32Console* self);
 
@@ -31,6 +31,6 @@ Int pWin32ConsoleWrite(PWin32Console* self, U8* pntr, Int start, Int stop);
 
 Int pWin32ConsoleRead(PWin32Console* self, U8* pntr, Int start, Int stop);
 
-Bool pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event);
+B32 pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event);
 
 #endif

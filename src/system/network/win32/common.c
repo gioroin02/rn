@@ -8,7 +8,7 @@ static volatile LONG p_win32_winsock_count = 0;
 LPFN_CONNECTEX WSAConnectEx = (LPFN_CONNECTEX) NULL;
 LPFN_ACCEPTEX  WSAAcceptEx  = (LPFN_ACCEPTEX)  NULL;
 
-Bool pWin32NetworkStart()
+B32 pWin32NetworkStart()
 {
     if (InterlockedIncrement(&p_win32_winsock_count) == 1)
         return pWin32NetworkStartImpl();
@@ -16,7 +16,7 @@ Bool pWin32NetworkStart()
     return 1;
 }
 
-Bool pWin32NetworkStartImpl()
+B32 pWin32NetworkStartImpl()
 {
     WSADATA data;
 

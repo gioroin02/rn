@@ -36,7 +36,7 @@ PClock* pClockReserve(PMemoryArena* arena)
     return (PClock*) __pClockReserve__(arena);
 }
 
-Bool pClockCreate(PClock* self)
+B32 pClockCreate(PClock* self)
 {
     return __pClockCreate__((__PClock__*) self);
 }

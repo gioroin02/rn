@@ -44,7 +44,7 @@ PSocketUdp* pSocketUdpReserve(PMemoryArena* arena)
     return (PSocketUdp*) __pSocketUdpReserve__(arena);
 }
 
-Bool pSocketUdpCreate(PSocketUdp* self, PHostIp host)
+B32 pSocketUdpCreate(PSocketUdp* self, PHostIp host)
 {
     return __pSocketUdpCreate__((__PSocketUdp__*) self, host);
 }
@@ -54,12 +54,12 @@ void pSocketUdpDestroy(PSocketUdp* self)
     return __pSocketUdpDestroy__((__PSocketUdp__*) self);
 }
 
-Bool pSocketUdpBind(PSocketUdp* self)
+B32 pSocketUdpBind(PSocketUdp* self)
 {
     return __pSocketUdpBind__((__PSocketUdp__*) self);
 }
 
-Bool pSocketUdpBindAs(PSocketUdp* self, PHostIp host)
+B32 pSocketUdpBindAs(PSocketUdp* self, PHostIp host)
 {
     return __pSocketUdpBindAs__((__PSocketUdp__*) self, host);
 }

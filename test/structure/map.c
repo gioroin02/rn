@@ -8,22 +8,19 @@ typedef PMap(PString8, U32) PMapString8U32;
 Int pString8Hash(PString8* key)
 {
     Int result = 0;
-    Int index  = 0;
 
-    for (index = 0; index < key->size; index += 1)
-        result += ((Int) key->values[index]);
+    for (Int i = 0; i < key->size; i += 1)
+        result += ((Int) key->values[i]);
 
     return result;
 }
 
-Bool pString8IsEqual(PString8* key, PString8* other)
+B32 pString8IsEqual(PString8* key, PString8* other)
 {
-    Int index = 0;
-
     if (key->size != other->size) return 0;
 
-    for (index = 0; index < key->size; index += 1) {
-        if (key->values[index] != other->values[index])
+    for (Int i = 0; i < key->size; i += 1) {
+        if (key->values[i] != other->values[i])
             return 0;
     }
 
@@ -32,12 +29,10 @@ Bool pString8IsEqual(PString8* key, PString8* other)
 
 void showPairs(PMapString8U32* self, PString8* keys, Int size)
 {
-    Int index = 0;
+    for (Int i = 0; i < size; i += 1) {
+        U32* value = pMapGetPntr(self, keys[i]);
 
-    for (index = 0; index < size; index += 1) {
-        U32* value = pMapGetPntr(self, keys[index]);
-
-        printf("map(%s) -> ", keys[index].values);
+        printf("map(%s) -> ", keys[i].values);
 
         if (value != 0)
             printf("%lu\n", *value);
@@ -48,14 +43,12 @@ void showPairs(PMapString8U32* self, PString8* keys, Int size)
 
 void showLists(PMapString8U32* self)
 {
-    Int index = 0;
-
-    for (index = 0; index < pMapCount(self); index += 1) {
-        PString8 key   = self->keys[index];
-        U32      value = self->values[index];
+    for (Int i = 0; i < pMapCount(self); i += 1) {
+        PString8 key   = self->keys[i];
+        U32      value = self->values[i];
 
         printf("map(%lli) -> %s, %lu\n",
-            index, key.values, value);
+            i, key.values, value);
     }
 }
 

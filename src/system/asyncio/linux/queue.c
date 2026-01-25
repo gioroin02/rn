@@ -62,7 +62,7 @@ PLinuxAsyncIoQueue* pLinuxAsyncIoQueueReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PLinuxAsyncIoQueue);
 }
 
-Bool pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool)
+B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -109,7 +109,7 @@ PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int time
     return result;
 }
 
-Bool pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value)
+B32 pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value)
 {
     if (value == NULL) return 0;
 

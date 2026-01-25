@@ -8,7 +8,7 @@ static volatile LONG p_win32_opengl_count = 0;
 WglCreateContextAttribsARB wglCreateContextAttribsARB = (WglCreateContextAttribsARB) NULL;
 WglChoosePixelFormatARB    wglChoosePixelFormatARB    = (WglChoosePixelFormatARB)    NULL;
 
-Bool pWin32WindowOpenglStart()
+B32 pWin32WindowOpenglStart()
 {
     if (InterlockedIncrement(&p_win32_opengl_count) == 1)
         return pWin32WindowOpenglStartImpl();
@@ -16,7 +16,7 @@ Bool pWin32WindowOpenglStart()
     return 1;
 }
 
-Bool pWin32WindowOpenglStartImpl()
+B32 pWin32WindowOpenglStartImpl()
 {
     HWND window = CreateWindowW(L"PWindowRegular", L"WindowDummy",
         0, 0, 0, 0, 0, NULL, NULL, NULL, NULL);

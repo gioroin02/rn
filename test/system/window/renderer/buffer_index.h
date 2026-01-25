@@ -14,7 +14,7 @@ typedef struct PBufferIndex
 }
 PBufferIndex;
 
-Bool pBufferIndexCreate(PBufferIndex* self, Int count, Int size);
+B32 pBufferIndexCreate(PBufferIndex* self, Int count, Int size);
 
 void pBufferIndexDestroy(PBufferIndex* self);
 

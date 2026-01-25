@@ -3,26 +3,20 @@
 
 #include "address-ip.h"
 
-static Bool pAddressIp4IsEqual(PAddressIp4 self, PAddressIp4 value)
+static B32 pAddressIp4IsEqual(PAddressIp4 self, PAddressIp4 value)
 {
-    Int index = 0;
-    Int size  = P_ADDRESS_IP4_SIZE;
-
-    for (index = 0; index < size; index += 1) {
-        if (self.values[index] != value.values[index])
+    for (Int i = 0; i < P_ADDRESS_IP4_SIZE; i += 1) {
+        if (self.values[i] != value.values[i])
             return 0;
     }
 
     return 1;
 }
 
-static Bool pAddressIp6IsEqual(PAddressIp6 self, PAddressIp6 value)
+static B32 pAddressIp6IsEqual(PAddressIp6 self, PAddressIp6 value)
 {
-    Int index = 0;
-    Int size  = P_ADDRESS_IP6_SIZE;
-
-    for (index = 0; index < size; index += 1) {
-        if (self.values[index] != value.values[index])
+    for (Int i = 0; i < P_ADDRESS_IP6_SIZE; i += 1) {
+        if (self.values[i] != value.values[i])
             return 0;
     }
 
@@ -106,7 +100,7 @@ PAddressIp pAddressIpSelf(PAddressIpKind kind)
     return result;
 }
 
-Bool pAddressIpIsEqual(PAddressIp self, PAddressIp value)
+B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value)
 {
     if (self.kind != value.kind) return 0;
 

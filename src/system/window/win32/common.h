@@ -7,9 +7,9 @@
 
 #include <windows.h>
 
-Bool pWin32WindowStart();
+B32 pWin32WindowStart();
 
-Bool pWin32WindowStartImpl();
+B32 pWin32WindowStartImpl();
 
 void pWin32WindowStop();
 

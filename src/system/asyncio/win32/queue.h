@@ -43,12 +43,12 @@ typedef PAsyncIoEventKind (PWin32AsyncIoProc) (void*, Int, PMemoryArena*, PAsync
 
 PWin32AsyncIoQueue* pWin32AsyncIoQueueReserve(PMemoryArena* arena);
 
-Bool pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool);
+B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool);
 
 void pWin32AsyncIoQueueDestroy(PWin32AsyncIoQueue* self);
 
 PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
 
-Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value);
+B32 pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value);
 
 #endif

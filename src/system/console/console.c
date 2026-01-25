@@ -29,7 +29,7 @@ PConsole* pConsoleReserve(PMemoryArena* arena)
     return (PConsole*) __pConsoleReserve__(arena);
 }
 
-Bool pConsoleCreate(PConsole* self)
+B32 pConsoleCreate(PConsole* self)
 {
     return __pConsoleCreate__((__PConsole__*) self);
 }
@@ -39,7 +39,7 @@ void pConsoleDestroy(PConsole* self)
     return __pConsoleDestroy__((__PConsole__*) self);
 }
 
-Bool pConsoleModeSet(PConsole* self, PConsoleMode mode)
+B32 pConsoleModeSet(PConsole* self, PConsoleMode mode)
 {
     return __pConsoleModeSet__((__PConsole__*) self, mode);
 }
@@ -59,7 +59,7 @@ Int pConsoleRead(PConsole* self, U8* pntr, Int start, Int stop)
     return __pConsoleRead__((__PConsole__*) self, pntr, start, stop);
 }
 
-Bool pConsolePollEvent(PConsole* self, PConsoleEvent* event)
+B32 pConsolePollEvent(PConsole* self, PConsoleEvent* event)
 {
     return __pConsolePollEvent__((__PConsole__*) self, event);
 }

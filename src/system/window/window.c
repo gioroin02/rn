@@ -30,7 +30,7 @@ PWindow* pWindowReserve(PMemoryArena* arena)
     return (PWindow*) __pWindowReserve__(arena);
 }
 
-Bool pWindowCreate(PWindow* self, PString8 title, Int width, Int height)
+B32 pWindowCreate(PWindow* self, PString8 title, Int width, Int height)
 {
     return __pWindowCreate__((__PWindow__*) self, title, width, height);
 }
@@ -40,7 +40,7 @@ void pWindowDestroy(PWindow* self)
     return __pWindowDestroy__((__PWindow__*) self);
 }
 
-Bool pWindowPollEvent(PWindow* self, PWindowEvent* event)
+B32 pWindowPollEvent(PWindow* self, PWindowEvent* event)
 {
     return __pWindowPollEvent__((__PWindow__*) self, event);
 }
@@ -50,7 +50,7 @@ void pWindowSwapBuffers(PWindow* self)
     return __pWindowSwapBuffers__((__PWindow__*) self);
 }
 
-Bool pWindowSetAttribs(PWindow* self, PWindowAttribs attribs)
+B32 pWindowSetAttribs(PWindow* self, PWindowAttribs attribs)
 {
     return __pWindowSetAttribs__((__PWindow__*) self, attribs);
 }
@@ -60,7 +60,7 @@ PWindowAttribs pWindowGetAttribs(PWindow* self)
     return __pWindowGetAttribs__((__PWindow__*) self);
 }
 
-Bool pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc)
+B32 pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc)
 {
     return __pWindowSetTimerCallback__((__PWindow__*) self, ctxt, proc);
 }

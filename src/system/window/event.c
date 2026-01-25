@@ -55,7 +55,7 @@ pWindowEventWindowDestroy(void* window)
 }
 
 PWindowEvent
-pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan)
+pWindowEventKeybdKey(void* window, PWindowKeybdKey key, B32 pressed, Int scan)
 {
     PWindowEvent result;
 

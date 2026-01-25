@@ -33,7 +33,7 @@ PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int step)
     result.list_head = NULL;
     result.size      = size;
 
-    result.step = pMemoryAlignSize(step, P_MEMORY_DEFAULT_ALIGNMENT);
+    result.step = pMemoryAlignSize(step, P_MEMORY_ALIGNMENT);
 
     pMemorySet(result.pntr_base, result.size, 0xAB);
 
@@ -64,7 +64,7 @@ void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size)
         return NULL;
 
     Int size_header = pMemoryAlignSize(
-        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_DEFAULT_ALIGNMENT);
+        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_ALIGNMENT);
 
     PMemoryPoolNode* node  = self->list_head;
     Int              bytes = count * size;
@@ -91,10 +91,10 @@ void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size)
     return ((U8*) node) + size_header;
 }
 
-Bool pMemoryPoolRelease(PMemoryPool* self, void* pntr)
+B32 pMemoryPoolRelease(PMemoryPool* self, void* pntr)
 {
     Int size_header = pMemoryAlignSize(
-        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_DEFAULT_ALIGNMENT);
+        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_ALIGNMENT);
 
     if (pntr == NULL) return 0;
 

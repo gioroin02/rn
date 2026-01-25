@@ -33,7 +33,7 @@ Int pWin32FileWrite(PWin32File* self, U8* pntr, Int start, Int stop)
     while (result < size) {
         Int count = 0;
 
-        Bool status = WriteFile(self->handle, memory + result,
+        B32 status = WriteFile(self->handle, memory + result,
             size - result, (DWORD*) &count, &self->overlap);
 
         if (status == 0 && GetLastError() == ERROR_IO_PENDING) {
@@ -66,7 +66,7 @@ Int pWin32FileRead(PWin32File* self, U8* pntr, Int start, Int stop)
 
     if (self->overlap.hEvent == NULL) return 0;
 
-    Bool status = ReadFile(self->handle, memory, size, (DWORD*) &count, &self->overlap);
+    B32 status = ReadFile(self->handle, memory, size, (DWORD*) &count, &self->overlap);
 
     if (status == 0 && GetLastError() == ERROR_IO_PENDING) {
         status = GetOverlappedResult(self->handle,

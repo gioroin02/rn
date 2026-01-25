@@ -29,6 +29,6 @@ void pMemoryPoolClear(PMemoryPool* self);
 
 void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size);
 
-Bool pMemoryPoolRelease(PMemoryPool* self, void* pntr);
+B32 pMemoryPoolRelease(PMemoryPool* self, void* pntr);
 
 #endif

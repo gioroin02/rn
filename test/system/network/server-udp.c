@@ -12,9 +12,7 @@ int main(int argc, char** argv)
     pSocketUdpCreate(socket, pHostIpMake(pAddressIp4Any(), 50000));
     pSocketUdpBind(socket);
 
-    Int conns = 0;
-
-    for (conns = 0; conns < 2; conns += 1) {
+    for (Int conns = 0; conns < 2; conns += 1) {
         PHostIp host = pHostIpMake(pAddressIp4Any(), 0);
 
         U8 buffer[256];

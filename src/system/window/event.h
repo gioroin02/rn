@@ -117,8 +117,8 @@ typedef struct PWindowEventKeybdKey
 
     PWindowKeybdKey key;
 
-    Bool pressed;
-    Int  scan;
+    Int scan;
+    B32 pressed;
 }
 PWindowEventKeybdKey;
 
@@ -149,6 +149,6 @@ PWindowEvent
 pWindowEventWindowDestroy(void* window);
 
 PWindowEvent
-pWindowEventKeybdKey(void* window, PWindowKeybdKey key, Bool pressed, Int scan);
+pWindowEventKeybdKey(void* window, PWindowKeybdKey key, B32 pressed, Int scan);
 
 #endif

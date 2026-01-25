@@ -21,10 +21,8 @@ void* pMemorySet(void* pntr, Int size, U8 value)
 {
     if (pntr == NULL) return NULL;
 
-    Int index = 0;
-
-    for (index = 0; index < size; index += 1)
-        ((U8*) pntr)[index] = value;
+    for (Int i = 0; i < size; i += 1)
+        ((U8*) pntr)[i] = value;
 
     return pntr;
 }
@@ -33,10 +31,8 @@ void* pMemoryCopy(void* pntr, Int size, void* value)
 {
     if (pntr == NULL || value == NULL) return NULL;
 
-    Int index = 0;
-
-    for (index = 0; index < size; index += 1)
-        ((U8*) pntr)[index] = ((U8*) value)[index];
+    for (Int i = 0; i < size; i += 1)
+        ((U8*) pntr)[i] = ((U8*) value)[i];
 
     return pntr;
 }
@@ -56,13 +52,11 @@ void* pMemoryShiftForw(void* pntr, Int size, Int about, U8 value)
     if (pntr == NULL || size < 0 || about < 0 || about >= size)
         return pntr;
 
-    Int index = 0;
+    for (Int i = size; i > about; i -= 1)
+        ((U8*) pntr)[i - 1] = ((U8*) pntr)[i - about - 1];
 
-    for (index = size; index > about; index -= 1)
-        ((U8*) pntr)[index - 1] = ((U8*) pntr)[index - about - 1];
-
-    for (index = about; index > 0; index -= 1)
-        ((U8*) pntr)[index - 1] = value;
+    for (Int i = about; i > 0; i -= 1)
+        ((U8*) pntr)[i - 1] = value;
 
     return pntr;
 }
@@ -72,13 +66,11 @@ void* pMemoryShiftBack(void* pntr, Int size, Int about, U8 value)
     if (pntr == NULL || size < 0 || about < 0 || about >= size)
         return pntr;
 
-    Int index = 0;
+    for (Int i = 0; i < size - about; i += 1)
+        ((U8*) pntr)[i] = ((U8*) pntr)[i + about];
 
-    for (index = 0; index < size - about; index += 1)
-        ((U8*) pntr)[index] = ((U8*) pntr)[index + about];
-
-    for (index = size - about; index < size; index += 1)
-        ((U8*) pntr)[index] = value;
+    for (Int i = size - about; i < size; i += 1)
+        ((U8*) pntr)[i] = value;
 
     return pntr;
 }
@@ -87,14 +79,14 @@ void* pMemoryReverse(void* pntr, Int size)
 {
     if (pntr == NULL || size <= 0) return NULL;
 
-    Int index = 0;
-    Int other = 0;
+    Int i = 0;
+    Int j = 0;
 
-    for (other = size - 1; index < other; index += 1, other -= 1) {
-        U8 temp = ((U8*) pntr)[index];
+    for (j = size - 1; i < j; i += 1, j -= 1) {
+        U8 temp = ((U8*) pntr)[i];
 
-        ((U8*) pntr)[index] = ((U8*) pntr)[other];
-        ((U8*) pntr)[other] = temp;
+        ((U8*) pntr)[i] = ((U8*) pntr)[j];
+        ((U8*) pntr)[j] = temp;
     }
 
     return pntr;

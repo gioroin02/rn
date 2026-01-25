@@ -53,12 +53,12 @@ PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes,
     return result;
 }
 
-Bool pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+B32 pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pFileWriteAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
-Bool pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+B32 pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pFileReadAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }

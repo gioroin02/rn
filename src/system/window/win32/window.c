@@ -78,7 +78,7 @@ PWin32Window* pWin32WindowReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PWin32Window);
 }
 
-Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height)
+B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height)
 {
     static U16 buffer[P_MEMORY_KIB];
 
@@ -141,7 +141,7 @@ void pWin32WindowDestroy(PWin32Window* self)
     pWin32WindowStop();
 }
 
-Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
+B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
 {
     MSG message;
 
@@ -181,7 +181,7 @@ void pWin32WindowSwapBuffers(PWin32Window* self)
     SwapBuffers(self->device);
 }
 
-Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
+B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
 {
     self->attribs = attribs;
 
@@ -228,7 +228,7 @@ PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
     return self->attribs;
 }
 
-Bool pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc)
+B32 pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc)
 {
     self->timer_ctxt = ctxt;
     self->timer_proc = proc;

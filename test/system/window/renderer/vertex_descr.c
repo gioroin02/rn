@@ -53,7 +53,7 @@ static GLenum pVertexFieldKind(PVertexField* self)
     return 0;
 }
 
-Bool pVertexLayoutPush(PVertexLayout* self, PVertexFieldKind kind, Int count)
+B32 pVertexLayoutPush(PVertexLayout* self, PVertexFieldKind kind, Int count)
 {
     if (self->count < 0 || self->count >= 16) return 0;
 
@@ -65,7 +65,7 @@ Bool pVertexLayoutPush(PVertexLayout* self, PVertexFieldKind kind, Int count)
     return 1;
 }
 
-Bool pVertexLayoutPop(PVertexLayout* self)
+B32 pVertexLayoutPop(PVertexLayout* self)
 {
     if (self->count <= 0 || self->count > 16)
         return 0;
@@ -80,7 +80,7 @@ void pVertexLayoutClear(PVertexLayout* self)
     self->count = 0;
 }
 
-Bool pVertexDescrCreate(PVertexDescr* self)
+B32 pVertexDescrCreate(PVertexDescr* self)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -103,7 +103,7 @@ void pVertexDescrDestroy(PVertexDescr* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
+B32 pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
     PBufferVertex* buff_vertex, PBufferIndex* buff_index)
 {
     GLenum slot_vertex = GL_ARRAY_BUFFER;
@@ -111,10 +111,9 @@ Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
 
     Int stride = 0;
     Int offset = 0;
-    Int index  = 0;
 
-    for (index = 0; index < layout->count; index += 1)
-        stride += pVertexFieldSize(&layout->values[index]);
+    for (Int i = 0; i < layout->count; i += 1)
+        stride += pVertexFieldSize(&layout->values[i]);
 
     glBindVertexArray(self->handle);
 
@@ -124,14 +123,14 @@ Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
     if (buff_index != NULL)
         glBindBuffer(slot_index, buff_index->handle);
 
-    for (index = 0; index < layout->count; index += 1) {
-        PVertexField* field = &layout->values[index];
+    for (Int i = 0; i < layout->count; i += 1) {
+        PVertexField* field = &layout->values[i];
         GLenum           kind  = pVertexFieldKind(field);
 
-        glVertexAttribPointer(index, field->count,
+        glVertexAttribPointer(i, field->count,
             kind, GL_FALSE, stride, (void*) offset);
 
-        glEnableVertexAttribArray(index);
+        glEnableVertexAttribArray(i);
 
         offset += pVertexFieldSize(field);
     }

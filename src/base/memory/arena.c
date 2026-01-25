@@ -49,19 +49,19 @@ void* pMemoryArenaReserve(PMemoryArena* self, Int count, Int size)
     if (next < self->pntr_base || next > self->pntr_base + self->size)
         return NULL;
 
-    self->pntr_next = pMemoryAlignPntr(next, P_MEMORY_DEFAULT_ALIGNMENT);
+    self->pntr_next = pMemoryAlignPntr(next, P_MEMORY_ALIGNMENT);
 
     pMemorySet(result, self->pntr_next - result, 0xAB);
 
     return result;
 }
 
-Bool pMemoryArenaRelease(PMemoryArena* arena, void* pntr)
+B32 pMemoryArenaRelease(PMemoryArena* arena, void* pntr)
 {
     return 0;
 }
 
-Bool pMemoryArenaRewind(PMemoryArena* self, void* pntr)
+B32 pMemoryArenaRewind(PMemoryArena* self, void* pntr)
 {
     U8* head = ((U8*) pntr);
 
@@ -70,7 +70,7 @@ Bool pMemoryArenaRewind(PMemoryArena* self, void* pntr)
 
     Int dist = head - self->pntr_base;
 
-    if (dist % P_MEMORY_DEFAULT_ALIGNMENT != 0) return 0;
+    if (dist % P_MEMORY_ALIGNMENT != 0) return 0;
 
     self->pntr_next = self->pntr_base + dist;
 

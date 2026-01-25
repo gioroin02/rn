@@ -19,7 +19,7 @@
 
 #endif
 
-Bool pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs)
+B32 pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs)
 {
     return __pWindowOpenglCreate__((__PWindow__*) self, attribs);
 }
@@ -29,7 +29,7 @@ void pWindowOpenglDestroy(PWindow* self)
     return __pWindowOpenglDestroy__((__PWindow__*) self);
 }
 
-Bool pWindowOpenglEnable(PWindow* self, Bool state)
+B32 pWindowOpenglEnable(PWindow* self, B32 state)
 {
     return __pWindowOpenglEnable__((__PWindow__*) self, state);
 }

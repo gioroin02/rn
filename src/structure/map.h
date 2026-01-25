@@ -28,8 +28,8 @@ typedef struct PMapTag
 }
 PMapTag;
 
-typedef Int  (PMapProcHash)    (void*);
-typedef Bool (PMapProcIsEqual) (void*, void*);
+typedef Int (PMapProcHash)    (void*);
+typedef B32 (PMapProcIsEqual) (void*, void*);
 
 #define PMap(ktype, vtype) struct {                 \
     __PMapTag__(ktype); ktype* keys; vtype* values; \
@@ -80,21 +80,21 @@ typedef Bool (PMapProcIsEqual) (void*, void*);
 #define pMapGetPntr(self, key) \
     (pMapIsKey(self, key) != 0 ? &(self)->values[(self)->map_index] : NULL)
 
-Bool __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
+B32 __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
     PMemoryArena* arena, Int size, void* proc_hash, void* proc_is_equal);
 
 Int __pMapSize__(PMapTag* self);
 
 Int __pMapCount__(PMapTag* self);
 
-Bool __pMapIsEmpty__(PMapTag* self);
+B32 __pMapIsEmpty__(PMapTag* self);
 
-Bool __pMapIsFull__(PMapTag* self);
+B32 __pMapIsFull__(PMapTag* self);
 
-Bool __pMapIsKey__(PMapTag* self, void* keys, void* key);
+B32 __pMapIsKey__(PMapTag* self, void* keys, void* key);
 
 void __pMapClear__(PMapTag* self);
 
-Bool __pMapSlotOpen__(PMapTag* self, void* keys, void* key);
+B32 __pMapSlotOpen__(PMapTag* self, void* keys, void* key);
 
 #endif

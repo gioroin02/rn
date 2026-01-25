@@ -5,7 +5,7 @@
 
 #include "gl.h"
 
-Bool pBufferVertexCreate(PBufferVertex* self, Int count, Int size)
+B32 pBufferVertexCreate(PBufferVertex* self, Int count, Int size)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 

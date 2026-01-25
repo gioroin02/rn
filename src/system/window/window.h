@@ -41,19 +41,19 @@ typedef void (PWindowTimerCallback) (void*, PWindow*, PWindowTimer);
 
 PWindow* pWindowReserve(PMemoryArena* arena);
 
-Bool pWindowCreate(PWindow* self, PString8 title, Int width, Int height);
+B32 pWindowCreate(PWindow* self, PString8 title, Int width, Int height);
 
 void pWindowDestroy(PWindow* self);
 
-Bool pWindowPollEvent(PWindow* self, PWindowEvent* event);
+B32 pWindowPollEvent(PWindow* self, PWindowEvent* event);
 
 void pWindowSwapBuffers(PWindow* self);
 
-Bool pWindowSetAttribs(PWindow* self, PWindowAttribs attribs);
+B32 pWindowSetAttribs(PWindow* self, PWindowAttribs attribs);
 
 PWindowAttribs pWindowGetAttribs(PWindow* self);
 
-Bool pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc);
+B32 pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc);
 
 void* pWindowGetTimerCallback(PWindow* self);
 

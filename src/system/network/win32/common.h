@@ -19,9 +19,9 @@ typedef struct sockaddr_in6     PWin32AddrIp6;
 extern LPFN_CONNECTEX WSAConnectEx;
 extern LPFN_ACCEPTEX  WSAAcceptEx;
 
-Bool pWin32NetworkStart();
+B32 pWin32NetworkStart();
 
-Bool pWin32NetworkStartImpl();
+B32 pWin32NetworkStartImpl();
 
 void pWin32NetworkStop();
 

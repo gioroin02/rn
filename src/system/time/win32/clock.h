@@ -17,7 +17,7 @@ PWin32Clock;
 
 PWin32Clock* pWin32ClockReserve(PMemoryArena* arena);
 
-Bool pWin32ClockCreate(PWin32Clock* self);
+B32 pWin32ClockCreate(PWin32Clock* self);
 
 F32 pWin32ClockElapsed(PWin32Clock* self);
 

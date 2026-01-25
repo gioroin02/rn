@@ -9,4 +9,4 @@ set "impl=%impl% src\system\console\export.c"
 
 set "test_mode=test\system\console\mode.c"
 
-%compiler% --std=c89 %impl% %test_mode% -lws2_32 -o bin\system_console_mode.exe
+%compiler% --std=c99 %impl% %test_mode% -o bin\system_console_mode.exe

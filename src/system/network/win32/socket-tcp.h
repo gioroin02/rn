@@ -12,19 +12,19 @@ PWin32SocketTcp;
 
 PWin32SocketTcp* pWin32SocketTcpReserve(PMemoryArena* arena);
 
-Bool pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host);
+B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host);
 
-Bool pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value);
+B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value);
 
 void pWin32SocketTcpDestroy(PWin32SocketTcp* self);
 
-Bool pWin32SocketTcpBind(PWin32SocketTcp* self);
+B32 pWin32SocketTcpBind(PWin32SocketTcp* self);
 
-Bool pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host);
+B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host);
 
-Bool pWin32SocketTcpListen(PWin32SocketTcp* self);
+B32 pWin32SocketTcpListen(PWin32SocketTcp* self);
 
-Bool pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host);
+B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host);
 
 Int pWin32SocketTcpWrite(PWin32SocketTcp* self, U8* pntr, Int start, Int stop);
 

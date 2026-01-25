@@ -92,7 +92,7 @@ static PConsoleKeybdKey pWin32ConsoleConvertKey(WORD key_code, CHAR key_char)
     return PConsoleKeybd_None;
 }
 
-static Bool pWin32ConsoleModeSetCooked(PWin32Console* self)
+static B32 pWin32ConsoleModeSetCooked(PWin32Console* self)
 {
     if (self->mode != PConsoleMode_Cooked) {
         SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), self->conf_in);
@@ -104,7 +104,7 @@ static Bool pWin32ConsoleModeSetCooked(PWin32Console* self)
     return 1;
 }
 
-static Bool pWin32ConsoleModeSetRaw(PWin32Console* self)
+static B32 pWin32ConsoleModeSetRaw(PWin32Console* self)
 {
     Int conf_in = self->conf_in & ~(ENABLE_PROCESSED_INPUT |
         ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
@@ -127,7 +127,7 @@ PWin32Console* pWin32ConsoleReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PWin32Console);
 }
 
-Bool pWin32ConsoleCreate(PWin32Console* self)
+B32 pWin32ConsoleCreate(PWin32Console* self)
 {
     GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), (DWORD*) &self->conf_in);
     GetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), (DWORD*) &self->conf_out);
@@ -145,7 +145,7 @@ void pWin32ConsoleDestroy(PWin32Console* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pWin32ConsoleModeSet(PWin32Console* self, PConsoleMode mode)
+B32 pWin32ConsoleModeSet(PWin32Console* self, PConsoleMode mode)
 {
     switch (mode) {
         case PConsoleMode_Cooked: return pWin32ConsoleModeSetCooked(self);
@@ -173,7 +173,7 @@ Int pWin32ConsoleWrite(PWin32Console* self, U8* pntr, Int start, Int stop)
     while (result < size) {
         Int count = 0;
 
-        Bool status = WriteFile(handle, memory + result,
+        B32 status = WriteFile(handle, memory + result,
             size - result, (DWORD*) &count, NULL);
 
         if (status != 0 && count > 0 && count <= size - result)
@@ -193,14 +193,14 @@ Int pWin32ConsoleRead(PWin32Console* self, U8* pntr, Int start, Int stop)
     Int size   = stop - start;
     Int count  = 0;
 
-    Bool status = ReadFile(handle, memory, size, (DWORD*) &count, NULL);
+    B32 status = ReadFile(handle, memory, size, (DWORD*) &count, NULL);
 
     if (status != 0 && count > 0 && count <= size) return count;
 
     return 0;
 }
 
-Bool pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event)
+B32 pWin32ConsolePollEvent(PWin32Console* self, PConsoleEvent* event)
 {
     INPUT_RECORD record;
 

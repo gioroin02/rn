@@ -7,7 +7,7 @@ typedef struct PClock { U8 __private__; } PClock;
 
 PClock* pClockReserve(PMemoryArena* arena);
 
-Bool pClockCreate(PClock* self);
+B32 pClockCreate(PClock* self);
 
 void pClockDestroy(PClock* self);
 

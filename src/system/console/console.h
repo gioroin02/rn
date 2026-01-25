@@ -15,11 +15,11 @@ typedef struct PConsole { U8 __private__; } PConsole;
 
 PConsole* pConsoleReserve(PMemoryArena* arena);
 
-Bool pConsoleCreate(PConsole* self);
+B32 pConsoleCreate(PConsole* self);
 
 void pConsoleDestroy(PConsole* self);
 
-Bool pConsoleModeSet(PConsole* self, PConsoleMode mode);
+B32 pConsoleModeSet(PConsole* self, PConsoleMode mode);
 
 PConsoleMode pConsoleModeGet(PConsole* self);
 
@@ -27,6 +27,6 @@ Int pConsoleWrite(PConsole* self, U8* pntr, Int start, Int stop);
 
 Int pConsoleRead(PConsole* self, U8* pntr, Int start, Int stop);
 
-Bool pConsolePollEvent(PConsole* self, PConsoleEvent* event);
+B32 pConsolePollEvent(PConsole* self, PConsoleEvent* event);
 
 #endif

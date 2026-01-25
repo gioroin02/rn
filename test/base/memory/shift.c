@@ -6,15 +6,13 @@ int main(int argc, char** argv)
 {
     U8 memory[32];
 
-    Int index = 0;
+    for (Int i = 0; i < sizeof memory; i += 1)
+        memory[i] = (U8) i;
 
-    for (index = 0; index < sizeof memory; index += 1)
-        memory[index] = (U8) index;
+    for (Int i = 0; i < sizeof memory; i += 1) {
+        printf("%2X ", memory[i]);
 
-    for (index = 0; index < sizeof memory; index += 1) {
-        printf("%2X ", memory[index]);
-
-        if ((index + 1) % 16 == 0)
+        if ((i + 1) % 16 == 0)
             printf("\n");
     }
 
@@ -22,10 +20,10 @@ int main(int argc, char** argv)
 
     printf("\n");
 
-    for (index = 0; index < sizeof memory; index += 1) {
-        printf("%2X ", memory[index]);
+    for (Int i = 0; i < sizeof memory; i += 1) {
+        printf("%2X ", memory[i]);
 
-        if ((index + 1) % 16 == 0)
+        if ((i + 1) % 16 == 0)
             printf("\n");
     }
 
@@ -33,10 +31,10 @@ int main(int argc, char** argv)
 
     printf("\n");
 
-    for (index = 0; index < sizeof memory; index += 1) {
-        printf("%2X ", memory[index]);
+    for (Int i = 0; i < sizeof memory; i += 1) {
+        printf("%2X ", memory[i]);
 
-        if ((index + 1) % 16 == 0)
+        if ((i + 1) % 16 == 0)
             printf("\n");
     }
 }

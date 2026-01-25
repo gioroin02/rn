@@ -7,7 +7,7 @@ extern Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM
 
 static volatile LONG p_win32_winclass_count = 0;
 
-Bool pWin32WindowStart()
+B32 pWin32WindowStart()
 {
     if (InterlockedIncrement(&p_win32_winclass_count) == 1)
         return pWin32WindowStartImpl();
@@ -15,7 +15,7 @@ Bool pWin32WindowStart()
     return 1;
 }
 
-Bool pWin32WindowStartImpl()
+B32 pWin32WindowStartImpl()
 {
     WNDCLASSEXW window_class;
 

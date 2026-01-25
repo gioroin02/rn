@@ -8,7 +8,7 @@ PLinuxSocketTcp* pLinuxSocketTcpReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PLinuxSocketTcp);
 }
 
-Bool pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host)
+B32 pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -39,7 +39,7 @@ Bool pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host)
     return 0;
 }
 
-Bool pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value)
+B32 pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value)
 {
     pMemorySet(value, sizeof *value, 0xAB);
 
@@ -80,7 +80,7 @@ void pLinuxSocketTcpDestroy(PLinuxSocketTcp* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pLinuxSocketTcpBind(PLinuxSocketTcp* self)
+B32 pLinuxSocketTcpBind(PLinuxSocketTcp* self)
 {
     PLinuxAddr* sockaddr = (PLinuxAddr*) &self->storage;
     Int         length   = pLinuxAddrStorageGetSize(&self->storage);
@@ -93,7 +93,7 @@ Bool pLinuxSocketTcpBind(PLinuxSocketTcp* self)
     return 1;
 }
 
-Bool pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host)
+B32 pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host)
 {
     PLinuxAddrStorage storage;
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &self->storage;
@@ -111,7 +111,7 @@ Bool pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host)
     return 1;
 }
 
-Bool pLinuxSocketTcpListen(PLinuxSocketTcp* self)
+B32 pLinuxSocketTcpListen(PLinuxSocketTcp* self)
 {
     if (listen(self->handle, SOMAXCONN) == -1)
         return 0;
@@ -119,7 +119,7 @@ Bool pLinuxSocketTcpListen(PLinuxSocketTcp* self)
     return 1;
 }
 
-Bool pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host)
+B32 pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host)
 {
     PLinuxAddrStorage storage;
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;

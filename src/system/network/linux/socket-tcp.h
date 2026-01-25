@@ -12,19 +12,19 @@ PLinuxSocketTcp;
 
 PLinuxSocketTcp* pLinuxSocketTcpReserve(PMemoryArena* arena);
 
-Bool pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host);
+B32 pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host);
 
-Bool pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value);
+B32 pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value);
 
 void pLinuxSocketTcpDestroy(PLinuxSocketTcp* self);
 
-Bool pLinuxSocketTcpBind(PLinuxSocketTcp* self);
+B32 pLinuxSocketTcpBind(PLinuxSocketTcp* self);
 
-Bool pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host);
+B32 pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host);
 
-Bool pLinuxSocketTcpListen(PLinuxSocketTcp* self);
+B32 pLinuxSocketTcpListen(PLinuxSocketTcp* self);
 
-Bool pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host);
+B32 pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host);
 
 Int pLinuxSocketTcpWrite(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop);
 

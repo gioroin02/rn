@@ -43,12 +43,12 @@ typedef PAsyncIoEventKind (PLinuxAsyncIoProc) (void*, PMemoryArena*, PAsyncIoEve
 
 PLinuxAsyncIoQueue* pLinuxAsyncIoQueueReserve(PMemoryArena* arena);
 
-Bool pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool);
+B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool);
 
 void pLinuxAsyncIoQueueDestroy(PLinuxAsyncIoQueue* self);
 
 PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
 
-Bool pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value);
+B32 pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value);
 
 #endif

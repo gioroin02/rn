@@ -12,13 +12,13 @@ PWin32SocketUdp;
 
 PWin32SocketUdp* pWin32SocketUdpReserve(PMemoryArena* arena);
 
-Bool pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host);
+B32 pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host);
 
 void pWin32SocketUdpDestroy(PWin32SocketUdp* self);
 
-Bool pWin32SocketUdpBind(PWin32SocketUdp* self);
+B32 pWin32SocketUdpBind(PWin32SocketUdp* self);
 
-Bool pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host);
+B32 pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host);
 
 Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host);
 

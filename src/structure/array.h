@@ -119,7 +119,7 @@ PArrayTag;
 #define pArrayGetPntr(self, index) \
     (pArrayIsIndex(self, index) != 0 ? &(self)->values[(self)->array_index] : NULL)
 
-Bool __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size);
+B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size);
 
 Int __pArraySize__(PArrayTag* self);
 
@@ -129,18 +129,18 @@ Int __pArrayFront__(PArrayTag* self);
 
 Int __pArrayBack__(PArrayTag* self);
 
-Bool __pArrayIsEmpty__(PArrayTag* self);
+B32 __pArrayIsEmpty__(PArrayTag* self);
 
-Bool __pArrayIsFull__(PArrayTag* self);
+B32 __pArrayIsFull__(PArrayTag* self);
 
-Bool __pArrayIsIndex__(PArrayTag* self, Int index);
+B32 __pArrayIsIndex__(PArrayTag* self, Int index);
 
 void __pArrayClear__(PArrayTag* self);
 
-Bool __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value);
+B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value);
 
-Bool __pArraySlotOpen__(PArrayTag* self, void* values, Int index);
+B32 __pArraySlotOpen__(PArrayTag* self, void* values, Int index);
 
-Bool __pArraySlotClose__(PArrayTag* self, void* values, Int index);
+B32 __pArraySlotClose__(PArrayTag* self, void* values, Int index);
 
 #endif

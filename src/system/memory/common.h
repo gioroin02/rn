@@ -7,6 +7,6 @@ Int pSystemMemoryPageSize();
 
 PMemoryArena pSystemMemoryReserve(Int size);
 
-Bool pSystemMemoryRelease(PMemoryArena* arena);
+B32 pSystemMemoryRelease(PMemoryArena* arena);
 
 #endif

@@ -71,7 +71,7 @@ PAddressIp pAddressIpAny(PAddressIpKind kind);
 
 PAddressIp pAddressIpSelf(PAddressIpKind kind);
 
-Bool pAddressIpIsEqual(PAddressIp self, PAddressIp value);
+B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value);
 
 PHostIp pHostIpMake(PAddressIp address, U16 port);
 

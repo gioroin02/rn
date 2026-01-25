@@ -8,7 +8,7 @@ static Int __pMapHash__(PMapTag* self, void* key)
     return ((PMapProcHash*) self->map_proc_hash)(key);
 }
 
-static Bool __pMapIsEqual__(PMapTag* self, void* key, void* other)
+static B32 __pMapIsEqual__(PMapTag* self, void* key, void* other)
 {
     return ((PMapProcIsEqual*) self->map_proc_is_equal)(key, other);
 }
@@ -28,12 +28,11 @@ static Int __pMapIndexForKey__(PMapTag* self, void* keys, void* key)
 {
     Int size  = self->map_size;
     Int probe = __pMapHash__(self, key) % size;
-    Int dist  = 0;
     Int index = self->map_indices[probe];
 
     if (key == NULL || self->map_count == 0) return -1;
 
-    for (dist = 0; dist < size && index >= 0; dist += 1) {
+    for (Int dist = 0; dist < size && index >= 0; dist += 1) {
         void* other_key = &((U8*) keys)[index * self->map_step_key];
 
         if (__pMapIsEqual__(self, key, other_key) != 0) return probe;
@@ -48,7 +47,7 @@ static Int __pMapIndexForKey__(PMapTag* self, void* keys, void* key)
     return -1;
 }
 
-Bool __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
+B32 __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
     PMemoryArena* arena, Int size, void* proc_hash, void* proc_is_equal)
 {
     pMemorySet(self, sizeof *self, 0xAB);
@@ -94,17 +93,17 @@ Int __pMapCount__(PMapTag* self)
     return self->map_count;
 }
 
-Bool __pMapIsEmpty__(PMapTag* self)
+B32 __pMapIsEmpty__(PMapTag* self)
 {
     return self->map_count == 0 ? 1 : 0;
 }
 
-Bool __pMapIsFull__(PMapTag* self)
+B32 __pMapIsFull__(PMapTag* self)
 {
     return self->map_count == self->map_size ? 1 : 0;
 }
 
-Bool __pMapIsKey__(PMapTag* self, void* keys, void* key)
+B32 __pMapIsKey__(PMapTag* self, void* keys, void* key)
 {
     Int index = __pMapIndexForKey__(self, keys, key);
 
@@ -117,24 +116,21 @@ Bool __pMapIsKey__(PMapTag* self, void* keys, void* key)
 
 void __pMapClear__(PMapTag* self)
 {
-    Int index = 0;
-
-    for (index = 0; index < self->map_size; index += 1)
-        self->map_indices[index] = -1;
+    for (Int i = 0; i < self->map_size; i += 1)
+        self->map_indices[i] = -1;
 
     self->map_count = 0;
 }
 
-Bool __pMapSlotOpen__(PMapTag* self, void* keys, void* key)
+B32 __pMapSlotOpen__(PMapTag* self, void* keys, void* key)
 {
     if (self->map_count == self->map_size) return 0;
 
     Int size  = self->map_size;
     Int probe = __pMapHash__(self, key) % size;
-    Int dist  = 0;
     Int index = self->map_indices[probe];
 
-    for (dist = 0; dist < size && index >= 0; dist += 1) {
+    for (Int dist = 0; dist < size && index >= 0; dist += 1) {
         void* other_key  = &((U8*) keys)[index * self->map_step_key];
         Int   other_dist = 0;
 

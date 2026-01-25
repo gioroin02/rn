@@ -14,6 +14,6 @@ Int pLinuxMemoryPageSize();
 
 PMemoryArena pLinuxMemoryReserve(Int size);
 
-Bool pLinuxMemoryRelease(PMemoryArena* arena);
+B32 pLinuxMemoryRelease(PMemoryArena* arena);
 
 #endif

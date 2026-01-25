@@ -32,24 +32,24 @@ typedef struct PShaderSchedule
 }
 PShaderSchedule;
 
-Bool pShaderStageCreate(PShaderStage* self, PShaderStageKind kind);
+B32 pShaderStageCreate(PShaderStage* self, PShaderStageKind kind);
 
 void pShaderStageDestroy(PShaderStage* self);
 
-Bool pShaderStageCompile(PShaderStage* self, PString8 source);
+B32 pShaderStageCompile(PShaderStage* self, PString8 source);
 
 void pShaderScheduleClear(PShaderSchedule* self);
 
-Bool pShaderScheduleCreate(PShaderSchedule* self, PShaderStageKind kind);
+B32 pShaderScheduleCreate(PShaderSchedule* self, PShaderStageKind kind);
 
 void pShaderScheduleDestroy(PShaderSchedule* self, PShaderStageKind kind);
 
-Bool pShaderScheduleCompile(PShaderSchedule* self, PShaderStageKind kind, PString8 source);
+B32 pShaderScheduleCompile(PShaderSchedule* self, PShaderStageKind kind, PString8 source);
 
-Bool pShaderCreate(PShader* self);
+B32 pShaderCreate(PShader* self);
 
 void pShaderDestroy(PShader* self);
 
-Bool pShaderLink(PShader* self, PShaderSchedule* schedule);
+B32 pShaderLink(PShader* self, PShaderSchedule* schedule);
 
 #endif

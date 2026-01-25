@@ -17,7 +17,7 @@ typedef struct PAsyncIoQueue { U8 __private__; } PAsyncIoQueue;
 
 PAsyncIoQueue* pAsyncIoQueueReserve(PMemoryArena* arena);
 
-Bool pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool);
+B32 pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool);
 
 void pAsyncIoQueueDestroy(PAsyncIoQueue* self);
 

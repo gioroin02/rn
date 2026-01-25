@@ -14,7 +14,7 @@ typedef struct PBufferVertex
 }
 PBufferVertex;
 
-Bool pBufferVertexCreate(PBufferVertex* self, Int count, Int size);
+B32 pBufferVertexCreate(PBufferVertex* self, Int count, Int size);
 
 void pBufferVertexDestroy(PBufferVertex* self);
 

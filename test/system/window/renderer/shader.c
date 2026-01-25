@@ -18,7 +18,7 @@ Int pShaderStageKindCode(PShaderStageKind kind)
     return 0;
 }
 
-Bool pShaderStageCreate(PShaderStage* self, PShaderStageKind kind)
+B32 pShaderStageCreate(PShaderStage* self, PShaderStageKind kind)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -40,7 +40,7 @@ void pShaderStageDestroy(PShaderStage* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pShaderStageCompile(PShaderStage* self, PString8 source)
+B32 pShaderStageCompile(PShaderStage* self, PString8 source)
 {
     if (source.size < 0) return 0;
 
@@ -61,15 +61,13 @@ Bool pShaderStageCompile(PShaderStage* self, PString8 source)
 
 void pShaderScheduleClear(PShaderSchedule* self)
 {
-    Int index = 0;
-
-    for (index = 0; index < P_SHADER_SCHEDULE_STAGES; index += 1) {
-        if (glIsShader(self->stages[index].handle) != 0)
-            pShaderStageDestroy(&self->stages[index]);
+    for (Int i = 0; i < P_SHADER_SCHEDULE_STAGES; i += 1) {
+        if (glIsShader(self->stages[i].handle) != 0)
+            pShaderStageDestroy(&self->stages[i]);
     }
 }
 
-Bool pShaderScheduleCreate(PShaderSchedule* self, PShaderStageKind kind)
+B32 pShaderScheduleCreate(PShaderSchedule* self, PShaderStageKind kind)
 {
     if (kind != PShaderStage_None)
         return pShaderStageCreate(&self->stages[kind - 1], kind);
@@ -83,7 +81,7 @@ void pShaderScheduleDestroy(PShaderSchedule* self, PShaderStageKind kind)
         pShaderStageDestroy(&self->stages[kind - 1]);
 }
 
-Bool pShaderScheduleCompile(PShaderSchedule* self, PShaderStageKind kind, PString8 source)
+B32 pShaderScheduleCompile(PShaderSchedule* self, PShaderStageKind kind, PString8 source)
 {
     if (kind != PShaderStage_None)
         return pShaderStageCompile(&self->stages[kind - 1], source);
@@ -91,7 +89,7 @@ Bool pShaderScheduleCompile(PShaderSchedule* self, PShaderStageKind kind, PStrin
     return 0;
 }
 
-Bool pShaderCreate(PShader* self)
+B32 pShaderCreate(PShader* self)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -112,12 +110,10 @@ void pShaderDestroy(PShader* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pShaderLink(PShader* self, PShaderSchedule* schedule)
+B32 pShaderLink(PShader* self, PShaderSchedule* schedule)
 {
-    Int index = 0;
-
-    for (index = 0; index < P_SHADER_SCHEDULE_STAGES; index += 1) {
-        PShaderStage* stage = &schedule->stages[index];
+    for (Int i = 0; i < P_SHADER_SCHEDULE_STAGES; i += 1) {
+        PShaderStage* stage = &schedule->stages[i];
 
         if (glIsShader(stage->handle) != 0)
             glAttachShader(self->handle, stage->handle);
@@ -129,8 +125,8 @@ Bool pShaderLink(PShader* self, PShaderSchedule* schedule)
 
     glGetProgramiv(self->handle, GL_LINK_STATUS, (GLint*) &status);
 
-    for (index = P_SHADER_SCHEDULE_STAGES; index > 0; index -= 1) {
-        PShaderStage* stage = &schedule->stages[index - 1];
+    for (Int i = P_SHADER_SCHEDULE_STAGES; i > 0; i -= 1) {
+        PShaderStage* stage = &schedule->stages[i - 1];
 
         if (glIsShader(stage->handle) != 0)
             glDetachShader(self->handle, stage->handle);

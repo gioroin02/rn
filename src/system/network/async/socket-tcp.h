@@ -26,7 +26,7 @@ typedef struct PSocketTcpEventConnect
     void*       ctxt;
     PSocketTcp* socket;
     PHostIp     host;
-    Bool        status;
+    B32         status;
 }
 PSocketTcpEventConnect;
 
@@ -68,18 +68,18 @@ PSocketTcpEvent;
 
 PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void* ctxt);
 
-PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, Bool status, void* ctxt);
+PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, B32 status, void* ctxt);
 
 PSocketTcpEvent pSocketTcpEventWrite(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
 
 PSocketTcpEvent pSocketTcpEventRead(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
 
-Bool pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt);
+B32 pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt);
 
-Bool pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt);
+B32 pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt);
 
-Bool pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+B32 pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
 
-Bool pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+B32 pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
 
 #endif

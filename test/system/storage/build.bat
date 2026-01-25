@@ -9,4 +9,4 @@ set "impl=%impl% src\system\storage\export.c"
 
 set "test_stdin=test\system\storage\stdin.c"
 
-%compiler% --std=c89 %impl% %test_stdin% -o bin\system_storage_stdin.exe
+%compiler% --std=c99 %impl% %test_stdin% -o bin\system_storage_stdin.exe

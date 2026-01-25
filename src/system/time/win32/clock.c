@@ -8,7 +8,7 @@ PWin32Clock* pWin32ClockReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PWin32Clock);
 }
 
-Bool pWin32ClockCreate(PWin32Clock* self)
+B32 pWin32ClockCreate(PWin32Clock* self)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 

@@ -13,9 +13,7 @@ int main(int argc, char** argv)
     pSocketTcpBind(listener);
     pSocketTcpListen(listener);
 
-    Int conns = 0;
-
-    for (conns = 0; conns < 2; conns += 1) {
+    for (Int conns = 0; conns < 2; conns += 1) {
         PSocketTcp* socket = pSocketTcpReserve(&arena);
 
         pSocketTcpAccept(listener, socket);

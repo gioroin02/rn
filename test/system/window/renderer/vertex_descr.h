@@ -43,17 +43,17 @@ typedef struct PVertexDescr
 }
 PVertexDescr;
 
-Bool pVertexLayoutPush(PVertexLayout* self, PVertexFieldKind kind, Int count);
+B32 pVertexLayoutPush(PVertexLayout* self, PVertexFieldKind kind, Int count);
 
-Bool pVertexLayoutPop(PVertexLayout* self);
+B32 pVertexLayoutPop(PVertexLayout* self);
 
 void pVertexLayoutClear(PVertexLayout* self);
 
-Bool pVertexDescrCreate(PVertexDescr* self);
+B32 pVertexDescrCreate(PVertexDescr* self);
 
 void pVertexDescrDestroy(PVertexDescr* self);
 
-Bool pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
+B32 pVertexDescrApplyLayout(PVertexDescr* self, PVertexLayout* layout,
     PBufferVertex* buff_vertex, PBufferIndex* buff_index);
 
 #endif

@@ -8,7 +8,7 @@ PLinuxSocketUdp* pLinuxSocketUdpReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PLinuxSocketUdp);
 }
 
-Bool pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
+B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -53,7 +53,7 @@ void pLinuxSocketUdpDestroy(PLinuxSocketUdp* self)
     pMemorySet(self, sizeof *self, 0xAB);
 }
 
-Bool pLinuxSocketUdpBind(PLinuxSocketUdp* self)
+B32 pLinuxSocketUdpBind(PLinuxSocketUdp* self)
 {
     PLinuxAddr* sockaddr = (PLinuxAddr*) &self->storage;
     Int         length   = pLinuxAddrStorageGetSize(&self->storage);
@@ -66,7 +66,7 @@ Bool pLinuxSocketUdpBind(PLinuxSocketUdp* self)
     return 1;
 }
 
-Bool pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host)
+B32 pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host)
 {
     PLinuxAddrStorage storage;
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;

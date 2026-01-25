@@ -8,7 +8,7 @@ PWin32SocketTcp* pWin32SocketTcpReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PWin32SocketTcp);
 }
 
-Bool pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
+B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -34,7 +34,7 @@ Bool pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
     return 0;
 }
 
-Bool pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value)
+B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value)
 {
     pMemorySet(value, sizeof *value, 0xAB);
 
@@ -70,7 +70,7 @@ void pWin32SocketTcpDestroy(PWin32SocketTcp* self)
     pWin32NetworkStop();
 }
 
-Bool pWin32SocketTcpBind(PWin32SocketTcp* self)
+B32 pWin32SocketTcpBind(PWin32SocketTcp* self)
 {
     PWin32Addr* sockaddr = (PWin32Addr*) &self->storage;
     Int         length   = pWin32AddrStorageGetSize(&self->storage);
@@ -83,7 +83,7 @@ Bool pWin32SocketTcpBind(PWin32SocketTcp* self)
     return 1;
 }
 
-Bool pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
+B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
 {
     PWin32AddrStorage storage;
     PWin32Addr*       sockaddr = (PWin32Addr*) &self->storage;
@@ -101,7 +101,7 @@ Bool pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
     return 1;
 }
 
-Bool pWin32SocketTcpListen(PWin32SocketTcp* self)
+B32 pWin32SocketTcpListen(PWin32SocketTcp* self)
 {
     if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
         return 0;
@@ -109,7 +109,7 @@ Bool pWin32SocketTcpListen(PWin32SocketTcp* self)
     return 1;
 }
 
-Bool pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host)
+B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host)
 {
     PWin32AddrStorage storage;
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;

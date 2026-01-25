@@ -18,7 +18,7 @@ void pWindowKeybdUpdate(PWindowKeybd* self, PWindowEventKeybdKey event)
         pWindowKeybdSet(self, event.key, event.pressed);
 }
 
-void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, Bool state)
+void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, B32 state)
 {
     if (key < 0 ||key >= (sizeof self->state_curr * 8))
         return;

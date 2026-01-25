@@ -32,7 +32,7 @@ PWindowKeybd pWindowKeybdMake();
 
 void pWindowKeybdUpdate(PWindowKeybd* self, PWindowEventKeybdKey event);
 
-void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, Bool state);
+void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, B32 state);
 
 PWindowKeybdKeyState pWindowKeybdGet(PWindowKeybd* self, PWindowKeybdKey key);
 

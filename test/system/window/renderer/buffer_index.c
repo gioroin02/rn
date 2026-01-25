@@ -5,7 +5,7 @@
 
 #include "gl.h"
 
-Bool pBufferIndexCreate(PBufferIndex* self, Int count, Int size)
+B32 pBufferIndexCreate(PBufferIndex* self, Int count, Int size)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 

@@ -18,19 +18,19 @@ PWin32Window;
 
 PWin32Window* pWin32WindowReserve(PMemoryArena* arena);
 
-Bool pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height);
+B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height);
 
 void pWin32WindowDestroy(PWin32Window* self);
 
-Bool pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
+B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
 
 void pWin32WindowSwapBuffers(PWin32Window* self);
 
-Bool pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs);
+B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs);
 
 PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self);
 
-Bool pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc);
+B32 pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc);
 
 void* pWin32WindowGetTimerCallback(PWin32Window* self);
 

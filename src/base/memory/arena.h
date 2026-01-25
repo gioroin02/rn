@@ -27,9 +27,9 @@ void pMemoryArenaClear(PMemoryArena* self);
 
 void* pMemoryArenaReserve(PMemoryArena* self, Int count, Int size);
 
-Bool pMemoryArenaRelease(PMemoryArena* self, void* pntr);
+B32 pMemoryArenaRelease(PMemoryArena* self, void* pntr);
 
-Bool pMemoryArenaRewind(PMemoryArena* self, void* pntr);
+B32 pMemoryArenaRewind(PMemoryArena* self, void* pntr);
 
 void* pMemoryArenaTell(PMemoryArena* self);
 

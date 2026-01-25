@@ -125,7 +125,7 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
     return NULL;
 }
 
-Bool pWin32WindowOpenglCreate(PWin32Window* self, POpenglContextAttribs attribs)
+B32 pWin32WindowOpenglCreate(PWin32Window* self, POpenglContextAttribs attribs)
 {
     if (pWin32WindowOpenglStart() == 0) return 0;
 
@@ -148,7 +148,7 @@ void pWin32WindowOpenglDestroy(PWin32Window* self)
     pWin32WindowOpenglStop();
 }
 
-Bool pWin32WindowOpenglEnable(PWin32Window* self, Bool state)
+B32 pWin32WindowOpenglEnable(PWin32Window* self, B32 state)
 {
     return 0;
 }

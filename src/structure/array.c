@@ -3,7 +3,7 @@
 
 #include "array.h"
 
-Bool __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size)
+B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -44,17 +44,17 @@ Int __pArrayBack__(PArrayTag* self)
     return self->array_count > 0 ? self->array_count - 1 : 0;
 }
 
-Bool __pArrayIsEmpty__(PArrayTag* self)
+B32 __pArrayIsEmpty__(PArrayTag* self)
 {
     return self->array_count == 0 ? 1 : 0;
 }
 
-Bool __pArrayIsFull__(PArrayTag* self)
+B32 __pArrayIsFull__(PArrayTag* self)
 {
     return self->array_count == self->array_size ? 1 : 0;
 }
 
-Bool __pArrayIsIndex__(PArrayTag* self, Int index)
+B32 __pArrayIsIndex__(PArrayTag* self, Int index)
 {
     if (index < 0 || index >= self->array_count)
         return 0;
@@ -67,7 +67,7 @@ void __pArrayClear__(PArrayTag* self)
     self->array_count = 0;
 }
 
-Bool __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
+B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
 {
     Int start = self->array_step * index;
 
@@ -79,7 +79,7 @@ Bool __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
     return 1;
 }
 
-Bool __pArraySlotOpen__(PArrayTag* self, void* values, Int index)
+B32 __pArraySlotOpen__(PArrayTag* self, void* values, Int index)
 {
     Int start = self->array_step * index;
     Int stop  = self->array_step * self->array_size;
@@ -92,7 +92,7 @@ Bool __pArraySlotOpen__(PArrayTag* self, void* values, Int index)
     return 1;
 }
 
-Bool __pArraySlotClose__(PArrayTag* self, void* values, Int index)
+B32 __pArraySlotClose__(PArrayTag* self, void* values, Int index)
 {
     Int start = self->array_step * index;
     Int stop  = self->array_step * self->array_size;

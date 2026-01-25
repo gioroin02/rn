@@ -3,7 +3,7 @@
 
 #include "import.h"
 
-#define P_MEMORY_DEFAULT_ALIGNMENT ((Int) 16)
+#define P_MEMORY_ALIGNMENT ((Int) 16)
 
 #define P_MEMORY_KB ((Int) 1000ll)
 #define P_MEMORY_MB ((Int) 1000000ll)
@@ -13,9 +13,9 @@
 #define pMemoryMB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_MB ? 0 : value * P_MEMORY_MB)
 #define pMemoryGB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_GB ? 0 : value * P_MEMORY_GB)
 
-#define P_MEMORY_KIB ((Int) 1024ll)
-#define P_MEMORY_MIB ((Int) 1048576ll)
-#define P_MEMORY_GIB ((Int) 1073741824ll)
+#define P_MEMORY_KIB ((Int) 0x00000400ll)
+#define P_MEMORY_MIB ((Int) 0x00100000ll)
+#define P_MEMORY_GIB ((Int) 0x40000000ll)
 
 #define pMemoryKIB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_KIB ? 0 : value * P_MEMORY_KIB)
 #define pMemoryMIB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_MIB ? 0 : value * P_MEMORY_MIB)

@@ -48,7 +48,7 @@ PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void*
     return result;
 }
 
-PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, Bool status, void* ctxt)
+PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, B32 status, void* ctxt)
 {
     PSocketTcpEvent result;
 
@@ -97,22 +97,22 @@ PSocketTcpEvent pSocketTcpEventRead(PSocketTcp* self, U8* pntr, Int start, Int s
     return result;
 }
 
-Bool pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt)
+B32 pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pSocketTcpAcceptAsync__((__PSocketTcp__*) self, (__PSocketTcp__*) value, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
-Bool pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt)
+B32 pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pSocketTcpConnectAsync__((__PSocketTcp__*) self, host, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
-Bool pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+B32 pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pSocketTcpWriteAsync__((__PSocketTcp__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }
 
-Bool pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+B32 pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
 {
     return __pSocketTcpReadAsync__((__PSocketTcp__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
 }

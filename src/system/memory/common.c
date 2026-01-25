@@ -35,7 +35,7 @@ PMemoryArena pSystemMemoryReserve(Int size)
     return __pSystemMemoryReserve__(size);
 }
 
-Bool pSystemMemoryRelease(PMemoryArena* arena)
+B32 pSystemMemoryRelease(PMemoryArena* arena)
 {
     return __pSystemMemoryRelease__(arena);
 }

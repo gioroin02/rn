@@ -12,7 +12,7 @@ int  main(int argc, char** argv)
 
     PArrayU32 array;
 
-    printf("reserve = %llu\n", pArrayCreate(&array, &arena, 17));
+    printf("reserve = %lu\n", pArrayCreate(&array, &arena, 17));
 
     pArrayInsertBack(&array, 156);
     pArrayInsertBack(&array, 222);
@@ -20,8 +20,8 @@ int  main(int argc, char** argv)
     pArrayInsertBack(&array, 453);
     pArrayInsertBack(&array, 333);
 
-    U32  temp  = 0;
-    Bool state = pArrayRemove(&array, 0, &temp);
+    U32 temp  = 0;
+    B32 state = pArrayRemove(&array, 0, &temp);
 
     printf("remove (0) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
 
@@ -30,15 +30,13 @@ int  main(int argc, char** argv)
 
     printf("remove (2) -> (x = %4lu, %s)\n", temp, state ? "SUCC" : "FAIL");
 
-    Int index = 0;
-
-    for (index = 0; index < pArrayCount(&array); index += 1)
-        printf("#%03lli %4lu\n", index, *pArrayGetPntr(&array, index));
+    for (Int i = 0; i < pArrayCount(&array); i += 1)
+        printf("#%03lli %4lu\n", i, *pArrayGetPntr(&array, i));
 
     state = pArrayDropBack(&array);
 
     printf("drop (back) -> (%s)\n", state ? "SUCC" : "FAIL");
 
-    for (index = 0; index < pArrayCount(&array); index += 1)
-        printf("#%03lli %4lu\n", index, *pArrayGetPntr(&array, index));
+    for (Int i = 0; i < pArrayCount(&array); i += 1)
+        printf("#%03lli %4lu\n", i, *pArrayGetPntr(&array, i));
 }

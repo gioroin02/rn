@@ -50,12 +50,12 @@ PSocketTcp* pSocketTcpReserve(PMemoryArena* arena)
     return (PSocketTcp*)  __pSocketTcpReserve__(arena);
 }
 
-Bool pSocketTcpCreate(PSocketTcp* self, PHostIp host)
+B32 pSocketTcpCreate(PSocketTcp* self, PHostIp host)
 {
     return __pSocketTcpCreate__((__PSocketTcp__*) self, host);
 }
 
-Bool pSocketTcpAccept(PSocketTcp* self, PSocketTcp* value)
+B32 pSocketTcpAccept(PSocketTcp* self, PSocketTcp* value)
 {
     return __pSocketTcpAccept__((__PSocketTcp__*) self, (__PSocketTcp__*) value);
 }
@@ -65,22 +65,22 @@ void pSocketTcpDestroy(PSocketTcp* self)
     return __pSocketTcpDestroy__((__PSocketTcp__*) self);
 }
 
-Bool pSocketTcpBind(PSocketTcp* self)
+B32 pSocketTcpBind(PSocketTcp* self)
 {
     return __pSocketTcpBind__((__PSocketTcp__*) self);
 }
 
-Bool pSocketTcpBindAs(PSocketTcp* self, PHostIp host)
+B32 pSocketTcpBindAs(PSocketTcp* self, PHostIp host)
 {
     return __pSocketTcpBindAs__((__PSocketTcp__*) self, host);
 }
 
-Bool pSocketTcpListen(PSocketTcp* self)
+B32 pSocketTcpListen(PSocketTcp* self)
 {
     return __pSocketTcpListen__((__PSocketTcp__*) self);
 }
 
-Bool pSocketTcpConnect(PSocketTcp* self, PHostIp host)
+B32 pSocketTcpConnect(PSocketTcp* self, PHostIp host)
 {
     return __pSocketTcpConnect__((__PSocketTcp__*) self, host);
 }

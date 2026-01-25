@@ -3,7 +3,7 @@
 
 #include "file.h"
 
-static Bool pWin32AsyncIoQueueBindFile(PWin32AsyncIoQueue* queue, PWin32File* file)
+static B32 pWin32AsyncIoQueueBindFile(PWin32AsyncIoQueue* queue, PWin32File* file)
 {
     HANDLE handle = file->handle;
     HANDLE result = CreateIoCompletionPort(handle, queue->handle, 0, 0);
@@ -11,7 +11,7 @@ static Bool pWin32AsyncIoQueueBindFile(PWin32AsyncIoQueue* queue, PWin32File* fi
     return result != NULL ? 1 : 0;
 }
 
-static Bool pWin32FileWriteBegin(PWin32FileWrite* task, PWin32AsyncIoQueue* queue)
+static B32 pWin32FileWriteBegin(PWin32FileWrite* task, PWin32AsyncIoQueue* queue)
 {
     PWin32File* self = task->self;
     I8*         pntr = ((I8*) task->pntr) + task->start;
@@ -48,7 +48,7 @@ static PAsyncIoEventKind pWin32FileWriteEnd(PWin32FileWrite* task, Int bytes, PM
     return PAsyncIoEvent_None;
 }
 
-static Bool pWin32FileReadBegin(PWin32FileRead* task, PWin32AsyncIoQueue* queue)
+static B32 pWin32FileReadBegin(PWin32FileRead* task, PWin32AsyncIoQueue* queue)
 {
     PWin32File* self = task->self;
     I8*         pntr = ((I8*) task->pntr) + task->start;
@@ -85,7 +85,7 @@ static PAsyncIoEventKind pWin32FileReadEnd(PWin32FileRead* task, Int bytes, PMem
     return PAsyncIoEvent_None;
 }
 
-Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
+B32 pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
 {
     PWin32FileWrite* result =
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileWrite);
@@ -110,7 +110,7 @@ Bool pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin3
     return 0;
 }
 
-Bool pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
+B32 pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
 {
     PWin32FileRead* result =
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileRead);

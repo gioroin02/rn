@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
     PConsoleEvent event;
 
-    Bool active = 1;
+    B32 active = 1;
 
     while (active != 0) {
         while (pConsolePollEvent(console, &event) != 0) {

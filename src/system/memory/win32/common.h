@@ -12,6 +12,6 @@ Int pWin32MemoryPageSize();
 
 PMemoryArena pWin32MemoryReserve(Int size);
 
-Bool pWin32MemoryRelease(PMemoryArena* arena);
+B32 pWin32MemoryRelease(PMemoryArena* arena);
 
 #endif

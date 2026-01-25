@@ -3,10 +3,10 @@
 
 #include "import.h"
 
-Bool pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs);
+B32 pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs);
 
 void pWindowOpenglDestroy(PWindow* self);
 
-Bool pWindowOpenglEnable(PWindow* self, Bool state);
+B32 pWindowOpenglEnable(PWindow* self, B32 state);
 
 #endif

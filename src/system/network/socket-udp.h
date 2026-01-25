@@ -7,13 +7,13 @@ typedef struct PSocketUdp { U8 __private__; } PSocketUdp;
 
 PSocketUdp* pSocketUdpReserve(PMemoryArena* arena);
 
-Bool pSocketUdpCreate(PSocketUdp* self, PHostIp host);
+B32 pSocketUdpCreate(PSocketUdp* self, PHostIp host);
 
 void pSocketUdpDestroy(PSocketUdp* self);
 
-Bool pSocketUdpBind(PSocketUdp* self);
+B32 pSocketUdpBind(PSocketUdp* self);
 
-Bool pSocketUdpBindAs(PSocketUdp* self, PHostIp host);
+B32 pSocketUdpBindAs(PSocketUdp* self, PHostIp host);
 
 Int pSocketUdpWrite(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host);
 

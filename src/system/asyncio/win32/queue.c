@@ -62,7 +62,7 @@ PWin32AsyncIoQueue* pWin32AsyncIoQueueReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PWin32AsyncIoQueue);
 }
 
-Bool pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool)
+B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -109,7 +109,7 @@ PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int time
     return result;
 }
 
-Bool pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value)
+B32 pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value)
 {
     if (value == NULL) return 0;
 

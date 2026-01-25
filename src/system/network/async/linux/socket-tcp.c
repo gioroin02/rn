@@ -3,7 +3,7 @@
 
 #include "socket-tcp.h"
 
-static Bool pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSocketTcp* socket, PLinuxAsyncIoTask* task)
+static B32 pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSocketTcp* socket, PLinuxAsyncIoTask* task)
 {
     int handle = (int) socket->handle;
     int queue  = (int) self->handle;
@@ -21,7 +21,7 @@ static Bool pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSock
     return status != -1 ? 1 : 0;
 }
 
-static Bool pLinuxSocketTcpAcceptBegin(PLinuxSocketTcpAccept* task, PLinuxAsyncIoQueue* queue)
+static B32 pLinuxSocketTcpAcceptBegin(PLinuxSocketTcpAccept* task, PLinuxAsyncIoQueue* queue)
 {
     PLinuxSocketTcp* self  = task->self;
     PLinuxSocketTcp* value = task->value;
@@ -37,7 +37,7 @@ static PAsyncIoEventKind pLinuxSocketTcpAcceptEnd(PLinuxSocketTcpAccept* task, P
     PLinuxSocketTcp* self  = task->self;
     PLinuxSocketTcp* value = task->value;
 
-    Bool status = pLinuxSocketTcpAccept(self, value);
+    B32 status = pLinuxSocketTcpAccept(self, value);
 
     if (status == 0) return PAsyncIoEvent_None;
 
@@ -56,7 +56,7 @@ static PAsyncIoEventKind pLinuxSocketTcpAcceptEnd(PLinuxSocketTcpAccept* task, P
     return PAsyncIoEvent_None;
 }
 
-static Bool pLinuxSocketTcpConnectBegin(PLinuxSocketTcpConnect* task, PLinuxAsyncIoQueue* queue)
+static B32 pLinuxSocketTcpConnectBegin(PLinuxSocketTcpConnect* task, PLinuxAsyncIoQueue* queue)
 {
     PLinuxSocketTcp* self = task->self;
     PHostIp          host = task->host;
@@ -72,7 +72,7 @@ static PAsyncIoEventKind pLinuxSocketTcpConnectEnd(PLinuxSocketTcpConnect* task,
     PLinuxSocketTcp* self = task->self;
     PHostIp          host = task->host;
 
-    Bool status = pLinuxSocketTcpConnect(self, host);
+    B32 status = pLinuxSocketTcpConnect(self, host);
 
     PSocketTcpEvent* result =
         pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
@@ -89,7 +89,7 @@ static PAsyncIoEventKind pLinuxSocketTcpConnectEnd(PLinuxSocketTcpConnect* task,
     return PAsyncIoEvent_None;
 }
 
-static Bool pLinuxSocketTcpWriteBegin(PLinuxSocketTcpWrite* task, PLinuxAsyncIoQueue* queue)
+static B32 pLinuxSocketTcpWriteBegin(PLinuxSocketTcpWrite* task, PLinuxAsyncIoQueue* queue)
 {
     PLinuxSocketTcp* self = task->self;
 
@@ -123,7 +123,7 @@ static PAsyncIoEventKind pLinuxSocketTcpWriteEnd(PLinuxSocketTcpWrite* task, PMe
     return PAsyncIoEvent_None;
 }
 
-static Bool pLinuxSocketTcpReadBegin(PLinuxSocketTcpRead* task, PLinuxAsyncIoQueue* queue)
+static B32 pLinuxSocketTcpReadBegin(PLinuxSocketTcpRead* task, PLinuxAsyncIoQueue* queue)
 {
     PLinuxSocketTcp* self = task->self;
 
@@ -157,7 +157,7 @@ static PAsyncIoEventKind pLinuxSocketTcpReadEnd(PLinuxSocketTcpRead* task, PMemo
     return PAsyncIoEvent_None;
 }
 
-Bool pLinuxSocketTcpAcceptAsync(PLinuxSocketTcp* self, PLinuxSocketTcp* value, PLinuxAsyncIoQueue* queue, void* ctxt)
+B32 pLinuxSocketTcpAcceptAsync(PLinuxSocketTcp* self, PLinuxSocketTcp* value, PLinuxAsyncIoQueue* queue, void* ctxt)
 {
     PLinuxSocketTcpAccept* result =
         pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpAccept);
@@ -178,7 +178,7 @@ Bool pLinuxSocketTcpAcceptAsync(PLinuxSocketTcp* self, PLinuxSocketTcp* value, P
     return 0;
 }
 
-Bool pLinuxSocketTcpConnectAsync(PLinuxSocketTcp* self, PHostIp host, PLinuxAsyncIoQueue* queue, void* ctxt)
+B32 pLinuxSocketTcpConnectAsync(PLinuxSocketTcp* self, PHostIp host, PLinuxAsyncIoQueue* queue, void* ctxt)
 {
     PLinuxSocketTcpConnect* result =
         pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpConnect);
@@ -199,7 +199,7 @@ Bool pLinuxSocketTcpConnectAsync(PLinuxSocketTcp* self, PHostIp host, PLinuxAsyn
     return 0;
 }
 
-Bool pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+B32 pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
 {
     PLinuxSocketTcpWrite* result =
         pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpWrite);
@@ -222,7 +222,7 @@ Bool pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int s
     return 0;
 }
 
-Bool pLinuxSocketTcpReadAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+B32 pLinuxSocketTcpReadAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
 {
     PLinuxSocketTcpRead* result =
         pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpRead);

@@ -16,9 +16,9 @@ typedef BOOL  (WINAPI* WglChoosePixelFormatARB)    (HDC, int*, FLOAT*, UINT, int
 WglCreateContextAttribsARB wglCreateContextAttribsARB;
 WglChoosePixelFormatARB    wglChoosePixelFormatARB;
 
-Bool pWin32WindowOpenglStart();
+B32 pWin32WindowOpenglStart();
 
-Bool pWin32WindowOpenglStartImpl();
+B32 pWin32WindowOpenglStartImpl();
 
 void pWin32WindowOpenglStop();
 

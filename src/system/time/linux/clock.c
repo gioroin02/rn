@@ -8,7 +8,7 @@ PLinuxClock* pLinuxClockReserve(PMemoryArena* arena)
     return pMemoryArenaReserveOneOf(arena, PLinuxClock);
 }
 
-Bool pLinuxClockCreate(PLinuxClock* self)
+B32 pLinuxClockCreate(PLinuxClock* self)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 

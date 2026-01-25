@@ -130,12 +130,12 @@ int main(int argc, char** argv)
 
     pShaderScheduleCreate(&schedule, PShaderStage_Vertex);
 
-    Bool status_vertex = pShaderScheduleCompile(&schedule,
+    B32 status_vertex = pShaderScheduleCompile(&schedule,
         PShaderStage_Vertex, pString8(SOURCE_VERTEX));
 
     pShaderScheduleCreate(&schedule, PShaderStage_Fragment);
 
-    Bool status_fragment = pShaderScheduleCompile(&schedule,
+    B32 status_fragment = pShaderScheduleCompile(&schedule,
         PShaderStage_Fragment, pString8(SOURCE_FRAGMENT));
 
     pShaderCreate(&context.shader);

@@ -18,7 +18,7 @@ PLinuxClock;
 
 PLinuxClock* pLinuxClockReserve(PMemoryArena* arena);
 
-Bool pLinuxClockCreate(PLinuxClock* self);
+B32 pLinuxClockCreate(PLinuxClock* self);
 
 void pLinuxClockDestroy(PLinuxClock* self);
 
