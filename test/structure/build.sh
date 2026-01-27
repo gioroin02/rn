@@ -2,7 +2,7 @@ compiler="gcc"
 
 impl="$impl src/base/export.c"
 impl="$impl src/base/memory/export.c"
-impl="$impl src/string/export.c"
+impl="$impl src/base/string/export.c"
 impl="$impl src/structure/export.c"
 
 test_array="test/structure/array.c"

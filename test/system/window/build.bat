@@ -4,8 +4,7 @@ set "compiler=zig cc"
 
 set "impl=%impl% src\base\export.c"
 set "impl=%impl% src\base\memory\export.c"
-
-set "impl=%impl% src\string\export.c"
+set "impl=%impl% src\base\string\export.c"
 
 set "impl=%impl% src\graphics\opengl\export.c"
 

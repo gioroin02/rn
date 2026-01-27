@@ -1,6 +1,0 @@
-#ifndef P_SYSTEM_WIN32_CONSOLE_EXPORT_C
-#define P_SYSTEM_WIN32_CONSOLE_EXPORT_C
-
-#include "console.c"
-
-#endif

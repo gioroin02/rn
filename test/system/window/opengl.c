@@ -1,4 +1,4 @@
-#include "../../../src/string/export.h"
+#include "../../../src/base/string/export.h"
 #include "../../../src/system/memory/export.h"
 #include "../../../src/system/time/export.h"
 #include "../../../src/system/window/export.h"
@@ -29,18 +29,14 @@ Vertex;
     "    gl_Position = vec4(vert_coord, 1, 1);\n" \
     "}\n"
 
-#define SOURCE_FRAGMENT                                  \
-    "#version 330 core\n"                                \
-    "\n"                                                 \
-    "in  vec3 frag_color;\n"                             \
-    "out vec3  out_color;\n"                             \
-    "\n"                                                 \
-    "void main() {\n"                                    \
-    "    float gamma_r = pow(frag_color.r, 0.80);\n"     \
-    "    float gamma_g = pow(frag_color.g, 0.80);\n"     \
-    "    float gamma_b = pow(frag_color.b, 0.80);\n"     \
-    "\n"                                                 \
-    "    out_color = vec3(gamma_r, gamma_g, gamma_b);\n" \
+#define SOURCE_FRAGMENT             \
+    "#version 330 core\n"           \
+    "\n"                            \
+    "in  vec3 frag_color;\n"        \
+    "out vec3  out_color;\n"        \
+    "\n"                            \
+    "void main() {\n"               \
+    "    out_color = frag_color;\n" \
     "}\n"
 
 typedef struct Context

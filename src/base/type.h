@@ -4,8 +4,6 @@
 #include "define.h"
 #include "system.h"
 
-#include <stdint.h>
-
 typedef char      I8;
 typedef short     I16;
 typedef long      I32;
