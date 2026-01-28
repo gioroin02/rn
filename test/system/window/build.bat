@@ -9,9 +9,9 @@ set "impl=%impl% src\base\string\export.c"
 set "impl=%impl% src\graphics\opengl\export.c"
 
 set "impl=%impl% src\system\memory\export.c"
-set "impl=%impl% src\system\time\export.c"
 set "impl=%impl% src\system\window\export.c"
 set "impl=%impl% src\system\window\opengl\export.c"
+set "impl=%impl% src\system\time\export.c"
 
 set "test_opengl=%test_opengl% test\system\window\renderer\export.c"
 set "test_opengl=%test_opengl% test\system\window\opengl.c"

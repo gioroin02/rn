@@ -3,11 +3,52 @@
 
 #include "import.h"
 
+typedef enum PFileKind
+{
+    PFileKind_None,
+    PFileKind_Regular,
+    PFileKind_Directory,
+}
+PFileKind;
+
+typedef enum PFilePerm
+{
+    PFilePerm_None  = 0,
+    PFilePerm_Read  = 1 << 0,
+    PFilePerm_Write = 1 << 1,
+}
+PFilePerm;
+
+typedef enum PFileMode
+{
+    PFileMode_None   = 0,
+    PFileMode_Read   = 1 << 0,
+    PFileMode_Write  = 1 << 1,
+    PFileMode_Create = 1 << 2,
+    PFileMode_Unique = 1 << 3,
+}
+PFileMode;
+
+typedef struct PFileAttribs
+{
+    PFileKind kind;
+    PFilePerm perm;
+
+    Int size;
+}
+PFileAttribs;
+
 typedef struct PFile { U8 __private__; } PFile;
+
+B32 pFileAttribs(PString8 name, PFileAttribs* attribs);
+
+B32 pFileDestroy(PString8 name);
 
 PFile* pFileReserve(PMemoryArena* arena);
 
-void pFileDestroy(PFile* self);
+B32 pFileOpen(PFile* self, PString8 name, PFileMode mode);
+
+void pFileClose(PFile* self);
 
 Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop);
 

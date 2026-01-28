@@ -1,12 +1,8 @@
 # Pax software components
 
-## Left to do
+## Missing features
 
-Things to add:
+List of missing features:
 
-1. Add string operations
-2. Add hashmap put and remove
-
-Things to fix:
-
-1. Work on an "interest group" which updates which handles are able to work with async operations
+1. String operations
+2. Map operations (`put` and `remove`)

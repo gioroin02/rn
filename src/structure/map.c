@@ -33,7 +33,7 @@ static Int __pMapIndexForKey__(PMapTag* self, void* keys, void* key)
     if (key == NULL || self->map_count == 0) return -1;
 
     for (Int dist = 0; dist < size && index >= 0; dist += 1) {
-        void* other_key = &((U8*) keys)[index * self->map_step_key];
+        void* other_key = &((U8*) keys)[index * self->map_stride_key];
 
         if (__pMapIsEqual__(self, key, other_key) != 0) return probe;
 
@@ -47,33 +47,34 @@ static Int __pMapIndexForKey__(PMapTag* self, void* keys, void* key)
     return -1;
 }
 
-B32 __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
+B32 __pMapCreate__(PMapTag* self, void** pntrk, Int stridek, void** pntrv, Int stridev,
     PMemoryArena* arena, Int size, void* proc_hash, void* proc_is_equal)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    if (pntr_keys == NULL || pntr_values == NULL || size < 0 || step_key <= 0 || step_value <= 0)
+    if (pntrk == NULL || pntrv == NULL || size < 0 || stridek <= 0 || stridev <= 0)
         return 0;
 
     void* mark = pMemoryArenaTell(arena);
 
     Int* indices = pMemoryArenaReserveManyOf(arena, Int, size);
-    U8*  keys    = pMemoryArenaReserve(arena, size, step_key);
-    U8*  values  = pMemoryArenaReserve(arena, size, step_value);
+    U8*  keys    = pMemoryArenaReserve(arena, size, stridek);
+    U8*  values  = pMemoryArenaReserve(arena, size, stridev);
 
     if (indices != NULL && keys != NULL && values != NULL) {
         self->map_size          = size;
         self->map_count         = 0;
-        self->map_step_key      = step_key;
-        self->map_step_value    = step_value;
+        self->map_stride_key    = stridek;
+        self->map_stride_value  = stridev;
         self->map_indices       = indices;
         self->map_proc_hash     = proc_hash;
         self->map_proc_is_equal = proc_is_equal;
 
-        *pntr_keys   = keys;
-        *pntr_values = values;
+        for (Int i = 0; i < self->map_size; i += 1)
+            self->map_indices[i] = -1;
 
-        __pMapClear__(self);
+        *pntrk = keys;
+        *pntrv = values;
 
         return 1;
     }
@@ -131,7 +132,7 @@ B32 __pMapSlotOpen__(PMapTag* self, void* keys, void* key)
     Int index = self->map_indices[probe];
 
     for (Int dist = 0; dist < size && index >= 0; dist += 1) {
-        void* other_key  = &((U8*) keys)[index * self->map_step_key];
+        void* other_key  = &((U8*) keys)[index * self->map_stride_key];
         Int   other_dist = 0;
 
         if (__pMapIsEqual__(self, key, other_key) != 0) break;

@@ -8,11 +8,12 @@ void* pWin32OpenglLoader(void* symbol)
     void*   result = wglGetProcAddress((LPCSTR) symbol);
     HMODULE module = NULL;
 
-    if (result != NULL) return result;
+    if (result == NULL) {
+        module = LoadLibraryA("opengl32.dll");
+        result = GetProcAddress(module, (LPCSTR) symbol);
+    }
 
-    module = LoadLibraryA("opengl32.dll");
-
-    return GetProcAddress(module, (LPCSTR) symbol);
+    return result;
 }
 
 #endif

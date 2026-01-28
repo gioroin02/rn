@@ -12,9 +12,9 @@ B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena
     U8* values = pMemoryArenaReserve(arena, size, step);
 
     if (values != NULL) {
-        self->array_size  = size;
-        self->array_count = 0;
-        self->array_step  = step;
+        self->array_size   = size;
+        self->array_count  = 0;
+        self->array_stride = step;
 
         *pntr = values;
 
@@ -69,11 +69,11 @@ void __pArrayClear__(PArrayTag* self)
 
 B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
 {
-    Int start = self->array_step * index;
+    Int start = self->array_stride * index;
 
     if (index < 0 || index >= self->array_count) return 0;
 
-    pMemoryCopy(value, self->array_step,
+    pMemoryCopy(value, self->array_stride,
         &((U8*) values)[start]);
 
     return 1;
@@ -81,26 +81,26 @@ B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
 
 B32 __pArraySlotOpen__(PArrayTag* self, void* values, Int index)
 {
-    Int start = self->array_step * index;
-    Int stop  = self->array_step * self->array_size;
+    Int start = self->array_stride * index;
+    Int stop  = self->array_stride * self->array_size;
 
     if (index < 0 || index > self->array_count) return 0;
 
     pMemoryShiftForw(&((U8*) values)[start],
-        stop, self->array_step, 0xAB);
+        stop, self->array_stride, 0xAB);
 
     return 1;
 }
 
 B32 __pArraySlotClose__(PArrayTag* self, void* values, Int index)
 {
-    Int start = self->array_step * index;
-    Int stop  = self->array_step * self->array_size;
+    Int start = self->array_stride * index;
+    Int stop  = self->array_stride * self->array_size;
 
     if (index < 0 || index >= self->array_count) return 0;
 
     pMemoryShiftBack(&((U8*) values)[start],
-        stop, self->array_step, 0xAB);
+        stop, self->array_stride, 0xAB);
 
     return 1;
 }

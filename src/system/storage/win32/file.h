@@ -15,9 +15,15 @@ typedef struct PWin32File
 }
 PWin32File;
 
+B32 pWin32FileAttribs(PString8 name, PFileAttribs* attribs);
+
+B32 pWin32FileDestroy(PString8 name);
+
 PWin32File* pWin32FileReserve(PMemoryArena* arena);
 
-void pWin32FileDestroy(PWin32File* self);
+B32 pWin32FileOpen(PWin32File* self, PString8 name, PFileMode mode);
+
+void pWin32FileClose(PWin32File* self);
 
 Int pWin32FileWrite(PWin32File* self, U8* pntr, Int start, Int stop);
 

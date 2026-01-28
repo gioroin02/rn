@@ -12,7 +12,7 @@ PMemoryArena pMemoryArenaMake(void* pntr, Int size)
     if (pntr == NULL || size <= 0) return result;
 
     result.pntr_base = (U8*) pntr;
-    result.pntr_next = result.pntr_base,
+    result.pntr_next = result.pntr_base;
     result.size      = size;
 
     pMemorySet(result.pntr_base, result.size, 0xAB);
@@ -63,12 +63,13 @@ B32 pMemoryArenaRelease(PMemoryArena* arena, void* pntr)
 
 B32 pMemoryArenaRewind(PMemoryArena* self, void* pntr)
 {
+    if (pntr == NULL) return 0;
+
     U8* head = ((U8*) pntr);
-
-    if (pntr == NULL || head < self->pntr_base || head >= self->pntr_next)
-        return 0;
-
     Int dist = head - self->pntr_base;
+
+    if (head < self->pntr_base || head >= self->pntr_next)
+        return 0;
 
     if (dist % P_MEMORY_ALIGNMENT != 0) return 0;
 

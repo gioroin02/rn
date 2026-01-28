@@ -6,7 +6,7 @@
 #define __PArrayTag__() struct { \
     Int array_size;              \
     Int array_count;             \
-    Int array_step;              \
+    Int array_stride;            \
     Int array_index;             \
 }
 
@@ -14,7 +14,7 @@ typedef struct
 {
     Int array_size;
     Int array_count;
-    Int array_step;
+    Int array_stride;
     Int array_index;
 }
 PArrayTag;

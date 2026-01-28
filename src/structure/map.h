@@ -6,8 +6,8 @@
 #define __PMapTag__(ktype) struct { \
     Int   map_size;                 \
     Int   map_count;                \
-    Int   map_step_key;             \
-    Int   map_step_value;           \
+    Int   map_stride_key;           \
+    Int   map_stride_value;         \
     Int*  map_indices;              \
     void* map_proc_hash;            \
     void* map_proc_is_equal;        \
@@ -19,8 +19,8 @@ typedef struct PMapTag
 {
     Int   map_size;
     Int   map_count;
-    Int   map_step_key;
-    Int   map_step_value;
+    Int   map_stride_key;
+    Int   map_stride_value;
     Int*  map_indices;
     void* map_proc_hash;
     void* map_proc_is_equal;
@@ -80,7 +80,7 @@ typedef B32 (PMapProcIsEqual) (void*, void*);
 #define pMapGetPntr(self, key) \
     (pMapIsKey(self, key) != 0 ? &(self)->values[(self)->map_index] : NULL)
 
-B32 __pMapCreate__(PMapTag* self, void** pntr_keys, Int step_key, void** pntr_values, Int step_value,
+B32 __pMapCreate__(PMapTag* self, void** pntrk, Int stridek, void** pntrv, Int stridev,
     PMemoryArena* arena, Int size, void* proc_hash, void* proc_is_equal);
 
 Int __pMapSize__(PMapTag* self);

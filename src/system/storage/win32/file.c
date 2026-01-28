@@ -3,12 +3,93 @@
 
 #include "file.h"
 
+static PString16 pWin32String8To16(PString8 string, U16* buffer, Int size)
+{
+    PString16 result = pString16Make(buffer, size);
+
+    result.size = MultiByteToWideChar(CP_UTF8, 0,
+        (I8*) string.values, string.size, buffer, size);
+
+    for (Int i = 0; i < result.size; i += 1) {
+        if (result.values[i] == 0x5C) result.values[i] = 0x2F;
+    }
+
+    return result;
+}
+
+B32 pWin32FileAttribs(PString8 name, PFileAttribs* attribs)
+{
+    U16 buffer[4 * P_MEMORY_KIB] = {0};
+
+    PString16 name16 = pWin32String8To16(name, buffer, sizeof buffer);
+
+    if (name16.size <= 0) return 0;
+
+    WIN32_FILE_ATTRIBUTE_DATA data = {0};
+
+    BOOL status = GetFileAttributesExW(name16.values,
+        GetFileExInfoStandard, &data);
+
+    if (status == 0) return 0;
+
+    if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+        ULARGE_INTEGER value;
+
+        value.HighPart = data.nFileSizeHigh;
+        value.LowPart  = data.nFileSizeLow;
+
+        attribs->kind = PFileKind_Regular;
+        attribs->size = value.QuadPart;
+    }
+    else attribs->kind = PFileKind_Directory;
+
+    return 1;
+}
+
+B32 pWin32FileDestroy(PString8 name)
+{
+    return 0;
+}
+
 PWin32File* pWin32FileReserve(PMemoryArena* arena)
 {
     return pMemoryArenaReserveOneOf(arena, PWin32File);
 }
 
-void pWin32FileDestroy(PWin32File* self)
+B32 pWin32FileOpen(PWin32File* self, PString8 name, PFileMode mode)
+{
+    U16 buffer[4 * P_MEMORY_KIB] = {0};
+
+    pMemorySet(self, sizeof *self, 0xAB);
+
+    Int action = OPEN_EXISTING;
+    Int access = 0;
+
+    if ((mode & PFileMode_Create) != 0) {
+        action = OPEN_ALWAYS;
+
+        if ((mode & PFileMode_Unique) != 0)
+            action = CREATE_NEW;
+    }
+
+    if ((mode & PFileMode_Read)  != 0) access |= GENERIC_READ;
+    if ((mode & PFileMode_Write) != 0) access |= GENERIC_WRITE;
+
+    PString16 name16 = pWin32String8To16(name, buffer, sizeof buffer);
+
+    if (name16.size <= 0) return 0;
+
+    HANDLE handle = CreateFileW(buffer, access,
+        FILE_SHARE_READ, 0, action, FILE_ATTRIBUTE_NORMAL, 0);
+
+    if (handle == INVALID_HANDLE_VALUE) return 0;
+
+    self->handle = handle;
+
+    return 1;
+}
+
+void pWin32FileClose(PWin32File* self)
 {
     if (self->handle != INVALID_HANDLE_VALUE)
         CloseHandle(self->handle);

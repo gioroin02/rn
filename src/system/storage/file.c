@@ -9,8 +9,11 @@
 
     #define __PFile__ PWin32File
 
-    #define __pFileReserve__ pWin32FileReserve
+    #define __pFileAttribs__ pWin32FileAttribs
     #define __pFileDestroy__ pWin32FileDestroy
+    #define __pFileReserve__ pWin32FileReserve
+    #define __pFileOpen__    pWin32FileOpen
+    #define __pFileClose__   pWin32FileClose
     #define __pFileWrite__   pWin32FileWrite
     #define __pFileRead__    pWin32FileRead
 
@@ -20,15 +23,29 @@
 
 #endif
 
-PFile*
-pFileReserve(PMemoryArena* arena)
+B32 pFileAttribs(PString8 name, PFileAttribs* attribs)
+{
+    return __pFileAttribs__(name, attribs);
+}
+
+B32 pFileDestroy(PString8 name)
+{
+    return __pFileDestroy__(name);
+}
+
+PFile* pFileReserve(PMemoryArena* arena)
 {
     return (PFile*) __pFileReserve__(arena);
 }
 
-void pFileDestroy(PFile* self)
+B32 pFileOpen(PFile* self, PString8 name, PFileMode mode)
 {
-    return __pFileDestroy__((__PFile__*) self);
+    return __pFileOpen__((__PFile__*) self, name, mode);
+}
+
+void pFileClose(PFile* self)
+{
+    return __pFileClose__((__PFile__*) self);
 }
 
 Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop)
