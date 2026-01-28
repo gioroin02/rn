@@ -41,7 +41,7 @@ void serverOnTcpWrite(Server* self, PMemoryArena* arena, PSocketTcpEventWrite ev
 
 void serverOnTcpRead(Server* self, PMemoryArena* arena, PSocketTcpEventRead event)
 {
-    printf("[DEBUG] Read '%.*s'!\n", ((int) event.bytes), event.pntr + event.start);
+    printf("[DEBUG] Read '%.*s'!\n", (int) event.bytes, event.pntr + event.start);
 
     self->active = pSocketTcpWriteAsync(event.socket, event.pntr,
         event.start, event.bytes, self->queue, NULL);

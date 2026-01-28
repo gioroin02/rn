@@ -3,7 +3,11 @@
 
 #include "import.h"
 
-#define _DEFAULT_SOURCE
+#ifndef _DEFAULT_SOURCE
+
+    #define _DEFAULT_SOURCE
+
+#endif
 
 #include <unistd.h>
 #include <time.h>

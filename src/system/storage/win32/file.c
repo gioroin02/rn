@@ -34,16 +34,15 @@ B32 pWin32FileAttribs(PString8 name, PFileAttribs* attribs)
 
     if (name16.size <= 0 || status == 0) return 0;
 
-    attribs->perm |= PFilePerm_Read;
-
     if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
         ULARGE_INTEGER value;
 
         value.HighPart = data.nFileSizeHigh;
         value.LowPart  = data.nFileSizeLow;
 
-        attribs->kind = PFileKind_Regular;
-        attribs->size = value.QuadPart;
+        attribs->kind  = PFileKind_Regular;
+        attribs->size  = value.QuadPart;
+        attribs->perm |= PFilePerm_Read;
     }
     else attribs->kind = PFileKind_Directory;
 

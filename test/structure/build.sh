@@ -1,4 +1,4 @@
-compiler="gcc"
+compiler="gcc --debug"
 
 impl="$impl src/base/export.c"
 impl="$impl src/base/memory/export.c"

@@ -13,6 +13,17 @@
     #define __pFileWriteAsync__ pWin32FileWriteAsync
     #define __pFileReadAsync__  pWin32FileReadAsync
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PAsyncIoQueue__ PLinuxAsyncIoQueue
+    #define __PFile__         PLinuxFile
+
+    #define __pFileWriteAsync__ pLinuxFileWriteAsync
+    #define __pFileReadAsync__  pLinuxFileReadAsync
+
+
 #else
 
     #error "Unknown platform"
