@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    U8 memory[256];
+    U8 memory[256] = {0};
 
     PMemoryArena arena = pMemoryArenaMake(memory, sizeof memory);
 

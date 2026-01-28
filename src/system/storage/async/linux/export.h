@@ -1,0 +1,6 @@
+#ifndef P_SYSTEM_LINUX_STORAGE_ASYNC_EXPORT_H
+#define P_SYSTEM_LINUX_STORAGE_ASYNC_EXPORT_H
+
+#include "file.h"
+
+#endif

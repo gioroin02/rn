@@ -52,29 +52,42 @@ B32 __pMapCreate__(PMapTag* self, void** pntrk, Int stridek, void** pntrv, Int s
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
+    self->map_size          = 0;
+    self->map_count         = 0;
+    self->map_stride_key    = 0;
+    self->map_stride_value  = 0;
+    self->map_indices       = NULL;
+    self->map_proc_hash     = NULL;
+    self->map_proc_is_equal = NULL;
+    self->map_index         = 0;
+
     if (pntrk == NULL || pntrv == NULL || size < 0 || stridek <= 0 || stridev <= 0)
         return 0;
 
+    *pntrk = NULL;
+    *pntrv = NULL;
+
+    if (size == 0) return 1;
+
     void* mark = pMemoryArenaTell(arena);
 
-    Int* indices = pMemoryArenaReserveManyOf(arena, Int, size);
-    U8*  keys    = pMemoryArenaReserve(arena, size, stridek);
-    U8*  values  = pMemoryArenaReserve(arena, size, stridev);
+    Int* pntr_indices = pMemoryArenaReserveManyOf(arena, Int, size);
+    U8*  pntr_keys    = pMemoryArenaReserve(arena, size, stridek);
+    U8*  pntr_values  = pMemoryArenaReserve(arena, size, stridev);
 
-    if (indices != NULL && keys != NULL && values != NULL) {
+    if (pntr_indices != NULL && pntr_keys != NULL && pntr_values != NULL) {
         self->map_size          = size;
-        self->map_count         = 0;
         self->map_stride_key    = stridek;
         self->map_stride_value  = stridev;
-        self->map_indices       = indices;
+        self->map_indices       = pntr_indices;
         self->map_proc_hash     = proc_hash;
         self->map_proc_is_equal = proc_is_equal;
 
         for (Int i = 0; i < self->map_size; i += 1)
             self->map_indices[i] = -1;
 
-        *pntrk = keys;
-        *pntrv = values;
+        *pntrk = pntr_keys;
+        *pntrv = pntr_values;
 
         return 1;
     }

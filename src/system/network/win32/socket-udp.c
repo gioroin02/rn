@@ -12,8 +12,11 @@ B32 pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    PWin32AddrStorage storage;
-    Int               length = 0;
+    self->handle  = (SOCKET) NULL;
+    self->storage = (PWin32AddrStorage) {0};
+
+    PWin32AddrStorage storage = {0};
+    Int               length  = 0;
 
     storage = pWin32AddrStorageMake(host.address, host.port, &length);
 
@@ -59,13 +62,14 @@ B32 pWin32SocketUdpBind(PWin32SocketUdp* self)
 
 B32 pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host)
 {
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     Int               length   = 0;
 
     storage = pWin32AddrStorageMake(host.address, host.port, &length);
 
-    if (storage.ss_family != self->storage.ss_family) return 0;
+    if (storage.ss_family != self->storage.ss_family)
+        return 0;
 
     if (bind(self->handle, sockaddr, length) == SOCKET_ERROR)
         return 0;
@@ -79,7 +83,7 @@ Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, P
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     Int               length   = 0;
 
@@ -88,9 +92,10 @@ Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, P
     I8* memory = ((I8*) pntr + start);
     Int size   = stop - start;
     Int result = 0;
+    Int count  = 0;
 
     while (result < size) {
-        Int count = sendto(self->handle, memory + result,
+        count = sendto(self->handle, memory + result,
             size - result, 0, sockaddr, length);
 
         if (count > 0 && count <= size - result)
@@ -106,7 +111,7 @@ Int pWin32SocketUdpRead(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PH
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     int               length   = sizeof storage;
 

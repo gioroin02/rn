@@ -5,17 +5,21 @@
 
 PMemoryArena pMemoryArenaMake(void* pntr, Int size)
 {
-    PMemoryArena result;
+    PMemoryArena result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
-    if (pntr == NULL || size <= 0) return result;
+    result.pntr_base = NULL;
+    result.pntr_next = NULL;
+    result.size      = 0;
 
-    result.pntr_base = (U8*) pntr;
-    result.pntr_next = result.pntr_base;
-    result.size      = size;
+    if (pntr != NULL || size > 0) {
+        result.pntr_base = (U8*) pntr;
+        result.pntr_next = result.pntr_base;
+        result.size      = size;
 
-    pMemorySet(result.pntr_base, result.size, 0xAB);
+        pMemorySet(result.pntr_base, result.size, 0xAB);
+    }
 
     return result;
 }

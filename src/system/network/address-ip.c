@@ -25,7 +25,7 @@ static B32 pAddressIp6IsEqual(PAddressIp6 self, PAddressIp6 value)
 
 PAddressIp pAddressIp4Make(U8 v0, U8 v1, U8 v2, U8 v3)
 {
-    PAddressIp result;
+    PAddressIp result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -40,7 +40,7 @@ PAddressIp pAddressIp4Make(U8 v0, U8 v1, U8 v2, U8 v3)
 
 PAddressIp pAddressIp6Make(U16 v0, U16 v1, U16 v2, U16 v3, U16 v4, U16 v5, U16 v6, U16 v7)
 {
-    PAddressIp result;
+    PAddressIp result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -59,7 +59,7 @@ PAddressIp pAddressIp6Make(U16 v0, U16 v1, U16 v2, U16 v3, U16 v4, U16 v5, U16 v
 
 PAddressIp pAddressIpNone()
 {
-    PAddressIp result;
+    PAddressIp result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -70,9 +70,7 @@ PAddressIp pAddressIpNone()
 
 PAddressIp pAddressIpAny(PAddressIpKind kind)
 {
-    PAddressIp result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
+    PAddressIp result = pAddressIpNone();
 
     switch (kind) {
         case PAddressIp_Ver4: return pAddressIp4Any();
@@ -86,9 +84,7 @@ PAddressIp pAddressIpAny(PAddressIpKind kind)
 
 PAddressIp pAddressIpSelf(PAddressIpKind kind)
 {
-    PAddressIp result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
+    PAddressIp result = pAddressIpNone();
 
     switch (kind) {
         case PAddressIp_Ver4: return pAddressIp4Self();
@@ -119,7 +115,7 @@ B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value)
 
 PHostIp pHostIpMake(PAddressIp address, U16 port)
 {
-    PHostIp result;
+    PHostIp result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 

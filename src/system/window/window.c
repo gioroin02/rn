@@ -25,6 +25,25 @@
 
 #endif
 
+PWindowAttribs pWindowAttribsMake()
+{
+    PWindowAttribs result = {0};
+
+    pMemorySet(&result, sizeof result, 0xAB);
+
+    result.visibility = PWindowVisibility_None;
+    result.coord_x    = 0;
+    result.coord_y    = 0;
+    result.width      = 0;
+    result.width_max  = 0;
+    result.width_min  = 0;
+    result.height     = 0;
+    result.height_max = 0;
+    result.height_min = 0;
+
+    return result;
+}
+
 PWindow* pWindowReserve(PMemoryArena* arena)
 {
     return (PWindow*) __pWindowReserve__(arena);

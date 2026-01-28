@@ -15,6 +15,4 @@ void pWin32WindowStop();
 
 void pWin32WindowStopImpl();
 
-PString16 pWin32Str8ToStr16(U16* pntr, Int size, PString8 string);
-
 #endif

@@ -3,20 +3,29 @@
 
 #include "array.h"
 
-B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size)
+B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int stride, PMemoryArena* arena, Int size)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    if (pntr == NULL || size < 0 || step <= 0) return 0;
+    self->array_size   = 0;
+    self->array_count  = 0;
+    self->array_stride = 0;
+    self->array_index  = 0;
 
-    U8* values = pMemoryArenaReserve(arena, size, step);
+    if (pntr == NULL || size < 0 || stride <= 0)
+        return 0;
 
-    if (values != NULL) {
+    *pntr = NULL;
+
+    if (size == 1) return 1;
+
+    U8* pntr_values = pMemoryArenaReserve(arena, size, stride);
+
+    if (pntr_values != NULL) {
         self->array_size   = size;
-        self->array_count  = 0;
-        self->array_stride = step;
+        self->array_stride = stride;
 
-        *pntr = values;
+        *pntr = pntr_values;
 
         return 1;
     }

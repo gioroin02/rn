@@ -20,22 +20,25 @@ struct PMemoryPoolNode
     PMemoryPoolNode* list_next;
 };
 
-PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int step)
+PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int stride)
 {
-    PMemoryPool result;
+    PMemoryPool result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
-    if (pntr == NULL || size <= 0 || step <= 0) return result;
-
-    result.pntr_base = (U8*) pntr;
-    result.pntr_next = result.pntr_base;
+    result.pntr_base = NULL;
+    result.pntr_next = NULL;
     result.list_head = NULL;
-    result.size      = size;
+    result.size      = 0;
 
-    result.step = pMemoryAlignSize(step, P_MEMORY_ALIGNMENT);
+    if (pntr != NULL || size > 0 || stride > 0) {
+        result.pntr_base = (U8*) pntr;
+        result.pntr_next = result.pntr_base;
+        result.size      = size;
+        result.stride    = pMemoryAlignSize(stride, P_MEMORY_ALIGNMENT);
 
-    pMemorySet(result.pntr_base, result.size, 0xAB);
+        pMemorySet(result.pntr_base, result.size, 0xAB);
+    }
 
     return result;
 }
@@ -66,13 +69,13 @@ void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size)
     Int size_header = pMemoryAlignSize(
         P_MEMORY_POOL_NODE_SIZE, P_MEMORY_ALIGNMENT);
 
-    PMemoryPoolNode* node  = self->list_head;
+    PMemoryPoolNode* node  = (PMemoryPoolNode*) self->list_head;
     Int              bytes = count * size;
 
-    if (bytes < 0 || bytes > self->step) return NULL;
+    if (bytes < 0 || bytes > self->stride) return NULL;
 
     if (node == NULL) {
-        U8* next = ((U8*) self->pntr_next) + size_header + self->step;
+        U8* next = ((U8*) self->pntr_next) + size_header + self->stride;
 
         if (next < self->pntr_base || next > self->pntr_base + self->size)
             return NULL;
@@ -81,9 +84,9 @@ void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size)
 
         self->pntr_next = next;
     }
-    else self->list_head = node->list_next;
+    else self->list_head = (U8*) node->list_next;
 
-    pMemorySet(node, size_header + self->step, 0xAB);
+    pMemorySet(node, size_header + self->stride, 0xAB);
 
     node->flag      = PMemoryPoolFlag_None;
     node->list_next = NULL;
@@ -104,17 +107,17 @@ B32 pMemoryPoolRelease(PMemoryPool* self, void* pntr)
     if (head < self->pntr_base || head >= self->pntr_next)
         return 0;
 
-    if (dist % (size_header + self->step) != 0) return 0;
+    if (dist % (size_header + self->stride) != 0) return 0;
 
     PMemoryPoolNode* node = (PMemoryPoolNode*) head;
 
     if ((node->flag & PMemoryPoolFlag_Free) != 0) return 0;
 
-    pMemorySet(head, size_header + self->step, 0xAB);
+    pMemorySet(head, size_header + self->stride, 0xAB);
 
     node->flag      = PMemoryPoolFlag_Free;
-    node->list_next = self->list_head;
-    self->list_head = node;
+    node->list_next = (PMemoryPoolNode*) self->list_head;
+    self->list_head = (U8*) node;
 
     return 1;
 }

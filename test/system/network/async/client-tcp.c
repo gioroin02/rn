@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 {
     PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    Client client;
+    Client client = {0};
 
     client.queue  = pAsyncIoQueueReserve(&arena);
     client.socket = pSocketTcpReserve(&arena);

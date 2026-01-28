@@ -19,14 +19,15 @@
     PWin32AsyncIoTask* list_next;         \
 }
 
-typedef struct PWin32AsyncIoTask
+typedef struct PWin32AsyncIoTask PWin32AsyncIoTask;
+
+struct PWin32AsyncIoTask
 {
     OVERLAPPED overlap;
     void*      callback;
 
-    struct PWin32AsyncIoTask* list_next;
-}
-PWin32AsyncIoTask;
+    PWin32AsyncIoTask* list_next;
+};
 
 typedef struct PWin32AsyncIoQueue
 {

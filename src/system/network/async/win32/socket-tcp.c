@@ -39,7 +39,7 @@ static PAsyncIoEventKind pWin32SocketTcpAcceptEnd(PWin32SocketTcpAccept* task, I
     setsockopt(value->handle, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
         (I8*) &self->handle, sizeof self->handle);
 
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     Int               length   = sizeof storage;
 
@@ -69,7 +69,7 @@ static B32 pWin32SocketTcpConnectBegin(PWin32SocketTcpConnect* task, PWin32Async
 
     pWin32AsyncIoQueueBindSocketTcp(queue, self);
 
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     Int               length   = 0;
 
@@ -210,12 +210,12 @@ B32 pWin32SocketTcpAcceptAsync(PWin32SocketTcp* self, PWin32SocketTcp* value, PW
         pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpAccept);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap,  0x00);
         pMemorySet(result->__buff__, sizeof result->__buff__, 0x00);
 
         result->self      = self;
         result->value     = value;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32SocketTcpAcceptEnd;
         result->list_next = NULL;
 
@@ -236,11 +236,10 @@ B32 pWin32SocketTcpConnectAsync(PWin32SocketTcp* self, PHostIp host, PWin32Async
         pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpConnect);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
         result->self      = self;
         result->host      = host;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32SocketTcpConnectEnd;
         result->list_next = NULL;
 
@@ -259,13 +258,12 @@ B32 pWin32SocketTcpWriteAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int st
         pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpWrite);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
         result->self      = self;
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32SocketTcpWriteEnd;
         result->list_next = NULL;
 
@@ -284,13 +282,12 @@ B32 pWin32SocketTcpReadAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int sto
         pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpRead);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
         result->self      = self;
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32SocketTcpReadEnd;
         result->list_next = NULL;
 

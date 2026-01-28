@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 
     pWindowCreate(context.window, pString8("Prova"), 800, 600);
 
-    POpenglContextAttribs opengl;
+    POpenglContextAttribs opengl = {0};
 
     opengl.profile       = POpenglProfile_Core;
     opengl.version_major = 3;
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 
     pClockCreate(context.clock);
 
-    PShaderSchedule schedule;
+    PShaderSchedule schedule = {0};
 
     PString8 source_vertex = pString8(SOURCE_VERTEX);
 
@@ -138,9 +138,7 @@ int main(int argc, char** argv)
 
     pShaderLink(&context.shader, &schedule);
 
-    PVertexLayout layout;
-
-    pVertexLayoutClear(&layout);
+    PVertexLayout layout = {0};
 
     pVertexLayoutPush(&layout, PVertexField_F32, 2);
     pVertexLayoutPush(&layout, PVertexField_F32, 3);
@@ -175,7 +173,7 @@ int main(int argc, char** argv)
     pWindowSetAttribs(context.window, attribs);
 
     while (context.active != 0) {
-        PWindowEvent event;
+        PWindowEvent event = {0};
 
         pMemorySet(&event, sizeof event, 0xAB);
 

@@ -18,7 +18,7 @@ typedef enum POpenglContextFlag
 }
 POpenglContextFlag;
 
-typedef struct POpenGLContextAttribs
+typedef struct POpenglContextAttribs
 {
     POpenglProfile profile;
 

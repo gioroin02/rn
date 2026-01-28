@@ -12,19 +12,27 @@ B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    PLinuxAddrStorage storage;
-    Int               length = 0;
-    int               option = 1;
+    self->handle = -1;
+    self->storage = (PLinuxAddrStorage) {0};
+
+    PLinuxAddrStorage storage = {0};
+    Int               length  = 0;
+    int               option  = 1;
+    int               status  = 0;
 
     storage = pLinuxAddrStorageMake(host.address, host.port, &length);
 
     if (length == 0) return 0;
 
-    Int handle = socket(storage.ss_family, SOCK_DGRAM, IPPROTO_UDP);
+    Int handle = socket(storage.ss_family,
+        SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP);
 
     if (handle != -1) {
-        int status = setsockopt(handle, SOL_SOCKET,
-            SO_REUSEADDR, &option, sizeof option);
+        do {
+            status = setsockopt(handle, SOL_SOCKET,
+                SO_REUSEADDR, &option, sizeof option);
+        }
+        while (status == -1 && errno == EINTR);
 
         if (status != -1) {
             self->handle  = handle;
@@ -34,7 +42,10 @@ B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
         }
     }
 
-    close(handle);
+    do {
+        status = close(handle);
+    }
+    while (status == -1 && errno == EINTR);
 
     return 0;
 }
@@ -57,27 +68,38 @@ B32 pLinuxSocketUdpBind(PLinuxSocketUdp* self)
 {
     PLinuxAddr* sockaddr = (PLinuxAddr*) &self->storage;
     Int         length   = pLinuxAddrStorageGetSize(&self->storage);
+    int         status   = 0;
 
     if (length == 0) return 0;
 
-    if (bind(self->handle, sockaddr, length) == -1)
-        return 0;
+    do {
+        status = bind(self->handle, sockaddr, length);
+    }
+    while (status == -1 && errno == EINTR);
+
+    if (status == -1) return 0;
 
     return 1;
 }
 
 B32 pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host)
 {
-    PLinuxAddrStorage storage;
+    PLinuxAddrStorage storage  = {0};
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
     Int               length   = 0;
+    int               status   = 0;
 
     storage = pLinuxAddrStorageMake(host.address, host.port, &length);
 
-    if (storage.ss_family != self->storage.ss_family) return 0;
-
-    if (bind(self->handle, sockaddr, length) == -1)
+    if (storage.ss_family != self->storage.ss_family)
         return 0;
+
+    do {
+        status = bind(self->handle, sockaddr, length);
+    }
+    while (status == -1 && errno == EINTR);
+
+    if (status == -1) return 0;
 
     self->storage = storage;
 
@@ -88,7 +110,7 @@ Int pLinuxSocketUdpWrite(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, P
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PLinuxAddrStorage storage;
+    PLinuxAddrStorage storage  = {0};
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
     Int               length   = 0;
 
@@ -97,10 +119,14 @@ Int pLinuxSocketUdpWrite(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, P
     I8* memory = ((I8*) pntr + start);
     Int size   = stop - start;
     Int result = 0;
+    Int count  = 0;
 
     while (result < size) {
-        Int count = sendto(self->handle, memory + result,
-            size - result, 0, sockaddr, length);
+        do {
+            count = sendto(self->handle, memory + result,
+                size - result, 0, sockaddr, length);
+        }
+        while (count == -1 && errno == EINTR);
 
         if (count > 0 && count <= size - result)
             result += count;
@@ -115,7 +141,7 @@ Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PH
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PLinuxAddrStorage storage;
+    PLinuxAddrStorage storage  = {0};
     PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
     int               length   = sizeof storage;
 
@@ -123,7 +149,12 @@ Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PH
 
     I8* memory = ((I8*) pntr + start);
     Int size   = stop - start;
-    Int count  = recvfrom(self->handle, memory, size, 0, sockaddr, &length);
+    Int count  = 0;
+
+    do {
+        count = recvfrom(self->handle, memory, size, 0, sockaddr, &length);
+    }
+    while (count == -1 && errno == EINTR);
 
     if (count > 0 && count <= size && length > 0) {
         if (host != NULL) {

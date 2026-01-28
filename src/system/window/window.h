@@ -37,7 +37,9 @@ PWindowAttribs;
 
 typedef struct PWindow { U8 __private__; } PWindow;
 
-typedef void (PWindowTimerCallback) (void*, PWindow*, PWindowTimer);
+typedef void (PWindowTimerCallback) (void*, PWindowTimer);
+
+PWindowAttribs pWindowAttribsMake();
 
 PWindow* pWindowReserve(PMemoryArena* arena);
 

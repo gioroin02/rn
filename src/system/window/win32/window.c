@@ -5,6 +5,14 @@
 
 #define P_SYSTEM_WIN32_TIMER_PAINT ((Int) PWindowTimer_Paint)
 
+static PString16 pWin32String8To16(PString8 string, U16* buffer, Int size)
+{
+    size = MultiByteToWideChar(CP_UTF8, 0,
+        (I8*) string.values, string.size, (LPWSTR) buffer, size);
+
+    return pString16Make(buffer, size);
+}
+
 static RECT pWin32AdjustWindowRect(Int left, Int top, Int right, Int bottom)
 {
     RECT result;
@@ -51,13 +59,13 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
         case WM_ERASEBKGND: result = 1; break;
 
         case WM_PAINT: {
-            PAINTSTRUCT paint;
+            PAINTSTRUCT paint = {0};
 
             HDC device = BeginPaint(self->handle, &paint);
 
             if (self->timer_proc != NULL) {
                 ((PWindowTimerCallback*) self->timer_proc)(
-                    self->timer_ctxt, (PWindow*) self, PWindowTimer_Paint);
+                    self->timer_ctxt, PWindowTimer_Paint);
             }
 
             EndPaint(self->handle, &paint);
@@ -80,12 +88,21 @@ PWin32Window* pWin32WindowReserve(PMemoryArena* arena)
 
 B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height)
 {
-    static U16 buffer[P_MEMORY_KIB];
+    static U16 buffer[4 * P_MEMORY_KIB] = {0};
+
+    pMemorySet(self, sizeof *self, 0xAB);
+
+    self->handle      = NULL;
+    self->device      = NULL;
+    self->opengl      = NULL;
+    self->timer_ctxt  = NULL;
+    self->timer_proc  = NULL;
+    self->attribs     = pWindowAttribsMake();
 
     if (width <= 0 || height <= 0 || width > P_INT_MAX / height) return 0;
 
     RECT      rect   = pWin32AdjustWindowRect(0, 0, width, height);
-    PString16 string = pWin32Str8ToStr16(buffer, sizeof buffer, title);
+    PString16 string = pWin32String8To16(title, buffer, sizeof buffer);
 
     if (string.size <= 0 || pWin32WindowStart() == 0) return 0;
 
@@ -102,7 +119,6 @@ B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height
     if (handle != NULL) {
         self->handle = handle;
         self->device = GetDC(handle);
-        self->opengl = NULL;
 
         self->attribs.visibility = PWindowVisibility_None;
         self->attribs.coord_x    = x;
@@ -113,8 +129,6 @@ B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height
         self->attribs.height     = height;
         self->attribs.height_max = 1080;
         self->attribs.height_min = 300;
-        self->timer_ctxt         = NULL;
-        self->timer_proc         = NULL;
 
         SetWindowLongPtr(self->handle, GWLP_USERDATA, (LONG_PTR) self);
 
@@ -130,11 +144,8 @@ B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height
 
 void pWin32WindowDestroy(PWin32Window* self)
 {
-    if (self->handle != NULL) {
-        DeleteDC(self->device);
-
-        DestroyWindow(self->handle);
-    }
+    if (self->opengl != NULL) wglDeleteContext(self->opengl);
+    if (self->handle != NULL) DestroyWindow(self->handle);
 
     pMemorySet(self, sizeof *self, 0xAB);
 
@@ -143,7 +154,7 @@ void pWin32WindowDestroy(PWin32Window* self)
 
 B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
 {
-    MSG message;
+    MSG message = {0};
 
     while (PeekMessageW(&message, 0, 0, 0, PM_REMOVE) > 0) {
         TranslateMessage(&message);
@@ -183,9 +194,7 @@ void pWin32WindowSwapBuffers(PWin32Window* self)
 
 B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
 {
-    self->attribs = attribs;
-
-    WINDOWPLACEMENT placement;
+    WINDOWPLACEMENT placement = {0};
 
     placement.length                  = sizeof placement;
     placement.rcNormalPosition.left   = attribs.coord_x;
@@ -202,13 +211,15 @@ B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
 
     SetWindowPlacement(self->handle, &placement);
 
+    self->attribs = attribs;
+
     return 1;
 }
 
 PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
 {
-    WINDOWPLACEMENT placement;
-    RECT            rect;
+    WINDOWPLACEMENT placement = {0};
+    RECT            rect      = {0};
 
     GetWindowPlacement(self->handle, &placement);
     GetWindowRect(self->handle, &rect);

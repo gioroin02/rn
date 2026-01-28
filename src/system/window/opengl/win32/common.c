@@ -23,7 +23,7 @@ B32 pWin32WindowOpenglStartImpl()
 
     if (window == NULL) return 0;
 
-    PIXELFORMATDESCRIPTOR descr;
+    PIXELFORMATDESCRIPTOR descr = {0};
 
     pMemorySet(&descr, sizeof descr, 0x00);
 

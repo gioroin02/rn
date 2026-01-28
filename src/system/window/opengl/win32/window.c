@@ -52,11 +52,8 @@ static int pWin32OpenglFlag(POpenglContextFlag flag)
 
 static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
 {
-    int attribs_context[32];
-    int attribs_pixel[32];
-
-    pMemorySet(attribs_context, sizeof attribs_context, 0x00);
-    pMemorySet(attribs_pixel,   sizeof attribs_pixel,   0x00);
+    int attribs_context[32] = {0};
+    int attribs_pixel[32]   = {0};
 
     int config_context[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, attribs.version_major,
@@ -78,7 +75,7 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
     pMemoryCopy(attribs_context, sizeof config_context, config_context);
     pMemoryCopy(attribs_pixel,     sizeof config_pixel,   config_pixel);
 
-    PIXELFORMATDESCRIPTOR descr;
+    PIXELFORMATDESCRIPTOR descr = {0};
 
     pMemorySet(&descr, sizeof descr, 0x00);
 

@@ -1,0 +1,6 @@
+#ifndef P_SYSTEM_LINUX_STORAGE_ASYNC_EXPORT_C
+#define P_SYSTEM_LINUX_STORAGE_ASYNC_EXPORT_C
+
+#include "file.c"
+
+#endif

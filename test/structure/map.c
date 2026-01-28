@@ -54,11 +54,11 @@ void showLists(PMapString8U32* self)
 
 int main(int argc, char** argv)
 {
-    U8 memory[1024];
+    U8 memory[P_MEMORY_KIB] = {0};
 
     PMemoryArena arena = pMemoryArenaMake(memory, sizeof memory);
 
-    PMapString8U32 map;
+    PMapString8U32 map = {0};
 
     pMapCreate(&map, &arena, 16, &pString8Hash, &pString8IsEqual);
 

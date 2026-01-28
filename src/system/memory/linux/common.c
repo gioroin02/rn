@@ -10,9 +10,7 @@ Int pLinuxMemoryPageSize()
 
 PMemoryArena pLinuxMemoryReserve(Int size)
 {
-    PMemoryArena result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
+    PMemoryArena result = pMemoryArenaMake(NULL, 0);
 
     if (size <= 0) return result;
 
@@ -29,9 +27,7 @@ PMemoryArena pLinuxMemoryReserve(Int size)
 
     if (memory == MAP_FAILED) return result;
 
-    result = pMemoryArenaMake(memory, size);
-
-    return result;
+    return pMemoryArenaMake(memory, size);
 }
 
 B32 pLinuxMemoryRelease(PMemoryArena* arena)

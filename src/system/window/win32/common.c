@@ -17,9 +17,7 @@ B32 pWin32WindowStart()
 
 B32 pWin32WindowStartImpl()
 {
-    WNDCLASSEXW window_class;
-
-    pMemorySet(&window_class, sizeof window_class, 0x00);
+    WNDCLASSEXW window_class = {0};
 
     window_class.cbSize        = sizeof window_class;
     window_class.style         = CS_HREDRAW | CS_VREDRAW;
@@ -42,18 +40,6 @@ void pWin32WindowStop()
 void pWin32WindowStopImpl()
 {
     UnregisterClassW(L"PWindowRegular", GetModuleHandle(NULL));
-}
-
-PString16 pWin32Str8ToStr16(U16* pntr, Int size, PString8 string)
-{
-    PString16 result = pString16Make(NULL, 0);
-
-     size = MultiByteToWideChar(CP_UTF8, 0,
-        (char*) string.values, string.size, (LPWSTR) pntr, size);
-
-     if (size > 0) result = pString16Make(pntr, size);
-
-     return result;
 }
 
 #endif

@@ -11,21 +11,18 @@ int main(int argc, char** argv)
 
     pSocketUdpCreate(socket, pHostIpMake(pAddressIp4Any(), 0));
 
-    U8 buffer[256];
+    U8 buffer_write[256] = {0};
+    U8 buffer_read[256]  = {0};
 
-    pMemorySet(buffer, sizeof buffer, 0x00);
-
-    Int size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
+    Int size = snprintf((char*) buffer_write, sizeof buffer_write, "%s", "Ciao!");
 
     PHostIp host = pHostIpMake(pAddressIp4Self(), 50000);
 
-    pSocketUdpWrite(socket, buffer, 0, size, host);
+    pSocketUdpWrite(socket, buffer_write, 0, size, host);
 
-    pMemorySet(buffer, sizeof buffer, 0x00);
+    size = pSocketUdpRead(socket, buffer_read, 0, sizeof buffer_read, &host);
 
-    size = pSocketUdpRead(socket, buffer, 0, sizeof buffer, &host);
-
-    printf("%.*s\n", ((int) size), buffer);
+    printf("%.*s\n", ((int) size), buffer_read);
 
     pSocketUdpDestroy(socket);
 }

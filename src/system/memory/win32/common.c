@@ -5,7 +5,7 @@
 
 Int pWin32MemoryPageSize()
 {
-    SYSTEM_INFO info;
+    SYSTEM_INFO info = {0};
 
     GetSystemInfo(&info);
 
@@ -14,9 +14,7 @@ Int pWin32MemoryPageSize()
 
 PMemoryArena pWin32MemoryReserve(Int size)
 {
-    PMemoryArena result;
-
-    pMemorySet(&result, sizeof result, 0xAB);
+    PMemoryArena result = pMemoryArenaMake(NULL, 0);
 
     if (size <= 0) return result;
 
@@ -28,10 +26,9 @@ PMemoryArena pWin32MemoryReserve(Int size)
     memory = VirtualAlloc(0, size,
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
-    if (memory != 0)
-        result = pMemoryArenaMake(memory, size);
+    if (memory == NULL) return result;
 
-    return result;
+    return pMemoryArenaMake(memory, size);
 }
 
 B32 pWin32MemoryRelease(PMemoryArena* arena)

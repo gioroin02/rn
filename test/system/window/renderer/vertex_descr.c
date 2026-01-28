@@ -7,7 +7,7 @@
 
 static PVertexField pVertexFieldMake(PVertexFieldKind kind, Int count)
 {
-    PVertexField result;
+    PVertexField result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 

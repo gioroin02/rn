@@ -22,7 +22,8 @@ B32 pWin32NetworkStartImpl()
 
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) return 0;
 
-    SOCKET handle = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP,
+        0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -61,13 +62,13 @@ void pWin32NetworkStopImpl()
 
 PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size)
 {
-    PWin32AddrStorage result;
+    PWin32AddrStorage result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
     switch (address.kind) {
         case PAddressIp_Ver4: {
-            PWin32AddrIp4* ip4 = ((PWin32AddrIp4*) &result);
+            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
@@ -79,7 +80,7 @@ PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size)
         } break;
 
         case PAddressIp_Ver6: {
-            PWin32AddrIp6* ip6 = ((PWin32AddrIp6*) &result);
+            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
@@ -98,7 +99,7 @@ PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size)
 
 PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size)
 {
-    PWin32AddrStorage result;
+    PWin32AddrStorage result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -106,7 +107,7 @@ PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
         case PAddressIp_Ver4: {
             U32 in4addr_any = INADDR_ANY;
 
-            PWin32AddrIp4* ip4 = ((PWin32AddrIp4*) &result);
+            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
@@ -118,7 +119,7 @@ PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
         } break;
 
         case PAddressIp_Ver6: {
-            PWin32AddrIp6* ip6 = ((PWin32AddrIp6*) &result);
+            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
@@ -153,7 +154,7 @@ PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self)
 
     switch (self->ss_family) {
         case AF_INET: {
-            PWin32AddrIp4* ip4 = ((PWin32AddrIp4*) self);
+            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) self;
 
             result.kind = PAddressIp_Ver4;
 
@@ -162,7 +163,7 @@ PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self)
         } break;
 
         case AF_INET6: {
-            PWin32AddrIp6* ip6 = ((PWin32AddrIp6*) self);
+            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) self;
 
             result.kind = PAddressIp_Ver6;
 
@@ -190,4 +191,5 @@ U16 pWin32AddrStorageGetPort(PWin32AddrStorage* self)
 
     return 0;
 }
+
 #endif

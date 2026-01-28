@@ -12,8 +12,11 @@ B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    PWin32AddrStorage storage;
-    Int               length = 0;
+    self->handle  = (SOCKET) NULL;
+    self->storage = (PWin32AddrStorage) {0};
+
+    PWin32AddrStorage storage = {0};
+    Int               length  = 0;
 
     storage = pWin32AddrStorageMake(host.address, host.port, &length);
 
@@ -38,7 +41,10 @@ B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value)
 {
     pMemorySet(value, sizeof *value, 0xAB);
 
-    PWin32AddrStorage storage;
+    value->handle  = (SOCKET) NULL;
+    value->storage = (PWin32AddrStorage) {0};
+
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     int               length   = sizeof storage;
 
@@ -85,7 +91,7 @@ B32 pWin32SocketTcpBind(PWin32SocketTcp* self)
 
 B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
 {
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &self->storage;
     Int               length   = 0;
 
@@ -111,7 +117,7 @@ B32 pWin32SocketTcpListen(PWin32SocketTcp* self)
 
 B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host)
 {
-    PWin32AddrStorage storage;
+    PWin32AddrStorage storage  = {0};
     PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
     Int               length   = 0;
 
@@ -132,9 +138,10 @@ Int pWin32SocketTcpWrite(PWin32SocketTcp* self, U8* pntr, Int start, Int stop)
     I8* memory = ((I8*) pntr + start);
     Int size   = stop - start;
     Int result = 0;
+    Int count  = 0;
 
     while (result < size) {
-        Int count = send(self->handle,
+        count = send(self->handle,
             memory + result, size - result, 0);
 
         if (count > 0 && count <= size - result)

@@ -24,8 +24,9 @@ typedef enum PFileMode
     PFileMode_None   = 0,
     PFileMode_Read   = 1 << 0,
     PFileMode_Write  = 1 << 1,
-    PFileMode_Create = 1 << 2,
-    PFileMode_Unique = 1 << 3,
+    PFileMode_New    = 1 << 2,
+    PFileMode_Always = 1 << 3,
+    PFileMode_Empty  = 1 << 4,
 }
 PFileMode;
 

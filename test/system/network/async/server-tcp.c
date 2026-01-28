@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 {
     PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
 
-    Server server;
+    Server server = {0};
 
     server.queue  = pAsyncIoQueueReserve(&arena);
     server.socket = pSocketTcpReserve(&arena);
@@ -80,7 +80,6 @@ int main(int argc, char** argv)
         if (kind == PAsyncIoEvent_None) continue;
 
         switch (kind) {
-
             case PAsyncIoEvent_Tcp: {
                 PSocketTcpEvent event_tcp = *(PSocketTcpEvent*) event;
 

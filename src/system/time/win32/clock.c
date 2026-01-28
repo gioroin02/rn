@@ -12,10 +12,19 @@ B32 pWin32ClockCreate(PWin32Clock* self)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
-    QueryPerformanceFrequency(&self->frequency);
-    QueryPerformanceCounter(&self->counter);
+    BOOL status = QueryPerformanceFrequency(&self->frequency);
 
-    return 1;
+    if (status != 0) {
+        status = QueryPerformanceCounter(&self->counter);
+
+        if (status != 0)
+            return 1;
+    }
+
+    self->counter.QuadPart   = 0;
+    self->frequency.QuadPart = 0;
+
+    return 0;
 }
 
 void pWin32ClockDestroy(PWin32Clock* self)
@@ -25,12 +34,16 @@ void pWin32ClockDestroy(PWin32Clock* self)
 
 F32 pWin32ClockElapsed(PWin32Clock* self)
 {
-    LARGE_INTEGER counter = self->counter;
+    LARGE_INTEGER counter = {0};
 
-    QueryPerformanceCounter(&self->counter);
+    BOOL status = QueryPerformanceCounter(&counter);
 
-    Uint diff = self->counter.QuadPart - counter.QuadPart;
+    if (status == 0) return P_F32_NAN;
+
+    Uint diff = counter.QuadPart - self->counter.QuadPart;
     Uint freq = self->frequency.QuadPart;
+
+    self->counter = counter;
 
     return (F32) diff / (F32) freq;
 }

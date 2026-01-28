@@ -19,12 +19,14 @@ typedef struct epoll_event PEpollEvent;
     PLinuxAsyncIoTask* list_next;         \
 }
 
+typedef struct PLinuxAsyncIoTask PLinuxAsyncIoTask;
+
 typedef struct PLinuxAsyncIoTask
 {
     Int   handle;
     void* callback;
 
-    struct PLinuxAsyncIoTask* list_next;
+    PLinuxAsyncIoTask* list_next;
 }
 PLinuxAsyncIoTask;
 

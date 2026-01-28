@@ -66,15 +66,18 @@ B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
+    self->handle     = NULL;
+    self->pool       = pMemoryPoolMake(NULL, 0, 0);
+    self->list_front = NULL;
+    self->list_back  = NULL;
+
     HANDLE handle = CreateIoCompletionPort(
-        INVALID_HANDLE_VALUE, 0, 0, 0);
+        INVALID_HANDLE_VALUE, NULL, 0, 0);
 
     if (handle == NULL) return 0;
 
-    self->handle     = handle;
-    self->pool       = pool;
-    self->list_front = NULL;
-    self->list_back  = NULL;
+    self->handle = handle;
+    self->pool   = pool;
 
     return 1;
 }
@@ -95,7 +98,11 @@ PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int time
     Int               bytes   = 0;
     OVERLAPPED*       overlap = NULL;
 
-    BOOL status = GetQueuedCompletionStatus(self->handle, (DWORD*) &bytes, NULL, &overlap, time);
+    // Note(Gio): This is useless but must not be null.
+    ULONG_PTR complet = 0;
+
+    BOOL status = GetQueuedCompletionStatus(self->handle,
+        (DWORD*) &bytes, &complet, &overlap, time);
 
     if (status == 0 && GetLastError() != WAIT_TIMEOUT) return result;
 

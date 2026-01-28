@@ -17,6 +17,20 @@
     #define __pFileWrite__   pWin32FileWrite
     #define __pFileRead__    pWin32FileRead
 
+#elif P_SYSTEM == P_SYSTEM_LINUX
+
+    #include "linux/export.c"
+
+    #define __PFile__ PLinuxFile
+
+    #define __pFileAttribs__ pLinuxFileAttribs
+    #define __pFileDestroy__ pLinuxFileDestroy
+    #define __pFileReserve__ pLinuxFileReserve
+    #define __pFileOpen__    pLinuxFileOpen
+    #define __pFileClose__   pLinuxFileClose
+    #define __pFileWrite__   pLinuxFileWrite
+    #define __pFileRead__    pLinuxFileRead
+
 #else
 
     #error "Unknown platform"

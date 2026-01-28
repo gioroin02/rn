@@ -15,9 +15,7 @@ int main(int argc, char** argv)
     for (Int conns = 0; conns < 2; conns += 1) {
         PHostIp host = pHostIpMake(pAddressIp4Any(), 0);
 
-        U8 buffer[256];
-
-        pMemorySet(buffer, sizeof buffer, 0x00);
+        U8 buffer[256] = {0};
 
         Int size = pSocketUdpRead(socket, buffer, 0, sizeof buffer, &host);
 

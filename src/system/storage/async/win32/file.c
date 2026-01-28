@@ -91,13 +91,12 @@ B32 pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileWrite);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
         result->self      = self;
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32FileWriteEnd;
         result->list_next = NULL;
 
@@ -116,13 +115,12 @@ B32 pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32A
         pMemoryPoolReserveOneOf(&queue->pool, PWin32FileRead);
 
     if (result != NULL) {
-        pMemorySet(&result->overlap, sizeof result->overlap, 0x00);
-
         result->self      = self;
         result->pntr      = pntr;
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
+        result->overlap   = (OVERLAPPED) {0};
         result->callback  = pWin32FileReadEnd;
         result->list_next = NULL;
 

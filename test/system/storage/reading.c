@@ -9,7 +9,7 @@ int main(int argc, char** argv)
 
     PFile* file = pFileReserve(&arena);
 
-    PString8     name    = pString8("test/system/window/opengl.c");
+    PString8     name    = pString8("README.md");
     PFileAttribs attribs = {0};
 
     if (argc >= 2) {

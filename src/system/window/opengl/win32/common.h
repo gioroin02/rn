@@ -13,8 +13,8 @@
 typedef HGLRC (WINAPI* WglCreateContextAttribsARB) (HDC, HGLRC, int*);
 typedef BOOL  (WINAPI* WglChoosePixelFormatARB)    (HDC, int*, FLOAT*, UINT, int*, UINT*);
 
-WglCreateContextAttribsARB wglCreateContextAttribsARB;
-WglChoosePixelFormatARB    wglChoosePixelFormatARB;
+extern WglCreateContextAttribsARB wglCreateContextAttribsARB;
+extern WglChoosePixelFormatARB    wglChoosePixelFormatARB;
 
 B32 pWin32WindowOpenglStart();
 

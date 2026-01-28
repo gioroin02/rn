@@ -6,11 +6,11 @@ typedef PArray(U32) PArrayU32;
 
 int  main(int argc, char** argv)
 {
-    U8 memory[256];
+    U8 memory[256] = {0};
 
     PMemoryArena arena = pMemoryArenaMake(memory, sizeof memory);
 
-    PArrayU32 array;
+    PArrayU32 array = {0};
 
     printf("reserve = %lu\n", pArrayCreate(&array, &arena, 17));
 

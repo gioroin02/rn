@@ -5,32 +5,36 @@
 
 static PString16 pWin32String8To16(PString8 string, U16* buffer, Int size)
 {
-    PString16 result = pString16Make(buffer, size);
-
-    result.size = MultiByteToWideChar(CP_UTF8, 0,
+    size = MultiByteToWideChar(CP_UTF8, 0,
         (I8*) string.values, string.size, buffer, size);
 
-    for (Int i = 0; i < result.size; i += 1) {
-        if (result.values[i] == 0x5C) result.values[i] = 0x2F;
+    for (Int i = 0; i < size; i += 1) {
+        if (buffer[i] == 0x5C) buffer[i] = 0x2F;
     }
 
-    return result;
+    return pString16Make(buffer, size);
 }
 
 B32 pWin32FileAttribs(PString8 name, PFileAttribs* attribs)
 {
+    WIN32_FILE_ATTRIBUTE_DATA data = {0};
+
     U16 buffer[4 * P_MEMORY_KIB] = {0};
+
+    pMemorySet(attribs, sizeof *attribs, 0xAB);
+
+    attribs->kind = PFileKind_None;
+    attribs->perm = PFilePerm_None;
+    attribs->size = 0;
 
     PString16 name16 = pWin32String8To16(name, buffer, sizeof buffer);
 
-    if (name16.size <= 0) return 0;
+    BOOL status = GetFileAttributesExW(
+        name16.values, GetFileExInfoStandard, &data);
 
-    WIN32_FILE_ATTRIBUTE_DATA data = {0};
+    if (name16.size <= 0 || status == 0) return 0;
 
-    BOOL status = GetFileAttributesExW(name16.values,
-        GetFileExInfoStandard, &data);
-
-    if (status == 0) return 0;
+    attribs->perm |= PFilePerm_Read;
 
     if ((data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
         ULARGE_INTEGER value;
@@ -62,22 +66,25 @@ B32 pWin32FileOpen(PWin32File* self, PString8 name, PFileMode mode)
 
     pMemorySet(self, sizeof *self, 0xAB);
 
+    self->handle  = NULL;
+    self->overlap = (OVERLAPPED) {0};
+
     Int action = OPEN_EXISTING;
     Int access = 0;
 
-    if ((mode & PFileMode_Create) != 0) {
-        action = OPEN_ALWAYS;
+    if ((mode & PFileMode_New)    != 0) action = CREATE_NEW;
+    if ((mode & PFileMode_Always) != 0) action = OPEN_ALWAYS;
+    if ((mode & PFileMode_Empty)  != 0) action = TRUNCATE_EXISTING;
 
-        if ((mode & PFileMode_Unique) != 0)
-            action = CREATE_NEW;
-    }
+    if ((mode & PFileMode_Always) != 0 && (mode & PFileMode_Empty) != 0)
+        action = CREATE_ALWAYS;
 
     if ((mode & PFileMode_Read)  != 0) access |= GENERIC_READ;
     if ((mode & PFileMode_Write) != 0) access |= GENERIC_WRITE;
 
     PString16 name16 = pWin32String8To16(name, buffer, sizeof buffer);
 
-    if (name16.size <= 0) return 0;
+    if (name16.size <= 0 || action == 0 || access == 0) return 0;
 
     HANDLE handle = CreateFileW(buffer, access,
         FILE_SHARE_READ, 0, action, FILE_ATTRIBUTE_NORMAL, 0);
@@ -104,16 +111,14 @@ Int pWin32FileWrite(PWin32File* self, U8* pntr, Int start, Int stop)
     I8* memory = ((I8*) pntr + start);
     Int size   = stop - start;
     Int result = 0;
+    Int count  = 0;
 
-    pMemorySet(&self->overlap, sizeof self->overlap, 0x00);
-
+    self->overlap        = (OVERLAPPED) {0};
     self->overlap.hEvent = CreateEvent(NULL, 1, 0, NULL);
 
     if (self->overlap.hEvent == NULL) return 0;
 
     while (result < size) {
-        Int count = 0;
-
         B32 status = WriteFile(self->handle, memory + result,
             size - result, (DWORD*) &count, &self->overlap);
 
@@ -141,8 +146,7 @@ Int pWin32FileRead(PWin32File* self, U8* pntr, Int start, Int stop)
     Int size   = stop - start;
     Int count  = 0;
 
-    pMemorySet(&self->overlap, sizeof self->overlap, 0x00);
-
+    self->overlap        = (OVERLAPPED) {0};
     self->overlap.hEvent = CreateEvent(NULL, 1, 0, NULL);
 
     if (self->overlap.hEvent == NULL) return 0;

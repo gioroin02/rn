@@ -36,7 +36,7 @@
 
 PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void* ctxt)
 {
-    PSocketTcpEvent result;
+    PSocketTcpEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -50,7 +50,7 @@ PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void*
 
 PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, B32 status, void* ctxt)
 {
-    PSocketTcpEvent result;
+    PSocketTcpEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -65,7 +65,7 @@ PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, B32 statu
 
 PSocketTcpEvent pSocketTcpEventWrite(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    PSocketTcpEvent result;
+    PSocketTcpEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -82,7 +82,7 @@ PSocketTcpEvent pSocketTcpEventWrite(PSocketTcp* self, U8* pntr, Int start, Int 
 
 PSocketTcpEvent pSocketTcpEventRead(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    PSocketTcpEvent result;
+    PSocketTcpEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 

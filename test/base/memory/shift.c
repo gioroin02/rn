@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-    U8 memory[32];
+    U8 memory[32] = {0};
 
     for (Int i = 0; i < sizeof memory; i += 1)
         memory[i] = (U8) i;

@@ -11,15 +11,15 @@
 
 typedef struct PMemoryPool
 {
-    U8*   pntr_base;
-    U8*   pntr_next;
-    void* list_head;
-    Int   size;
-    Int   step;
+    U8* pntr_base;
+    U8* pntr_next;
+    U8* list_head;
+    Int size;
+    Int stride;
 }
 PMemoryPool;
 
-PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int step);
+PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int stride);
 
 void* pMemoryPoolPntr(PMemoryPool* self);
 

@@ -21,7 +21,7 @@
 
 PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    PFileEvent result;
+    PFileEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -38,7 +38,7 @@ PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes
 
 PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
 {
-    PFileEvent result;
+    PFileEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 

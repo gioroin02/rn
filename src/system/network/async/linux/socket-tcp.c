@@ -8,10 +8,12 @@ static B32 pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSocke
     int handle = (int) socket->handle;
     int queue  = (int) self->handle;
 
-    PEpollEvent notif;
+    PEpollEvent notif = {0};
 
     notif.events   = EPOLLIN | EPOLLOUT;
     notif.data.ptr = task;
+
+    // TODO(Gio): check if could encounter EINTR.
 
     int status = epoll_ctl(queue, EPOLL_CTL_ADD, handle, &notif);
 

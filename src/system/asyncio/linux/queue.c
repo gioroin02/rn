@@ -66,24 +66,31 @@ B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool)
 {
     pMemorySet(self, sizeof *self, 0xAB);
 
+    self->handle     = -1;
+    self->pool       = pMemoryPoolMake(NULL, 0, 0);
+    self->list_front = NULL;
+    self->list_back  = NULL;
+
     int handle = epoll_create1(EPOLL_CLOEXEC);
 
-    if (handle != -1) {
-        self->handle     = handle;
-        self->pool       = pool;
-        self->list_front = NULL;
-        self->list_back  = NULL;
+    if (handle == -1) return 0;
 
-        return 1;
-    }
+    self->handle     = handle;
+    self->pool       = pool;
 
-    return 0;
+    return 1;
 }
 
 void pLinuxAsyncIoQueueDestroy(PLinuxAsyncIoQueue* self)
 {
-    if (self->handle != -1)
-        close(self->handle);
+    int status = 0;
+
+    if (self->handle == -1) return;
+
+    do {
+        status = close(self->handle);
+    }
+    while (status == -1 && errno == EINTR);
 
     pMemorySet(self, sizeof *self, 0xAB);
 }
@@ -93,9 +100,13 @@ PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int time
     Int time = timeout >= 0 ? timeout : -1;
 
     PAsyncIoEventKind result = PAsyncIoEvent_None;
-    PEpollEvent       notif;
+    PEpollEvent       notif  = {0};
+    int               status = 0;
 
-    int status = epoll_wait(self->handle, &notif, 1, time);
+    do {
+        status = epoll_wait(self->handle, &notif, 1, time);
+    }
+    while (status == -1 && errno == EINTR);
 
     if (status <= 0) return result;
 

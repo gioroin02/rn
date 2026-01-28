@@ -5,13 +5,13 @@
 
 PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size)
 {
-    PLinuxAddrStorage result;
+    PLinuxAddrStorage result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
     switch (address.kind) {
         case PAddressIp_Ver4: {
-            PLinuxAddrIp4* ip4 = ((PLinuxAddrIp4*) &result);
+            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
@@ -23,7 +23,7 @@ PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size)
         } break;
 
         case PAddressIp_Ver6: {
-            PLinuxAddrIp6* ip6 = ((PLinuxAddrIp6*) &result);
+            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
@@ -42,7 +42,7 @@ PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size)
 
 PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size)
 {
-    PLinuxAddrStorage result;
+    PLinuxAddrStorage result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -50,7 +50,7 @@ PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
         case PAddressIp_Ver4: {
             U32 in4addr_any = INADDR_ANY;
 
-            PLinuxAddrIp4* ip4 = ((PLinuxAddrIp4*) &result);
+            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
@@ -62,7 +62,7 @@ PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
         } break;
 
         case PAddressIp_Ver6: {
-            PLinuxAddrIp6* ip6 = ((PLinuxAddrIp6*) &result);
+            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
@@ -97,7 +97,7 @@ PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self)
 
     switch (self->ss_family) {
         case AF_INET: {
-            PLinuxAddrIp4* ip4 = ((PLinuxAddrIp4*) self);
+            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) self;
 
             result.kind = PAddressIp_Ver4;
 
@@ -106,7 +106,7 @@ PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self)
         } break;
 
         case AF_INET6: {
-            PLinuxAddrIp6* ip6 = ((PLinuxAddrIp6*) self);
+            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) self;
 
             result.kind = PAddressIp_Ver6;
 
@@ -134,4 +134,5 @@ U16 pLinuxAddrStorageGetPort(PLinuxAddrStorage* self)
 
     return 0;
 }
+
 #endif

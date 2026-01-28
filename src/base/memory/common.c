@@ -7,7 +7,7 @@ PByteOrder pGetHostByteOrder()
 {
     static U16 value = 1;
 
-    U8 bytes[sizeof value];
+    U8 bytes[sizeof value] = {0};
 
     pMemoryCopy(bytes, sizeof value, &value);
 
@@ -79,10 +79,7 @@ void* pMemoryReverse(void* pntr, Int size)
 {
     if (pntr == NULL || size <= 0) return NULL;
 
-    Int i = 0;
-    Int j = 0;
-
-    for (j = size - 1; i < j; i += 1, j -= 1) {
+    for (Int i = 0, j = size - 1; i < j; i += 1, j -= 1) {
         U8 temp = ((U8*) pntr)[i];
 
         ((U8*) pntr)[i] = ((U8*) pntr)[j];

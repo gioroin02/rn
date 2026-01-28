@@ -37,6 +37,9 @@ typedef unsigned long long U64;
 typedef float  F32;
 typedef double F64;
 
+#define P_F32_NAN (- ((F32) 0.0 / (F32) 0.0))
+#define P_F64_NAN (- ((F64) 0.0 / (F64) 0.0))
+
 typedef U8  B8;
 typedef U16 B16;
 typedef U32 B32;

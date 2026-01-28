@@ -6,7 +6,7 @@
 PWindowEvent
 pWindowEventNone()
 {
-    PWindowEvent result;
+    PWindowEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -18,7 +18,7 @@ pWindowEventNone()
 PWindowEvent
 pWindowEventQuit(void* window)
 {
-    PWindowEvent result;
+    PWindowEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -31,7 +31,7 @@ pWindowEventQuit(void* window)
 PWindowEvent
 pWindowEventWindowCreate(void* window)
 {
-    PWindowEvent result;
+    PWindowEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -44,7 +44,7 @@ pWindowEventWindowCreate(void* window)
 PWindowEvent
 pWindowEventWindowDestroy(void* window)
 {
-    PWindowEvent result;
+    PWindowEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 
@@ -57,7 +57,7 @@ pWindowEventWindowDestroy(void* window)
 PWindowEvent
 pWindowEventKeybdKey(void* window, PWindowKeybdKey key, B32 pressed, Int scan)
 {
-    PWindowEvent result;
+    PWindowEvent result = {0};
 
     pMemorySet(&result, sizeof result, 0xAB);
 

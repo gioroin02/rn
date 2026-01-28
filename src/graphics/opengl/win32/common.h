@@ -10,12 +10,6 @@
 #include <windows.h>
 #include <wingdi.h>
 
-typedef HGLRC (WINAPI* WglCreateContextAttribsARB) (HDC, HGLRC, int*);
-typedef BOOL  (WINAPI* WglChoosePixelFormatARB)    (HDC, int*, FLOAT*, UINT, int*, UINT*);
-
-static WglCreateContextAttribsARB wglCreateContextAttribsARB;
-static WglChoosePixelFormatARB    wglChoosePixelFormatARB;
-
 void* pWin32OpenglLoader(void* symbol);
 
 #endif

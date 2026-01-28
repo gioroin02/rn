@@ -12,19 +12,16 @@ int main(int argc, char** argv)
     pSocketTcpCreate(socket, pHostIpMake(pAddressIp4Any(), 0));
     pSocketTcpConnect(socket, pHostIpMake(pAddressIp4Self(), 50000));
 
-    U8 buffer[256];
+    U8 buffer_write[256] = {0};
+    U8 buffer_read[256]  = {0};
 
-    pMemorySet(buffer, sizeof buffer, 0x00);
+    Int size = snprintf((char*) buffer_write, sizeof buffer_write, "%s", "Ciao!");
 
-    Int size = snprintf((char*) buffer, sizeof buffer, "%s", "Ciao!");
+    pSocketTcpWrite(socket, buffer_write, 0, size);
 
-    pSocketTcpWrite(socket, buffer, 0, size);
+    size = pSocketTcpRead(socket, buffer_read, 0, sizeof buffer_read);
 
-    pMemorySet(buffer, sizeof buffer, 0x00);
-
-    size = pSocketTcpRead(socket, buffer, 0, sizeof buffer);
-
-    printf("%.*s\n", ((int) size), buffer);
+    printf("%.*s\n", ((int) size), buffer_read);
 
     pSocketTcpDestroy(socket);
 }

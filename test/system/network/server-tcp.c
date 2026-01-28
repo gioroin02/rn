@@ -18,9 +18,7 @@ int main(int argc, char** argv)
 
         pSocketTcpAccept(listener, socket);
 
-        U8 buffer[256];
-
-        pMemorySet(buffer, sizeof buffer, 0x00);
+        U8 buffer[256] = {0};
 
         Int size = pSocketTcpRead(socket, buffer, 0, sizeof buffer);
 

@@ -5,9 +5,7 @@
 
 PWindowKeybd pWindowKeybdMake()
 {
-    PWindowKeybd result;
-
-    pMemorySet(&result, sizeof result, 0x00);
+    PWindowKeybd result = {0};
 
     return result;
 }
@@ -20,28 +18,27 @@ void pWindowKeybdUpdate(PWindowKeybd* self, PWindowEventKeybdKey event)
 
 void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, B32 state)
 {
-    if (key < 0 ||key >= (sizeof self->state_curr * 8))
-        return;
+    if (key >= 0 && key < (sizeof self->state_curr * 8)) {
+        Int index = key >> 3;
+        Int mask  = 1 << (key & 0x7);
 
-    Int index = key >> 3;
-    Int mask  = 1 << (key & 0x7);
+        U8 prev = self->state_prev[index];
+        U8 curr = self->state_curr[index];
 
-    U8 prev = self->state_prev[index];
-    U8 curr = self->state_curr[index];
+        prev = (curr & mask) != 0 ?
+            prev | mask : prev & ~mask;
 
-    prev = (curr & mask) != 0 ?
-        prev | mask : prev & ~mask;
+        curr = state != 0 ?
+            curr | mask : curr & ~mask;
 
-    curr = state != 0 ?
-        curr | mask : curr & ~mask;
-
-    self->state_prev[index] = prev;
-    self->state_curr[index] = curr;
+        self->state_prev[index] = prev;
+        self->state_curr[index] = curr;
+    }
 }
 
 PWindowKeybdKeyState pWindowKeybdGet(PWindowKeybd* self, PWindowKeybdKey key)
 {
-    if (key < 0 ||key >= (sizeof self->state_curr * 8))
+    if (key < 0 || key >= (sizeof self->state_curr * 8))
         return PWindowKeybdKeyState_None;
 
     Int index = key >> 3;
