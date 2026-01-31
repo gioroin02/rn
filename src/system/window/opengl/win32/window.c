@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_OPENGL_WINDOW_C
-#define P_SYSTEM_WIN32_WINDOW_OPENGL_WINDOW_C
+#ifndef RHO_SYSTEM_WINDOW_OPENGL_WIN32_WINDOW_C
+#define RHO_SYSTEM_WINDOW_OPENGL_WIN32_WINDOW_C
 
 #include "window.h"
 
@@ -25,13 +25,13 @@
 
 #define WGL_PIXEL_TYPE_RGBA_ARB 1
 
-static int pWin32OpenglProfile(POpenglProfile profile)
+static int rho_win32_opengl_profile(ROpenglProfile profile)
 {
     switch (profile) {
-        case POpenglProfile_Compatibility:
+        case ROpenglProfile_Compatibility:
             return WGL_CONTEXT_PROFILE_COMPATIBILITY_ARB;
 
-        case POpenglProfile_Core:
+        case ROpenglProfile_Core:
             return WGL_CONTEXT_PROFILE_CORE_ARB;
 
         default: break;
@@ -40,17 +40,17 @@ static int pWin32OpenglProfile(POpenglProfile profile)
     return 0;
 }
 
-static int pWin32OpenglFlag(POpenglContextFlag flag)
+static int rho_win32_opengl_flag(ROpenglContextFlag flag)
 {
     int result = 0;
 
-    if ((flag & POpenglContextFlag_Debug) != 0)
+    if ((flag & ROpenglContextFlag_Debug) != 0)
         result |= WGL_CONTEXT_DEBUG_BIT_ARB;
 
     return result;
 }
 
-static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
+static HGLRC rho_win32_opengl_create(HDC device, ROpenglContextAttribs attribs)
 {
     int attribs_context[32] = {0};
     int attribs_pixel[32]   = {0};
@@ -58,8 +58,8 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
     int config_context[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, attribs.version_major,
         WGL_CONTEXT_MINOR_VERSION_ARB, attribs.version_minor,
-        WGL_CONTEXT_PROFILE_MASK_ARB,  pWin32OpenglProfile(attribs.profile),
-        WGL_CONTEXT_FLAGS_ARB,         pWin32OpenglFlag(attribs.flag),
+        WGL_CONTEXT_PROFILE_MASK_ARB,  rho_win32_opengl_profile(attribs.profile),
+        WGL_CONTEXT_FLAGS_ARB,         rho_win32_opengl_flag(attribs.flag),
     };
 
     int config_pixel[] = {
@@ -72,12 +72,12 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
         WGL_PIXEL_STENCIL_BITS_ARB,   8,
     };
 
-    pMemoryCopy(attribs_context, sizeof config_context, config_context);
-    pMemoryCopy(attribs_pixel,     sizeof config_pixel,   config_pixel);
+    rho_memory_copy(attribs_context, sizeof config_context, config_context);
+    rho_memory_copy(attribs_pixel,     sizeof config_pixel,   config_pixel);
 
     PIXELFORMATDESCRIPTOR descr = {0};
 
-    pMemorySet(&descr, sizeof descr, 0x00);
+    rho_memory_set(&descr, sizeof descr, 0x00);
 
     descr.nSize        = sizeof descr;
     descr.nVersion     = 1;
@@ -89,13 +89,13 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
     descr.cStencilBits = 8;
 
     int  format_array[16] = {0};
-    Uint format_count     = 0;
+    RInt format_count     = 0;
 
     BOOL status = wglChoosePixelFormatARB(device, attribs_pixel,
         NULL, 1, format_array, (UINT*) &format_count);
 
     if (status != 0 && format_count > 0) {
-        pMemorySet(&descr, sizeof descr, 0x00);
+        rho_memory_set(&descr, sizeof descr, 0x00);
 
         DescribePixelFormat(device, format_array[0],
             sizeof descr, &descr);
@@ -122,12 +122,12 @@ static HGLRC pWin32OpenglCreate(HDC device, POpenglContextAttribs attribs)
     return NULL;
 }
 
-B32 pWin32WindowOpenglCreate(PWin32Window* self, POpenglContextAttribs attribs)
+RBool32 rho_win32_window_opengl_create(RWin32Window* self, ROpenglContextAttribs attribs)
 {
-    if (pWin32WindowOpenglStart() == 0) return 0;
+    if (rho_win32_window_opengl_start() == 0) return 0;
 
     if (self->opengl == NULL) {
-        self->opengl = pWin32OpenglCreate(self->device, attribs);
+        self->opengl = rho_win32_opengl_create(self->device, attribs);
 
         if (self->opengl != NULL) return 1;
     }
@@ -135,17 +135,17 @@ B32 pWin32WindowOpenglCreate(PWin32Window* self, POpenglContextAttribs attribs)
     return 0;
 }
 
-void pWin32WindowOpenglDestroy(PWin32Window* self)
+void rho_win32_window_opengl_destroy(RWin32Window* self)
 {
     if (self->opengl != NULL)
         wglDeleteContext(self->opengl);
 
     self->opengl = NULL;
 
-    pWin32WindowOpenglStop();
+    rho_win32_window_opengl_stop();
 }
 
-B32 pWin32WindowOpenglEnable(PWin32Window* self, B32 state)
+RBool32 rho_win32_window_opengl_enable(RWin32Window* self, RBool32 state)
 {
     return 0;
 }

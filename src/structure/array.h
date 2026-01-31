@@ -1,61 +1,67 @@
-#ifndef P_STRUCTURE_ARRAY_H
-#define P_STRUCTURE_ARRAY_H
+#ifndef RHO_STRUCTURE_ARRAY_H
+#define RHO_STRUCTURE_ARRAY_H
 
 #include "import.h"
 
-#define __PArrayTag__() struct { \
-    Int array_size;              \
-    Int array_count;             \
-    Int array_stride;            \
-    Int array_index;             \
+#define __RArrayTag__() struct { \
+    RInt array_size;             \
+    RInt array_count;            \
+    RInt array_stride;           \
+    RInt array_index;            \
 }
 
 typedef struct
 {
-    Int array_size;
-    Int array_count;
-    Int array_stride;
-    Int array_index;
+    RInt array_size;
+    RInt array_count;
+    RInt array_stride;
+    RInt array_index;
 }
-PArrayTag;
+RArrayTag;
 
-#define PArray(type) struct { __PArrayTag__(); type* values; }
+#define RArray(type) struct { __RArrayTag__(); type* values; }
 
-#define pArraySize(self)    __pArraySize__(((PArrayTag*) self))
-#define pArrayCount(self)   __pArrayCount__(((PArrayTag*) self))
-#define pArrayFront(self)   __pArrayFront__(((PArrayTag*) self))
-#define pArrayBack(self)    __pArrayBack__(((PArrayTag*) self))
-#define pArrayIsEmpty(self) __pArrayIsEmpty__(((PArrayTag*) self))
-#define pArrayIsFull(self)  __pArrayIsFull__(((PArrayTag*) self))
+#define rho_array_size(self)     __rho_array_size__(((RArrayTag*) self))
+#define rho_array_count(self)    __rho_array_count__(((RArrayTag*) self))
+#define rho_array_front(self)    __rho_array_front__(((RArrayTag*) self))
+#define rho_array_back(self)     __rho_array_back__(((RArrayTag*) self))
+#define rho_array_is_empty(self) __rho_array_is_empty__(((RArrayTag*) self))
+#define rho_array_is_full(self)  __rho_array_is_full__(((RArrayTag*) self))
 
-#define pArrayIsIndex(self, index) ( \
-    (self)->array_index = (index),   \
-    __pArrayIsIndex__(               \
-        ((PArrayTag*) self),         \
-        (self)->array_index)         \
+#define rho_array_is_index(self, index) ( \
+    (self)->array_index = (index),        \
+    __rho_array_is_index__(               \
+        ((RArrayTag*) self),              \
+        (self)->array_index)              \
 )
 
-#define pArrayClear(self) __pArrayClear__(((PArrayTag*) self))
+#define rho_array_clear(self) __rho_array_clear__(((RArrayTag*) self))
 
-#define pArrayCreate(self, arena, size) ( \
-    __pArrayCreate__(                     \
-        ((PArrayTag*) self),              \
-        ((void**) &(self)->values),       \
-        sizeof *(self)->values,           \
-        arena, size)                      \
+#define rho_array_create(self, arena, size) ( \
+    __rho_array_create__(                     \
+        ((RArrayTag*) self),                  \
+        ((void**) &(self)->values),           \
+        sizeof *(self)->values,               \
+        arena, size)                          \
 )
 
-#define pArrayCopy(self, index, value)  \
-(                                       \
-    __pArrayCopy__(((PArrayTag*) self), \
-        (self)->values, index, value)   \
+#define rho_array_destroy(self) (   \
+    __rho_array_destroy__(          \
+        ((RArrayTag*) self),        \
+        ((void**) &(self)->values)) \
 )
 
-#define pArrayInsert(self, index, value)                \
+#define rho_array_copy(self, index, value)  \
+(                                           \
+    __rho_array_copy__(((RArrayTag*) self), \
+        (self)->values, index, value)       \
+)
+
+#define rho_array_insert(self, index, value)            \
 (                                                       \
     (self)->array_index = (index),                      \
-    __pArraySlotOpen__(                                 \
-        ((PArrayTag*) self),                            \
+    __rho_array_slot_open__(                            \
+        ((RArrayTag*) self),                            \
         (self)->values,                                 \
         (self)->array_index) != 0 ?                     \
     (                                                   \
@@ -64,11 +70,11 @@ PArrayTag;
     ), 1 : 0                                            \
 )
 
-#define pArrayAdd(self, index)      \
+#define rho_array_add(self, index)  \
 (                                   \
     (self)->array_index = (index),  \
-    __pArraySlotOpen__(             \
-        ((PArrayTag*) self),        \
+    __rho_array_slot_open__(        \
+        ((RArrayTag*) self),        \
         (self)->values,             \
         (self)->array_index) != 0 ? \
     (                               \
@@ -76,24 +82,24 @@ PArrayTag;
     ), 1 : 0                        \
 )
 
-#define pArrayRemove(self, index, value)  \
-(                                         \
-    (self)->array_index = (index),        \
-    pArrayCopy(self, index, value) != 0 ? \
-    (                                     \
-        __pArraySlotClose__(              \
-            ((PArrayTag*) self),          \
-            (self)->values,               \
-            (self)->array_index),         \
-        (self)->array_count -= 1          \
-    ), 1 : 0                              \
+#define rho_array_remove(self, index, value)  \
+(                                             \
+    (self)->array_index = (index),            \
+    rho_array_copy(self, index, value) != 0 ? \
+    (                                         \
+        __rho_array_slot_close__(             \
+            ((RArrayTag*) self),              \
+            (self)->values,                   \
+            (self)->array_index),             \
+        (self)->array_count -= 1              \
+    ), 1 : 0                                  \
 )
 
-#define pArrayDrop(self, index)     \
+#define rho_array_drop(self, index) \
 (                                   \
     (self)->array_index = (index),  \
-    __pArraySlotClose__(            \
-        ((PArrayTag*) self),        \
+    __rho_array_slot_close__(       \
+        ((RArrayTag*) self),        \
         (self)->values,             \
         (self)->array_index) != 0 ? \
     (                               \
@@ -101,46 +107,48 @@ PArrayTag;
     ), 1 : 0                        \
 )
 
-#define pArrayInsertFront(self, value) pArrayInsert(self, 0,                 value)
-#define pArrayInsertBack(self, value)  pArrayInsert(self, pArrayCount(self), value)
+#define rho_array_insert_front(self, value) rho_array_insert(self, 0,                     value)
+#define rho_array_insert_back(self, value)  rho_array_insert(self, rho_array_count(self), value)
 
-#define pArrayAddFront(self) pArrayAdd(self, 0)
-#define pArrayAddBack(self)  pArrayAdd(self, pArrayCount(self))
+#define rho_array_add_front(self) rho_array_add(self, 0)
+#define rho_array_add_back(self)  rho_array_add(self, rho_array_count(self))
 
-#define pArrayRemoveFront(self, value) pArrayRemove(self, 0,                value)
-#define pArrayRemoveBack(self, value)  pArrayRemove(self, pArrayBack(self), value)
+#define rho_array_remove_front(self, value) rho_array_remove(self, 0,                   value)
+#define rho_array_remove_back(self, value)  rho_array_remove(self, rho_array_back(self), value)
 
-#define pArrayDropFront(self) pArrayDrop(self, 0)
-#define pArrayDropBack(self)  pArrayDrop(self, pArrayBack(self))
+#define rho_array_drop_front(self) rho_array_drop(self, 0)
+#define rho_array_drop_back(self)  rho_array_drop(self, rho_array_back(self))
 
-#define pArrayGet(self, index, other) \
-    (pArrayIsIndex(self, index) != 0 ? (self)->values[(self)->array_index] : (other))
+#define rho_array_get(self, index, other) \
+    (rho_array_is_index(self, index) != 0 ? (self)->values[(self)->array_index] : (other))
 
-#define pArrayGetPntr(self, index) \
-    (pArrayIsIndex(self, index) != 0 ? &(self)->values[(self)->array_index] : NULL)
+#define rho_array_get_pntr(self, index) \
+    (rho_array_is_index(self, index) != 0 ? &(self)->values[(self)->array_index] : NULL)
 
-B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int step, PMemoryArena* arena, Int size);
+RBool32 __rho_array_create__(RArrayTag* self, void** pntr, RInt step, RMemoryArena* arena, RInt size);
 
-Int __pArraySize__(PArrayTag* self);
+void __rho_array_destroy__(RArrayTag* self, void** pntr);
 
-Int __pArrayCount__(PArrayTag* self);
+RInt __rho_array_size__(RArrayTag* self);
 
-Int __pArrayFront__(PArrayTag* self);
+RInt __rho_array_count__(RArrayTag* self);
 
-Int __pArrayBack__(PArrayTag* self);
+RInt __rho_array_front__(RArrayTag* self);
 
-B32 __pArrayIsEmpty__(PArrayTag* self);
+RInt __rho_array_back__(RArrayTag* self);
 
-B32 __pArrayIsFull__(PArrayTag* self);
+RBool32 __rho_array_is_empty__(RArrayTag* self);
 
-B32 __pArrayIsIndex__(PArrayTag* self, Int index);
+RBool32 __rho_array_is_full__(RArrayTag* self);
 
-void __pArrayClear__(PArrayTag* self);
+RBool32 __rho_array_is_index__(RArrayTag* self, RInt index);
 
-B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value);
+void __rho_array_clear__(RArrayTag* self);
 
-B32 __pArraySlotOpen__(PArrayTag* self, void* values, Int index);
+RBool32 __rho_array_copy__(RArrayTag* self, void* values, RInt index, void* value);
 
-B32 __pArraySlotClose__(PArrayTag* self, void* values, Int index);
+RBool32 __rho_array_slot_open__(RArrayTag* self, void* values, RInt index);
+
+RBool32 __rho_array_slot_close__(RArrayTag* self, void* values, RInt index);
 
 #endif

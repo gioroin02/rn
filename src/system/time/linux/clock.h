@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_LINUX_TIME_CLOCK_H
-#define P_SYSTEM_LINUX_TIME_CLOCK_H
+#ifndef RHO_SYSTEM_TIME_LINUX_CLOCK_H
+#define RHO_SYSTEM_TIME_LINUX_CLOCK_H
 
 #include "import.h"
 
@@ -12,20 +12,25 @@
 #include <unistd.h>
 #include <time.h>
 
-typedef struct timespec PTimeSpec;
+typedef struct timespec RLinuxTimeSpec;
 
-typedef struct PLinuxClock
+typedef struct RLinuxClock
 {
-    PTimeSpec counter;
+    RLinuxTimeSpec counter;
+    RLinuxTimeSpec elapsed;
 }
-PLinuxClock;
+RLinuxClock;
 
-PLinuxClock* pLinuxClockReserve(PMemoryArena* arena);
+RLinuxClock* rho_linux_clock_reserve(RMemoryArena* arena);
 
-B32 pLinuxClockCreate(PLinuxClock* self);
+RBool32 rho_linux_clock_create(RLinuxClock* self);
 
-void pLinuxClockDestroy(PLinuxClock* self);
+void rho_linux_clock_destroy(RLinuxClock* self);
 
-F32 pLinuxClockElapsed(PLinuxClock* self);
+void rho_linux_clock_tick(RLinuxClock* self);
+
+RUint rho_linux_clock_elapsed(RLinuxClock* self);
+
+RUint rho_linux_clock_frequency(RLinuxClock* self);
 
 #endif

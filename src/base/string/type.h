@@ -1,37 +1,37 @@
-#ifndef P_BASE_STRING_TYPE_H
-#define P_BASE_STRING_TYPE_H
+#ifndef RHO_BASE_STRING_TYPE_H
+#define RHO_BASE_STRING_TYPE_H
 
 #include "import.h"
 
-#define pString8(arr)  pString8Make(((U8*) arr),   sizeof (arr) / sizeof *(arr) - 1)
-#define pString16(arr) pString16Make(((U16*) arr), sizeof (arr) / sizeof *(arr) - 1)
-#define pString32(arr) pString32Make(((U32*) arr), sizeof (arr) / sizeof *(arr) - 1)
+#define rho_string8(arr)  rho_string8_make((RChar8*) (arr),   sizeof (arr) / sizeof *(arr) - 1)
+#define rho_string16(arr) rho_string16_make((RChar16*) (arr), sizeof (arr) / sizeof *(arr) - 1)
+#define rho_string32(arr) rho_string32_make((RChar32*) (arr), sizeof (arr) / sizeof *(arr) - 1)
 
-typedef struct PString8
+typedef struct RString8
 {
-    U8* values;
-    Int size;
+    RChar8* values;
+    RInt    size;
 }
-PString8;
+RString8;
 
-typedef struct PString16
+typedef struct RString16
 {
-    U16* values;
-    Int  size;
+    RChar16* values;
+    RInt     size;
 }
-PString16;
+RString16;
 
-typedef struct PString32
+typedef struct RString32
 {
-    U32* values;
-    Int  size;
+    RChar32* values;
+    RInt     size;
 }
-PString32;
+RString32;
 
-PString8 pString8Make(U8* values, Int size);
+RString8 rho_string8_make(RChar8* values, RInt size);
 
-PString16 pString16Make(U16* values, Int size);
+RString16 rho_string16_make(RChar16* values, RInt size);
 
-PString32 pString32Make(U32* values, Int size);
+RString32 rho_string32_make(RChar32* values, RInt size);
 
 #endif

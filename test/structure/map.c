@@ -3,23 +3,23 @@
 
 #include <stdio.h>
 
-typedef PMap(PString8, U32) PMapString8U32;
+typedef RMap(RString8, RUint32) RString8Uint32Map;
 
-Int pString8Hash(PString8* key)
+RInt rho_string8_hash(RString8* key)
 {
-    Int result = 0;
+    RInt result = 0;
 
-    for (Int i = 0; i < key->size; i += 1)
-        result += ((Int) key->values[i]);
+    for (RInt i = 0; i < key->size; i += 1)
+        result += ((RInt) key->values[i]);
 
     return result;
 }
 
-B32 pString8IsEqual(PString8* key, PString8* other)
+RBool32 rho_string8_is_equal(RString8* key, RString8* other)
 {
     if (key->size != other->size) return 0;
 
-    for (Int i = 0; i < key->size; i += 1) {
+    for (RInt i = 0; i < key->size; i += 1) {
         if (key->values[i] != other->values[i])
             return 0;
     }
@@ -27,10 +27,10 @@ B32 pString8IsEqual(PString8* key, PString8* other)
     return 1;
 }
 
-void showPairs(PMapString8U32* self, PString8* keys, Int size)
+void show_pairs(RString8Uint32Map* self, RString8* keys, RInt size)
 {
-    for (Int i = 0; i < size; i += 1) {
-        U32* value = pMapGetPntr(self, keys[i]);
+    for (RInt i = 0; i < size; i += 1) {
+        RUint32* value = rho_map_get_pntr(self, keys[i]);
 
         printf("map(%s) -> ", keys[i].values);
 
@@ -41,11 +41,11 @@ void showPairs(PMapString8U32* self, PString8* keys, Int size)
     }
 }
 
-void showLists(PMapString8U32* self)
+void show_lists(RString8Uint32Map* self)
 {
-    for (Int i = 0; i < pMapCount(self); i += 1) {
-        PString8 key   = self->keys[i];
-        U32      value = self->values[i];
+    for (RInt i = 0; i < rho_map_count(self); i += 1) {
+        RString8 key   = self->keys[i];
+        RUint32  value = self->values[i];
 
         printf("map(%lli) -> %s, %lu\n",
             i, key.values, value);
@@ -54,31 +54,43 @@ void showLists(PMapString8U32* self)
 
 int main(int argc, char** argv)
 {
-    U8 memory[P_MEMORY_KIB] = {0};
+    RUint8 memory[RHO_MEMORY_KIB] = {0};
 
-    PMemoryArena arena = pMemoryArenaMake(memory, sizeof memory);
+    RMemoryArena arena = rho_memory_arena_make(memory, sizeof memory);
 
-    PMapString8U32 map = {0};
+    RString8Uint32Map map = {0};
 
-    pMapCreate(&map, &arena, 16, &pString8Hash, &pString8IsEqual);
+    rho_map_create(&map, &arena, 16, &rho_string8_hash, &rho_string8_is_equal);
 
-    PString8 keys[3] = {
-        pString8("Filiberto"),
-        pString8("Astronfo"),
-        pString8("Roboldofo"),
+    RString8 keys[3] = {
+        rho_string8("Filiberto"),
+        rho_string8("Astronfo"),
+        rho_string8("Roboldofo"),
     };
 
-    pMapInsert(&map, keys[0], 10);
-    pMapInsert(&map, keys[1], 20);
-    pMapInsert(&map, keys[2], 30);
+    rho_map_insert(&map, keys[0], 10);
+    rho_map_insert(&map, keys[1], 20);
+    rho_map_insert(&map, keys[2], 30);
 
-    showPairs(&map, keys, 3);
-    showLists(&map);
+    printf("Pairs: {\n");
+        show_pairs(&map, keys, 3);
+    printf("}\n");
 
-    pMapClear(&map);
+    printf("Lists: {\n");
+        show_lists(&map);
+    printf("}\n");
+
+    rho_map_clear(&map);
 
     printf("\n");
 
-    showPairs(&map, keys, 3);
-    showLists(&map);
+    printf("Pairs: {\n");
+        show_pairs(&map, keys, 3);
+    printf("}\n");
+
+    printf("Lists: {\n");
+        show_lists(&map);
+    printf("}\n");
+
+    rho_map_destroy(&map);
 }

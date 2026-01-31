@@ -1,5 +1,5 @@
-#ifndef P_BASE_TYPE_C
-#define P_BASE_TYPE_C
+#ifndef RHO_BASE_TYPE_C
+#define RHO_BASE_TYPE_C
 
 #include "type.h"
 

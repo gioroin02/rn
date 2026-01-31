@@ -1,34 +1,34 @@
-#ifndef P_GRAPHICS_OPENGL_COMMON_H
-#define P_GRAPHICS_OPENGL_COMMON_H
+#ifndef RHO_GRAPHICS_OPENGL_COMMON_H
+#define RHO_GRAPHICS_OPENGL_COMMON_H
 
 #include "import.h"
 
-typedef enum POpenglProfile
+typedef enum ROpenglProfile
 {
-    POpenglProfile_None,
-    POpenglProfile_Compatibility,
-    POpenglProfile_Core,
+    ROpenglProfile_None,
+    ROpenglProfile_Compatibility,
+    ROpenglProfile_Core,
 }
-POpenglProfile;
+ROpenglProfile;
 
-typedef enum POpenglContextFlag
+typedef enum ROpenglContextFlag
 {
-    POpenglContextFlag_None  = 0,
-    POpenglContextFlag_Debug = 1 << 0,
+    ROpenglContextFlag_None  = 0,
+    ROpenglContextFlag_Debug = 1 << 0,
 }
-POpenglContextFlag;
+ROpenglContextFlag;
 
-typedef struct POpenglContextAttribs
+typedef struct ROpenglContextAttribs
 {
-    POpenglProfile profile;
+    ROpenglProfile profile;
 
-    POpenglContextFlag flag;
+    ROpenglContextFlag flag;
 
-    Int version_major;
-    Int version_minor;
+    RInt16 version_major;
+    RInt16 version_minor;
 }
-POpenglContextAttribs;
+ROpenglContextAttribs;
 
-void* pOpenglLoader(void* symbol);
+void* rho_opengl_loader(void* symbol);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_MEMORY_COMMON_H
-#define P_SYSTEM_WIN32_MEMORY_COMMON_H
+#ifndef RHO_SYSTEM_MEMORY_WIN32_COMMON_H
+#define RHO_SYSTEM_MEMORY_WIN32_COMMON_H
 
 #include "import.h"
 
@@ -8,10 +8,10 @@
 
 #include <windows.h>
 
-Int pWin32MemoryPageSize();
+RInt rho_win32_memory_page_size();
 
-PMemoryArena pWin32MemoryReserve(Int size);
+RMemoryArena rho_win32_memory_reserve(RInt size);
 
-B32 pWin32MemoryRelease(PMemoryArena* arena);
+RBool32 rho_win32_memory_release(RMemoryArena* arena);
 
 #endif

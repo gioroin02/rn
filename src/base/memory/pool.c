@@ -1,30 +1,30 @@
-#ifndef P_BASE_MEMORY_POOL_C
-#define P_BASE_MEMORY_POOL_C
+#ifndef RHO_BASE_MEMORY_POOL_C
+#define RHO_BASE_MEMORY_POOL_C
 
 #include "pool.h"
 
-#define P_MEMORY_POOL_NODE_SIZE ((Int) sizeof (PMemoryPoolNode))
+#define RHO_MEMORY_POOL_NODE_SIZE ((RInt) sizeof (RMemoryPoolNode))
 
-typedef enum PMemoryPoolFlag
+typedef enum RMemoryPoolFlag
 {
-    PMemoryPoolFlag_None = 0,
-    PMemoryPoolFlag_Free = 1 << 0,
+    RMemoryPoolFlag_None = 0,
+    RMemoryPoolFlag_Free = 1 << 0,
 }
-PMemoryPoolFlag;
+RMemoryPoolFlag;
 
-typedef struct PMemoryPoolNode PMemoryPoolNode;
+typedef struct RMemoryPoolNode RMemoryPoolNode;
 
-struct PMemoryPoolNode
+struct RMemoryPoolNode
 {
-    PMemoryPoolFlag  flag;
-    PMemoryPoolNode* list_next;
+    RMemoryPoolFlag  flag;
+    RMemoryPoolNode* list_next;
 };
 
-PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int stride)
+RMemoryPool rho_memory_pool_make(void* pntr, RInt size, RInt stride)
 {
-    PMemoryPool result = {0};
+    RMemoryPool result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     result.pntr_base = NULL;
     result.pntr_next = NULL;
@@ -32,92 +32,92 @@ PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int stride)
     result.size      = 0;
 
     if (pntr != NULL || size > 0 || stride > 0) {
-        result.pntr_base = (U8*) pntr;
+        result.pntr_base = (RUint8*) pntr;
         result.pntr_next = result.pntr_base;
         result.size      = size;
-        result.stride    = pMemoryAlignSize(stride, P_MEMORY_ALIGNMENT);
+        result.stride    = rho_memory_align_size(stride, RHO_MEMORY_ALIGNMENT);
 
-        pMemorySet(result.pntr_base, result.size, 0xAB);
+        rho_memory_set(result.pntr_base, result.size, 0xAB);
     }
 
     return result;
 }
 
-void* pMemoryPoolPntr(PMemoryPool* self)
+void* rho_memory_pool_pntr(RMemoryPool* self)
 {
     return self->pntr_base;
 }
 
-Int pMemoryPoolSize(PMemoryPool* self)
+RInt rho_memory_pool_size(RMemoryPool* self)
 {
     return self->size;
 }
 
-void pMemoryPoolClear(PMemoryPool* self)
+void rho_memory_pool_clear(RMemoryPool* self)
 {
-    pMemorySet(self->pntr_base, self->size, 0xAB);
+    rho_memory_set(self->pntr_base, self->size, 0xAB);
 
     self->pntr_next = self->pntr_base;
     self->list_head = NULL;
 }
 
-void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size)
+void* rho_memory_pool_reserve(RMemoryPool* self, RInt count, RInt size)
 {
-    if (count <= 0 || size <= 0 || count > P_INT_MAX / size)
+    if (count <= 0 || size <= 0 || count > RHO_INT_MAX / size)
         return NULL;
 
-    Int size_header = pMemoryAlignSize(
-        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_ALIGNMENT);
+    RInt size_header = rho_memory_align_size(
+        RHO_MEMORY_POOL_NODE_SIZE, RHO_MEMORY_ALIGNMENT);
 
-    PMemoryPoolNode* node  = (PMemoryPoolNode*) self->list_head;
-    Int              bytes = count * size;
+    RMemoryPoolNode* node  = (RMemoryPoolNode*) self->list_head;
+    RInt             bytes = count * size;
 
     if (bytes < 0 || bytes > self->stride) return NULL;
 
     if (node == NULL) {
-        U8* next = ((U8*) self->pntr_next) + size_header + self->stride;
+        RUint8* next = ((RUint8*) self->pntr_next) + size_header + self->stride;
 
         if (next < self->pntr_base || next > self->pntr_base + self->size)
             return NULL;
 
-        node = (PMemoryPoolNode*) self->pntr_next;
+        node = (RMemoryPoolNode*) self->pntr_next;
 
         self->pntr_next = next;
     }
-    else self->list_head = (U8*) node->list_next;
+    else self->list_head = (RUint8*) node->list_next;
 
-    pMemorySet(node, size_header + self->stride, 0xAB);
+    rho_memory_set(node, size_header + self->stride, 0xAB);
 
-    node->flag      = PMemoryPoolFlag_None;
+    node->flag      = RMemoryPoolFlag_None;
     node->list_next = NULL;
 
-    return ((U8*) node) + size_header;
+    return ((RUint8*) node) + size_header;
 }
 
-B32 pMemoryPoolRelease(PMemoryPool* self, void* pntr)
+RBool32 rho_memory_pool_release(RMemoryPool* self, void* pntr)
 {
-    Int size_header = pMemoryAlignSize(
-        P_MEMORY_POOL_NODE_SIZE, P_MEMORY_ALIGNMENT);
+    RInt size_header = rho_memory_align_size(
+        RHO_MEMORY_POOL_NODE_SIZE, RHO_MEMORY_ALIGNMENT);
 
     if (pntr == NULL) return 0;
 
-    U8* head = ((U8*) pntr) - size_header;
-    Int dist = head - self->pntr_base;
+    RUint8* head = ((RUint8*) pntr) - size_header;
+    RInt    dist = head - self->pntr_base;
 
     if (head < self->pntr_base || head >= self->pntr_next)
         return 0;
 
     if (dist % (size_header + self->stride) != 0) return 0;
 
-    PMemoryPoolNode* node = (PMemoryPoolNode*) head;
+    RMemoryPoolNode* node = (RMemoryPoolNode*) head;
 
-    if ((node->flag & PMemoryPoolFlag_Free) != 0) return 0;
+    if ((node->flag & RMemoryPoolFlag_Free) != 0) return 0;
 
-    pMemorySet(head, size_header + self->stride, 0xAB);
+    rho_memory_set(head, size_header + self->stride, 0xAB);
 
-    node->flag      = PMemoryPoolFlag_Free;
-    node->list_next = (PMemoryPoolNode*) self->list_head;
-    self->list_head = (U8*) node;
+    node->flag      = RMemoryPoolFlag_Free;
+    node->list_next = (RMemoryPoolNode*) self->list_head;
+    self->list_head = (RUint8*) node;
 
     return 1;
 }

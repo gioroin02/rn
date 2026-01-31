@@ -1,9 +1,9 @@
-#ifndef P_GRAPHICS_WIN32_OPENGL_COMMON_C
-#define P_GRAPHICS_WIN32_OPENGL_COMMON_C
+#ifndef RHO_GRAPHICS_OPENGL_WIN32_COMMON_C
+#define RHO_GRAPHICS_OPENGL_WIN32_COMMON_C
 
 #include "common.h"
 
-void* pWin32OpenglLoader(void* symbol)
+void* rWin32OpenglLoader(void* symbol)
 {
     void*   result = wglGetProcAddress((LPCSTR) symbol);
     HMODULE module = NULL;

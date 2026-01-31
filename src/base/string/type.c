@@ -1,13 +1,13 @@
-#ifndef P_BASE_STRING_TYPE_C
-#define P_BASE_STRING_TYPE_C
+#ifndef RHO_BASE_STRING_TYPE_C
+#define RHO_BASE_STRING_TYPE_C
 
 #include "type.h"
 
-PString8 pString8Make(U8* values, Int size)
+RString8 rho_string8_make(RChar8* values, RInt size)
 {
-    PString8 result = {0};
+    RString8 result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     result.values = NULL;
     result.size   = 0;
@@ -20,11 +20,11 @@ PString8 pString8Make(U8* values, Int size)
     return result;
 }
 
-PString16 pString16Make(U16* values, Int size)
+RString16 rho_string16_make(RChar16* values, RInt size)
 {
-    PString16 result = {0};
+    RString16 result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     result.values = NULL;
     result.size   = 0;
@@ -37,11 +37,11 @@ PString16 pString16Make(U16* values, Int size)
     return result;
 }
 
-PString32 pString32Make(U32* values, Int size)
+RString32 rho_string32_make(RChar32* values, RInt size)
 {
-    PString32 result = {0};
+    RString32 result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     result.values = NULL;
     result.size   = 0;

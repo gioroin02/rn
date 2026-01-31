@@ -1,5 +1,5 @@
-#ifndef P_BASE_MEMORY_EXPORT_H
-#define P_BASE_MEMORY_EXPORT_H
+#ifndef RHO_BASE_MEMORY_EXPORT_H
+#define RHO_BASE_MEMORY_EXPORT_H
 
 #include "common.h"
 

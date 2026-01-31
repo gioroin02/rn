@@ -1,34 +1,31 @@
-#ifndef P_BASE_MEMORY_POOL_H
-#define P_BASE_MEMORY_POOL_H
+#ifndef RHO_BASE_MEMORY_POOL_H
+#define RHO_BASE_MEMORY_POOL_H
 
 #include "common.h"
 
-#define pMemoryPoolReserveManyOf(self, type, count) \
-    ((type*) pMemoryPoolReserve(self, count, sizeof (type)))
+#define rho_memory_pool_reserve_of(self, type, count) \
+    ((type*) rho_memory_pool_reserve(self, count, sizeof (type)))
 
-#define pMemoryPoolReserveOneOf(self, type) \
-    ((type*) pMemoryPoolReserve(self, 1, sizeof (type)))
-
-typedef struct PMemoryPool
+typedef struct RMemoryPool
 {
-    U8* pntr_base;
-    U8* pntr_next;
-    U8* list_head;
-    Int size;
-    Int stride;
+    RUint8* pntr_base;
+    RUint8* pntr_next;
+    RUint8* list_head;
+    RInt    size;
+    RInt    stride;
 }
-PMemoryPool;
+RMemoryPool;
 
-PMemoryPool pMemoryPoolMake(void* pntr, Int size, Int stride);
+RMemoryPool rho_memory_pool_make(void* pntr, RInt size, RInt stride);
 
-void* pMemoryPoolPntr(PMemoryPool* self);
+void* rho_memory_pool_pntr(RMemoryPool* self);
 
-Int pMemoryPoolSize(PMemoryPool* self);
+RInt rho_memory_pool_size(RMemoryPool* self);
 
-void pMemoryPoolClear(PMemoryPool* self);
+void rho_memory_pool_clear(RMemoryPool* self);
 
-void* pMemoryPoolReserve(PMemoryPool* self, Int count, Int size);
+void* rho_memory_pool_reserve(RMemoryPool* self, RInt count, RInt size);
 
-B32 pMemoryPoolRelease(PMemoryPool* self, void* pntr);
+RBool32 rho_memory_pool_release(RMemoryPool* self, void* pntr);
 
 #endif

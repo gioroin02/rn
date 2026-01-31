@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_OPENGL_H
-#define P_SYSTEM_WIN32_WINDOW_OPENGL_H
+#ifndef RHO_SYSTEM_WINDOW_OPENGL_WIN32_H
+#define RHO_SYSTEM_WINDOW_OPENGL_WIN32_H
 
 #include "import.h"
 
@@ -16,12 +16,8 @@ typedef BOOL  (WINAPI* WglChoosePixelFormatARB)    (HDC, int*, FLOAT*, UINT, int
 extern WglCreateContextAttribsARB wglCreateContextAttribsARB;
 extern WglChoosePixelFormatARB    wglChoosePixelFormatARB;
 
-B32 pWin32WindowOpenglStart();
+RBool32 rho_win32_window_opengl_start();
 
-B32 pWin32WindowOpenglStartImpl();
-
-void pWin32WindowOpenglStop();
-
-void pWin32WindowOpenglStopImpl();
+void rho_win32_window_opengl_stop();
 
 #endif

@@ -1,23 +1,23 @@
-#ifndef P_SYSTEM_LINUX_MEMORY_COMMON_C
-#define P_SYSTEM_LINUX_MEMORY_COMMON_C
+#ifndef RHO_SYSTEM_MEMORY_LINUX_COMMON_C
+#define RHO_SYSTEM_MEMORY_LINUX_COMMON_C
 
 #include "common.h"
 
-Int pLinuxMemoryPageSize()
+RInt rho_linux_memory_page_size()
 {
-    return (Int) sysconf(_SC_PAGESIZE);
+    return (RInt) sysconf(_SC_PAGESIZE);
 }
 
-PMemoryArena pLinuxMemoryReserve(Int size)
+RMemoryArena rho_linux_memory_reserve(RInt size)
 {
-    PMemoryArena result = pMemoryArenaMake(NULL, 0);
+    RMemoryArena result = rho_memory_arena_make(NULL, 0);
 
     if (size <= 0) return result;
 
-    Int   page   = pLinuxMemoryPageSize();
+    RInt  page   = rho_linux_memory_page_size();
     void* memory = NULL;
 
-    size = pMemoryAlignSize(size, page);
+    size = rho_memory_align_size(size, page);
 
     do {
         memory = mmap(0, size, PROT_READ | PROT_WRITE,
@@ -27,15 +27,15 @@ PMemoryArena pLinuxMemoryReserve(Int size)
 
     if (memory == MAP_FAILED) return result;
 
-    return pMemoryArenaMake(memory, size);
+    return rho_memory_arena_make(memory, size);
 }
 
-B32 pLinuxMemoryRelease(PMemoryArena* arena)
+RBool32 rho_linux_memory_release(RMemoryArena* arena)
 {
     int   status = 0;
-    Int   page   = pLinuxMemoryPageSize();
-    void* memory = pMemoryArenaPntr(arena);
-    Int   size   = pMemoryArenaSize(arena);
+    RInt  page   = rho_linux_memory_page_size();
+    void* memory = rho_memory_arena_pntr(arena);
+    RInt  size   = rho_memory_arena_size(arena);
 
     if (memory == NULL || size <= 0 || size % page != 0)
         return 0;
@@ -45,7 +45,7 @@ B32 pLinuxMemoryRelease(PMemoryArena* arena)
     }
     while (status == -1 && errno == EINTR);
 
-    pMemorySet(arena, sizeof *arena, 0xAB);
+    rho_memory_set(arena, sizeof *arena, 0xAB);
 
     return 1;
 }

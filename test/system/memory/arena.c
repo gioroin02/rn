@@ -4,8 +4,8 @@
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(16);
+    RMemoryArena arena = rho_system_memory_reserve(16);
 
     printf("0x%llx, %lli\n",
-        (Uint) pMemoryArenaPntr(&arena), pMemoryArenaSize(&arena));
+        (RUint) rho_memory_arena_pntr(&arena), rho_memory_arena_size(&arena));
 }

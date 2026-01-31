@@ -1,37 +1,37 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_WINDOW_H
-#define P_SYSTEM_WIN32_WINDOW_WINDOW_H
+#ifndef RHO_SYSTEM_WINDOW_WIN32_WINDOW_H
+#define RHO_SYSTEM_WINDOW_WIN32_WINDOW_H
 
 #include "event.h"
 
-typedef struct PWin32Window
+typedef struct RWin32Window
 {
     HWND  handle;
     HDC   device;
     HGLRC opengl;
 
-    PWindowAttribs attribs;
+    RWindowAttribs attribs;
 
-    void* timer_ctxt;
-    void* timer_proc;
+    void* trig_ctxt;
+    void* trig_proc;
 }
-PWin32Window;
+RWin32Window;
 
-PWin32Window* pWin32WindowReserve(PMemoryArena* arena);
+RWin32Window* rho_win32_window_reserve(RMemoryArena* arena);
 
-B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height);
+RBool32 rho_win32_window_create(RWin32Window* self, RString8 title, RInt width, RInt height);
 
-void pWin32WindowDestroy(PWin32Window* self);
+void rho_win32_window_destroy(RWin32Window* self);
 
-B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event);
+RBool32 rho_win32_window_poll_event(RWin32Window* self, RWindowEvent* event);
 
-void pWin32WindowSwapBuffers(PWin32Window* self);
+void rho_win32_window_swap_buffers(RWin32Window* self);
 
-B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs);
+RBool32 rho_win32_window_set_attribs(RWin32Window* self, RWindowAttribs attribs);
 
-PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self);
+RWindowAttribs rho_win32_window_get_attribs(RWin32Window* self);
 
-B32 pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc);
+RBool32 rho_win32_window_set_callback(RWin32Window* self, void* ctxt, void* proc);
 
-void* pWin32WindowGetTimerCallback(PWin32Window* self);
+void* rho_win32_window_get_callback(RWin32Window* self);
 
 #endif

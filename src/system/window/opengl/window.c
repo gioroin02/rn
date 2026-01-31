@@ -1,17 +1,17 @@
-#ifndef P_SYSTEM_WINDOW_OPENGL_WINDOW_C
-#define P_SYSTEM_WINDOW_OPENGL_WINDOW_C
+#ifndef RHO_SYSTEM_WINDOW_OPENGL_WINDOW_C
+#define RHO_SYSTEM_WINDOW_OPENGL_WINDOW_C
 
 #include "window.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PWindow__ PWin32Window
+    #define __RWindow__ RWin32Window
 
-    #define __pWindowOpenglCreate__  pWin32WindowOpenglCreate
-    #define __pWindowOpenglDestroy__ pWin32WindowOpenglDestroy
-    #define __pWindowOpenglEnable__  pWin32WindowOpenglEnable
+    #define __rho_window_opengl_create__  rho_win32_window_opengl_create
+    #define __rho_window_opengl_destroy__ rho_win32_window_opengl_destroy
+    #define __rho_window_opengl_enable__  rho_win32_window_opengl_enable
 
 #else
 
@@ -19,19 +19,19 @@
 
 #endif
 
-B32 pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs)
+RBool32 rho_window_opengl_create(RWindow* self, ROpenglContextAttribs attribs)
 {
-    return __pWindowOpenglCreate__((__PWindow__*) self, attribs);
+    return __rho_window_opengl_create__((__RWindow__*) self, attribs);
 }
 
-void pWindowOpenglDestroy(PWindow* self)
+void rho_window_opengl_destroy(RWindow* self)
 {
-    return __pWindowOpenglDestroy__((__PWindow__*) self);
+    return __rho_window_opengl_destroy__((__RWindow__*) self);
 }
 
-B32 pWindowOpenglEnable(PWindow* self, B32 state)
+RBool32 rho_window_opengl_enable(RWindow* self, RBool32 state)
 {
-    return __pWindowOpenglEnable__((__PWindow__*) self, state);
+    return __rho_window_opengl_enable__((__RWindow__*) self, state);
 }
 
 #endif

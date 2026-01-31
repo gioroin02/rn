@@ -1,29 +1,21 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_COMMON_C
-#define P_SYSTEM_WIN32_WINDOW_COMMON_C
+#ifndef RHO_SYSTEM_WINDOW_WIN32_COMMON_C
+#define RHO_SYSTEM_WINDOW_WIN32_COMMON_C
 
 #include "common.h"
 
-extern Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
+extern RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam);
 
-static volatile LONG p_win32_winclass_count = 0;
+static volatile LONG rho_win32_winclass_count = 0;
 
-B32 pWin32WindowStart()
-{
-    if (InterlockedIncrement(&p_win32_winclass_count) == 1)
-        return pWin32WindowStartImpl();
-
-    return 1;
-}
-
-B32 pWin32WindowStartImpl()
+static RBool32 __rho_win32_window_start__()
 {
     WNDCLASSEXW window_class = {0};
 
     window_class.cbSize        = sizeof window_class;
     window_class.style         = CS_HREDRAW | CS_VREDRAW;
-    window_class.lpfnWndProc   = pWin32WindowProcRegular;
+    window_class.lpfnWndProc   = rho_win32_winproc_regular;
     window_class.hInstance     = GetModuleHandle(NULL);
-    window_class.lpszClassName = L"PWindowRegular";
+    window_class.lpszClassName = L"RWindowRegular";
     window_class.hCursor       = LoadCursor(NULL, IDC_ARROW);
 
     if (RegisterClassExW(&window_class) == 0) return 0;
@@ -31,15 +23,23 @@ B32 pWin32WindowStartImpl()
     return 1;
 }
 
-void pWin32WindowStop()
+static void __rho_win32_window_stop__()
 {
-    if (InterlockedDecrement(&p_win32_winclass_count) == 0)
-        pWin32WindowStopImpl();
+    UnregisterClassW(L"RWindowRegular", GetModuleHandle(NULL));
 }
 
-void pWin32WindowStopImpl()
+RBool32 rho_win32_window_start()
 {
-    UnregisterClassW(L"PWindowRegular", GetModuleHandle(NULL));
+    if (InterlockedIncrement(&rho_win32_winclass_count) == 1)
+        return __rho_win32_window_start__();
+
+    return 1;
+}
+
+void rho_win32_window_stop()
+{
+    if (InterlockedDecrement(&rho_win32_winclass_count) == 0)
+        __rho_win32_window_stop__();
 }
 
 #endif

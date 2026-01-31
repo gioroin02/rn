@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_TIME_CLOCK_H
-#define P_SYSTEM_WIN32_TIME_CLOCK_H
+#ifndef RHO_SYSTEM_TIME_WIN32_CLOCK_H
+#define RHO_SYSTEM_TIME_WIN32_CLOCK_H
 
 #include "import.h"
 
@@ -8,19 +8,24 @@
 
 #include <windows.h>
 
-typedef struct PWin32Clock
+typedef struct RWin32Clock
 {
     LARGE_INTEGER frequency;
     LARGE_INTEGER counter;
+    LARGE_INTEGER elapsed;
 }
-PWin32Clock;
+RWin32Clock;
 
-PWin32Clock* pWin32ClockReserve(PMemoryArena* arena);
+RWin32Clock* rho_win32_clock_reserve(RMemoryArena* arena);
 
-B32 pWin32ClockCreate(PWin32Clock* self);
+RBool32 rho_win32_clock_create(RWin32Clock* self);
 
-void pWin32ClockDestroy(PWin32Clock* self);
+void rho_win32_clock_destroy(RWin32Clock* self);
 
-F32 pWin32ClockElapsed(PWin32Clock* self);
+void rho_win32_clock_tick(RWin32Clock* self);
+
+RUint rho_win32_clock_elapsed(RWin32Clock* self);
+
+RUint rho_win32_clock_frequency(RWin32Clock* self);
 
 #endif

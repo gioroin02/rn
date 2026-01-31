@@ -1,69 +1,76 @@
-#ifndef P_STRUCTURE_MAP_H
-#define P_STRUCTURE_MAP_H
+#ifndef RHO_STRUCTURE_MAP_H
+#define RHO_STRUCTURE_MAP_H
 
 #include "import.h"
 
-#define __PMapTag__(ktype) struct { \
-    Int   map_size;                 \
-    Int   map_count;                \
-    Int   map_stride_key;           \
-    Int   map_stride_value;         \
-    Int*  map_indices;              \
+#define __RMapTag__(ktype) struct { \
+    RInt  map_size;                 \
+    RInt  map_count;                \
+    RInt  map_stride_key;           \
+    RInt  map_stride_value;         \
+    RInt* map_indices;              \
     void* map_proc_hash;            \
     void* map_proc_is_equal;        \
-    Int   map_index;                \
+    RInt  map_index;                \
     ktype map_key;                  \
 }
 
-typedef struct PMapTag
+typedef struct RMapTag
 {
-    Int   map_size;
-    Int   map_count;
-    Int   map_stride_key;
-    Int   map_stride_value;
-    Int*  map_indices;
+    RInt  map_size;
+    RInt  map_count;
+    RInt  map_stride_key;
+    RInt  map_stride_value;
+    RInt* map_indices;
     void* map_proc_hash;
     void* map_proc_is_equal;
-    Int   map_index;
+    RInt  map_index;
 }
-PMapTag;
+RMapTag;
 
-typedef Int (PMapProcHash)    (void*);
-typedef B32 (PMapProcIsEqual) (void*, void*);
+typedef RInt    (RMapProcHash)    (void*);
+typedef RBool32 (RMapProcIsEqual) (void*, void*);
 
-#define PMap(ktype, vtype) struct {                 \
-    __PMapTag__(ktype); ktype* keys; vtype* values; \
+#define RMap(ktype, vtype) struct {                 \
+    __RMapTag__(ktype); ktype* keys; vtype* values; \
 }
 
-#define pMapSize(self)    __pMapSize__(((PMapTag*) self))
-#define pMapCount(self)   __pMapCount__(((PMapTag*) self))
-#define pMapIsEmpty(self) __pMapIsEmpty__(((PMapTag*) self))
-#define pMapIsFull(self)  __pMapIsFull__(((PMapTag*) self))
+#define rho_map_size(self)     __rho_map_size__(((RMapTag*) self))
+#define rho_map_count(self)    __rho_map_count__(((RMapTag*) self))
+#define rho_map_is_empty(self) __rho_map_is_empty__(((RMapTag*) self))
+#define rho_map_is_full(self)  __rho_map_is_full__(((RMapTag*) self))
 
-#define pMapIsKey(self, key) ( \
-    (self)->map_key = (key),   \
-    __pMapIsKey__(             \
-        ((PMapTag*) self),     \
-        (self)->keys,          \
-        &(self)->map_key)      \
+#define rho_map_is_key(self, key) ( \
+    (self)->map_key = (key),        \
+    __rho_map_is_key__(             \
+        ((RMapTag*) self),          \
+        (self)->keys,               \
+        &(self)->map_key)           \
 )
 
-#define pMapClear(self) __pMapClear__(((PMapTag*) self))
+#define rho_map_clear(self) __rho_map_clear__(((RMapTag*) self))
 
-#define pMapCreate(self, arena, size, proc_hash, proc_is_equal) ( \
-    __pMapCreate__(                                               \
-        ((PMapTag*) self),                                        \
-        ((void**) &(self)->keys),                                 \
-        sizeof *(self)->keys,                                     \
-        ((void**) &(self)->values),                               \
-        sizeof *(self)->values,                                   \
-        arena, size, proc_hash, proc_is_equal)                    \
+#define rho_map_create(self, arena, size, proc_hash, proc_is_equal) ( \
+    __rho_map_create__(                                               \
+        ((RMapTag*) self),                                            \
+        ((void**) &(self)->keys),                                     \
+        sizeof *(self)->keys,                                         \
+        ((void**) &(self)->values),                                   \
+        sizeof *(self)->values,                                       \
+        arena, size, proc_hash, proc_is_equal)                        \
 )
 
-#define pMapInsert(self, key, value) (                               \
+#define rho_map_destroy(self) (     \
+    __rho_map_destroy__(            \
+        ((RMapTag*) self),          \
+        ((void**) &(self)->keys),   \
+        ((void**) &(self)->values)) \
+)
+
+#define rho_map_insert(self, key, value) (                           \
     (self)->map_key = (key),                                         \
-    __pMapSlotOpen__(                                                \
-        ((PMapTag*) self),                                           \
+    __rho_map_slot_open__(                                           \
+        ((RMapTag*) self),                                           \
         (self)->keys,                                                \
         &(self)->map_key) != 0 ?                                     \
     (                                                                \
@@ -74,27 +81,29 @@ typedef B32 (PMapProcIsEqual) (void*, void*);
     ), 1 : 0                                                         \
 )
 
-#define pMapGet(self, key, other) \
-    (pMapIsKey(self, key) != 0 ? (self)->values[(self)->map_index] : (other))
+#define rho_map_get(self, key, other) \
+    (rho_map_is_key(self, key) != 0 ? (self)->values[(self)->map_index] : (other))
 
-#define pMapGetPntr(self, key) \
-    (pMapIsKey(self, key) != 0 ? &(self)->values[(self)->map_index] : NULL)
+#define rho_map_get_pntr(self, key) \
+    (rho_map_is_key(self, key) != 0 ? &(self)->values[(self)->map_index] : NULL)
 
-B32 __pMapCreate__(PMapTag* self, void** pntrk, Int stridek, void** pntrv, Int stridev,
-    PMemoryArena* arena, Int size, void* proc_hash, void* proc_is_equal);
+RBool32 __rho_map_create__(RMapTag* self, void** pntrk, RInt stridek, void** pntrv, RInt stridev,
+    RMemoryArena* arena, RInt size, void* proc_hash, void* proc_is_equal);
 
-Int __pMapSize__(PMapTag* self);
+void __rho_map_destroy__(RMapTag* self, void** pntrk, void** pntrv);
 
-Int __pMapCount__(PMapTag* self);
+RInt __rho_map_size__(RMapTag* self);
 
-B32 __pMapIsEmpty__(PMapTag* self);
+RInt __rho_map_count__(RMapTag* self);
 
-B32 __pMapIsFull__(PMapTag* self);
+RBool32 __rho_map_is_empty__(RMapTag* self);
 
-B32 __pMapIsKey__(PMapTag* self, void* keys, void* key);
+RBool32 __rho_map_is_full__(RMapTag* self);
 
-void __pMapClear__(PMapTag* self);
+RBool32 __rho_map_is_key__(RMapTag* self, void* keys, void* key);
 
-B32 __pMapSlotOpen__(PMapTag* self, void* keys, void* key);
+void __rho_map_clear__(RMapTag* self);
+
+RBool32 __rho_map_slot_open__(RMapTag* self, void* keys, void* key);
 
 #endif

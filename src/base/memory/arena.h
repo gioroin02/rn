@@ -1,36 +1,33 @@
-#ifndef P_BASE_MEMORY_ARENA_H
-#define P_BASE_MEMORY_ARENA_H
+#ifndef RHO_BASE_MEMORY_ARENA_H
+#define RHO_BASE_MEMORY_ARENA_H
 
 #include "common.h"
 
-#define pMemoryArenaReserveManyOf(self, type, count) \
-    ((type*) pMemoryArenaReserve(self, count, sizeof (type)))
+#define rho_memory_arena_reserve_of(self, type, count) \
+    ((type*) rho_memory_arena_reserve(self, count, sizeof (type)))
 
-#define pMemoryArenaReserveOneOf(self, type) \
-    ((type*) pMemoryArenaReserve(self, 1, sizeof (type)))
-
-typedef struct PMemoryArena
+typedef struct RMemoryArena
 {
-    U8* pntr_base;
-    U8* pntr_next;
-    Int size;
+    RUint8* pntr_base;
+    RUint8* pntr_next;
+    RInt    size;
 }
-PMemoryArena;
+RMemoryArena;
 
-PMemoryArena pMemoryArenaMake(void* pntr, Int size);
+RMemoryArena rho_memory_arena_make(void* pntr, RInt size);
 
-void* pMemoryArenaPntr(PMemoryArena* self);
+void* rho_memory_arena_pntr(RMemoryArena* self);
 
-Int pMemoryArenaSize(PMemoryArena* self);
+RInt rho_memory_arena_size(RMemoryArena* self);
 
-void pMemoryArenaClear(PMemoryArena* self);
+void rho_memory_arena_clear(RMemoryArena* self);
 
-void* pMemoryArenaReserve(PMemoryArena* self, Int count, Int size);
+void* rho_memory_arena_reserve(RMemoryArena* self, RInt count, RInt size);
 
-B32 pMemoryArenaRelease(PMemoryArena* self, void* pntr);
+RBool32 rho_memory_arena_release(RMemoryArena* self, void* pntr);
 
-B32 pMemoryArenaRewind(PMemoryArena* self, void* pntr);
+RBool32 rho_memory_arena_rewind(RMemoryArena* self, void* pntr);
 
-void* pMemoryArenaTell(PMemoryArena* self);
+void* rho_memory_arena_tell(RMemoryArena* self);
 
 #endif

@@ -1,19 +1,19 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_WINDOW_C
-#define P_SYSTEM_WIN32_WINDOW_WINDOW_C
+#ifndef RHO_SYSTEM_WINDOW_WIN32_WINDOW_C
+#define RHO_SYSTEM_WINDOW_WIN32_WINDOW_C
 
 #include "window.h"
 
-#define P_SYSTEM_WIN32_TIMER_PAINT ((Int) PWindowTimer_Paint)
+#define RHO_WIN32_WINDOW_TRIGGER_PAINT ((RInt) RWindowTrigger_Paint)
 
-static PString16 pWin32String8To16(PString8 string, U16* buffer, Int size)
+static RString16 rho_win32_utf8_to_utf16(RString8 string, RChar16* buffer, RInt size)
 {
     size = MultiByteToWideChar(CP_UTF8, 0,
-        (I8*) string.values, string.size, (LPWSTR) buffer, size);
+        (RChar8*) string.values, string.size, (LPWSTR) buffer, size);
 
-    return pString16Make(buffer, size);
+    return rho_string16_make(buffer, size);
 }
 
-static RECT pWin32AdjustWindowRect(Int left, Int top, Int right, Int bottom)
+static RECT rho_win32_adjust_window_rect(RInt left, RInt top, RInt right, RInt bottom)
 {
     RECT result;
 
@@ -25,26 +25,44 @@ static RECT pWin32AdjustWindowRect(Int left, Int top, Int right, Int bottom)
     return result;
 }
 
-Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
+RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 {
-    PWin32Window* self = (PWin32Window*) GetWindowLongPtr(handle, GWLP_USERDATA);
+    RWin32Window* self = (RWin32Window*) GetWindowLongPtr(handle, GWLP_USERDATA);
 
     if (self == NULL) return DefWindowProcW(handle, kind, wparam, lparam);
 
-    Int result = 0;
+    RInt result = 0;
 
     switch (kind) {
-        case WM_ENTERSIZEMOVE:
-            SetTimer(handle, P_SYSTEM_WIN32_TIMER_PAINT, 20, NULL);
-        break;
+        case WM_ACTIVATE: {
+            RInt timer = RHO_WIN32_WINDOW_TRIGGER_PAINT;
 
-        case WM_EXITSIZEMOVE:
-            KillTimer(handle, P_SYSTEM_WIN32_TIMER_PAINT);
-        break;
+            if (wparam != 0)
+                SetTimer(handle, timer, 5, NULL);
+            else
+                KillTimer(handle, timer);
+        } break;
+
+        case WM_CLOSE: PostQuitMessage(0); break;
 
         case WM_TIMER: {
-            if (wparam == P_SYSTEM_WIN32_TIMER_PAINT)
+            if (wparam == RHO_WIN32_WINDOW_TRIGGER_PAINT)
                 InvalidateRect(self->handle, NULL, 1);
+        } break;
+
+        case WM_ERASEBKGND: result = 1; break;
+
+        case WM_PAINT: {
+            PAINTSTRUCT paint = {0};
+
+            HDC device = BeginPaint(self->handle, &paint);
+
+            if (self->trig_proc != NULL) {
+                ((RWindowCallback*) self->trig_proc)(
+                    self->trig_ctxt, RWindowTrigger_Paint);
+            }
+
+            EndPaint(self->handle, &paint);
         } break;
 
         case WM_GETMINMAXINFO: {
@@ -56,23 +74,6 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
             info->ptMaxTrackSize.y = self->attribs.height_max;
         } break;
 
-        case WM_ERASEBKGND: result = 1; break;
-
-        case WM_PAINT: {
-            PAINTSTRUCT paint = {0};
-
-            HDC device = BeginPaint(self->handle, &paint);
-
-            if (self->timer_proc != NULL) {
-                ((PWindowTimerCallback*) self->timer_proc)(
-                    self->timer_ctxt, PWindowTimer_Paint);
-            }
-
-            EndPaint(self->handle, &paint);
-        } break;
-
-        case WM_CLOSE: PostQuitMessage(0); break;
-
         default: result = -1;
     }
 
@@ -81,46 +82,46 @@ Int pWin32WindowProcRegular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam
     return result;
 }
 
-PWin32Window* pWin32WindowReserve(PMemoryArena* arena)
+RWin32Window* rho_win32_window_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PWin32Window);
+    return rho_memory_arena_reserve_of(arena, RWin32Window, 1);
 }
 
-B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height)
+RBool32 rho_win32_window_create(RWin32Window* self, RString8 title, RInt width, RInt height)
 {
-    static U16 buffer[4 * P_MEMORY_KIB] = {0};
+    static RChar16 buffer[4 * RHO_MEMORY_KIB] = {0};
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
-    self->handle      = NULL;
-    self->device      = NULL;
-    self->opengl      = NULL;
-    self->timer_ctxt  = NULL;
-    self->timer_proc  = NULL;
-    self->attribs     = pWindowAttribsMake();
+    self->handle    = NULL;
+    self->device    = NULL;
+    self->opengl    = NULL;
+    self->trig_ctxt = NULL;
+    self->trig_proc = NULL;
+    self->attribs   = rho_window_attribs_make();
 
-    if (width <= 0 || height <= 0 || width > P_INT_MAX / height) return 0;
+    if (width <= 0 || height <= 0 || width > RHO_INT_MAX / height) return 0;
 
-    RECT      rect   = pWin32AdjustWindowRect(0, 0, width, height);
-    PString16 string = pWin32String8To16(title, buffer, sizeof buffer);
+    RECT      rect    = rho_win32_adjust_window_rect(0, 0, width, height);
+    RString16 title16 = rho_win32_utf8_to_utf16(title, buffer, sizeof buffer);
 
-    if (string.size <= 0 || pWin32WindowStart() == 0) return 0;
+    if (title16.size <= 0 || rho_win32_window_start() == 0) return 0;
 
-    Int style = WS_OVERLAPPEDWINDOW;
-    Int x     = 100;
-    Int y     = 100;
+    RInt style = WS_OVERLAPPEDWINDOW;
+    RInt x     = 100;
+    RInt y     = 100;
 
     width  = rect.right - rect.left;
     height = rect.bottom - rect.top;
 
-    HWND handle = CreateWindowW(L"PWindowRegular", string.values,
+    HWND handle = CreateWindowW(L"RWindowRegular", (RUint16*) title16.values,
         style, x, y, width, height, NULL, NULL, NULL, NULL);
 
     if (handle != NULL) {
         self->handle = handle;
         self->device = GetDC(handle);
 
-        self->attribs.visibility = PWindowVisibility_None;
+        self->attribs.visibility = RWindowVisibility_None;
         self->attribs.coord_x    = x;
         self->attribs.coord_y    = y;
         self->attribs.width      = width;
@@ -137,22 +138,22 @@ B32 pWin32WindowCreate(PWin32Window* self, PString8 title, Int width, Int height
         return 1;
     }
 
-    pWin32WindowStop();
+    rho_win32_window_stop();
 
     return 0;
 }
 
-void pWin32WindowDestroy(PWin32Window* self)
+void rho_win32_window_destroy(RWin32Window* self)
 {
     if (self->opengl != NULL) wglDeleteContext(self->opengl);
     if (self->handle != NULL) DestroyWindow(self->handle);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
-    pWin32WindowStop();
+    rho_win32_window_stop();
 }
 
-B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
+RBool32 rho_win32_window_poll_event(RWin32Window* self, RWindowEvent* event)
 {
     MSG message = {0};
 
@@ -161,23 +162,20 @@ B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
         DispatchMessageW(&message);
 
         switch (message.message) {
-            case WM_QUIT: *event = pWindowEventQuit((PWindow*) self); return 1;
-
-            case WM_CREATE:  *event = pWindowEventWindowCreate((PWindow*) self);  return 1;
-            case WM_DESTROY: *event = pWindowEventWindowDestroy((PWindow*) self); return 1;
+            case WM_QUIT: *event = rho_window_event_quit((RWindow*) self); return 1;
 
             case WM_KEYDOWN: {
-                PWindowKeybdKey key  = pWin32WindowConvertKey(message.wParam);
-                Int             scan = (message.lParam >> 16) & 0xff;
+                RWindowKeyboardKey key  = rho_win32_window_convert_key(message.wParam);
+                RInt               scan = (message.lParam >> 16) & 0xff;
 
-                *event = pWindowEventKeybdKey((PWindow*) self, key, 1, scan);
+                *event = rho_window_event_keyboard_key((RWindow*) self, key, 1, scan);
             } return 1;
 
             case WM_KEYUP: {
-                PWindowKeybdKey key  = pWin32WindowConvertKey(message.wParam);
-                Int             scan = (message.lParam >> 16) & 0xff;
+                RWindowKeyboardKey key  = rho_win32_window_convert_key(message.wParam);
+                RInt               scan = (message.lParam >> 16) & 0xff;
 
-                *event = pWindowEventKeybdKey((PWindow*) self, key, 0, scan);
+                *event = rho_window_event_keyboard_key((RWindow*) self, key, 0, scan);
             } return 1;
 
             default: break;
@@ -187,12 +185,12 @@ B32 pWin32WindowPollEvent(PWin32Window* self, PWindowEvent* event)
     return 0;
 }
 
-void pWin32WindowSwapBuffers(PWin32Window* self)
+void rho_win32_window_swap_buffers(RWin32Window* self)
 {
     SwapBuffers(self->device);
 }
 
-B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
+RBool32 rho_win32_window_set_attribs(RWin32Window* self, RWindowAttribs attribs)
 {
     WINDOWPLACEMENT placement = {0};
 
@@ -203,8 +201,8 @@ B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
     placement.rcNormalPosition.bottom = attribs.coord_y + attribs.height;
 
     switch (attribs.visibility) {
-        case PWindowVisibility_Hide: placement.showCmd = SW_HIDE; break;
-        case PWindowVisibility_Show: placement.showCmd = SW_SHOW; break;
+        case RWindowVisibility_Hide: placement.showCmd = SW_HIDE; break;
+        case RWindowVisibility_Show: placement.showCmd = SW_SHOW; break;
 
         default: break;
     }
@@ -216,7 +214,7 @@ B32 pWin32WindowSetAttribs(PWin32Window* self, PWindowAttribs attribs)
     return 1;
 }
 
-PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
+RWindowAttribs rho_win32_window_get_attribs(RWin32Window* self)
 {
     WINDOWPLACEMENT placement = {0};
     RECT            rect      = {0};
@@ -230,8 +228,8 @@ PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
     self->attribs.height  = rect.bottom - rect.top;
 
     switch (placement.showCmd) {
-        case SW_HIDE: self->attribs.visibility = PWindowVisibility_Hide; break;
-        case SW_SHOW: self->attribs.visibility = PWindowVisibility_Show; break;
+        case SW_HIDE: self->attribs.visibility = RWindowVisibility_Hide; break;
+        case SW_SHOW: self->attribs.visibility = RWindowVisibility_Show; break;
 
         default: break;
     }
@@ -239,17 +237,17 @@ PWindowAttribs pWin32WindowGetAttribs(PWin32Window* self)
     return self->attribs;
 }
 
-B32 pWin32WindowSetTimerCallback(PWin32Window* self, void* ctxt, void* proc)
+RBool32 rho_win32_window_set_callback(RWin32Window* self, void* ctxt, void* proc)
 {
-    self->timer_ctxt = ctxt;
-    self->timer_proc = proc;
+    self->trig_ctxt = ctxt;
+    self->trig_proc = proc;
 
     return 1;
 }
 
-void* pWin32WindowGetTimerCallback(PWin32Window* self)
+void* rho_win32_window_get_callback(RWin32Window* self)
 {
-    return self->timer_proc;
+    return self->trig_proc;
 }
 
 #endif

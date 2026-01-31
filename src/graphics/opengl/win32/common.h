@@ -1,5 +1,5 @@
-#ifndef P_GRAPHICS_WIN32_OPENGL_COMMON_H
-#define P_GRAPHICS_WIN32_OPENGL_COMMON_H
+#ifndef RHO_GRAPHICS_OPENGL_WIN32_COMMON_H
+#define RHO_GRAPHICS_OPENGL_WIN32_COMMON_H
 
 #include "import.h"
 
@@ -10,6 +10,6 @@
 #include <windows.h>
 #include <wingdi.h>
 
-void* pWin32OpenglLoader(void* symbol);
+void* rWin32OpenglLoader(void* symbol);
 
 #endif

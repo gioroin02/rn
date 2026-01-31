@@ -1,11 +1,11 @@
-#ifndef P_STRUCTURE_ARRAY_C
-#define P_STRUCTURE_ARRAY_C
+#ifndef RHO_STRUCTURE_ARRAY_C
+#define RHO_STRUCTURE_ARRAY_C
 
 #include "array.h"
 
-B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int stride, PMemoryArena* arena, Int size)
+RBool32 __rho_array_create__(RArrayTag* self, void** pntr, RInt stride, RMemoryArena* arena, RInt size)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->array_size   = 0;
     self->array_count  = 0;
@@ -19,7 +19,7 @@ B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int stride, PMemoryArena* are
 
     if (size == 1) return 1;
 
-    U8* pntr_values = pMemoryArenaReserve(arena, size, stride);
+    RUint8* pntr_values = rho_memory_arena_reserve(arena, size, stride);
 
     if (pntr_values != NULL) {
         self->array_size   = size;
@@ -33,37 +33,43 @@ B32 __pArrayCreate__(PArrayTag* self, void** pntr, Int stride, PMemoryArena* are
     return 0;
 }
 
-Int __pArraySize__(PArrayTag* self)
+void __rho_array_destroy__(RArrayTag* self, void** pntr)
+{
+    rho_memory_set(pntr, sizeof *pntr, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
+}
+
+RInt __rho_array_size__(RArrayTag* self)
 {
     return self->array_size;
 }
 
-Int __pArrayCount__(PArrayTag* self)
+RInt __rho_array_count__(RArrayTag* self)
 {
     return self->array_count;
 }
 
-Int __pArrayFront__(PArrayTag* self)
+RInt __rho_array_front__(RArrayTag* self)
 {
     return 0;
 }
 
-Int __pArrayBack__(PArrayTag* self)
+RInt __rho_array_back__(RArrayTag* self)
 {
     return self->array_count > 0 ? self->array_count - 1 : 0;
 }
 
-B32 __pArrayIsEmpty__(PArrayTag* self)
+RBool32 __rho_array_is_empty__(RArrayTag* self)
 {
     return self->array_count == 0 ? 1 : 0;
 }
 
-B32 __pArrayIsFull__(PArrayTag* self)
+RBool32 __rho_array_is_full__(RArrayTag* self)
 {
     return self->array_count == self->array_size ? 1 : 0;
 }
 
-B32 __pArrayIsIndex__(PArrayTag* self, Int index)
+RBool32 __rho_array_is_index__(RArrayTag* self, RInt index)
 {
     if (index < 0 || index >= self->array_count)
         return 0;
@@ -71,44 +77,44 @@ B32 __pArrayIsIndex__(PArrayTag* self, Int index)
     return 1;
 }
 
-void __pArrayClear__(PArrayTag* self)
+void __rho_array_clear__(RArrayTag* self)
 {
     self->array_count = 0;
 }
 
-B32 __pArrayCopy__(PArrayTag* self, void* values, Int index, void* value)
+RBool32 __rho_array_copy__(RArrayTag* self, void* values, RInt index, void* value)
 {
-    Int start = self->array_stride * index;
+    RInt start = self->array_stride * index;
 
     if (index < 0 || index >= self->array_count) return 0;
 
-    pMemoryCopy(value, self->array_stride,
-        &((U8*) values)[start]);
+    rho_memory_copy(value, self->array_stride,
+        &((RUint8*) values)[start]);
 
     return 1;
 }
 
-B32 __pArraySlotOpen__(PArrayTag* self, void* values, Int index)
+RBool32 __rho_array_slot_open__(RArrayTag* self, void* values, RInt index)
 {
-    Int start = self->array_stride * index;
-    Int stop  = self->array_stride * self->array_size;
+    RInt start = self->array_stride * index;
+    RInt stop  = self->array_stride * self->array_size;
 
     if (index < 0 || index > self->array_count) return 0;
 
-    pMemoryShiftForw(&((U8*) values)[start],
+    rho_memory_shift_forw(&((RUint8*) values)[start],
         stop, self->array_stride, 0xAB);
 
     return 1;
 }
 
-B32 __pArraySlotClose__(PArrayTag* self, void* values, Int index)
+RBool32 __rho_array_slot_close__(RArrayTag* self, void* values, RInt index)
 {
-    Int start = self->array_stride * index;
-    Int stop  = self->array_stride * self->array_size;
+    RInt start = self->array_stride * index;
+    RInt stop  = self->array_stride * self->array_size;
 
     if (index < 0 || index >= self->array_count) return 0;
 
-    pMemoryShiftBack(&((U8*) values)[start],
+    rho_memory_shift_back(&((RUint8*) values)[start],
         stop, self->array_stride, 0xAB);
 
     return 1;

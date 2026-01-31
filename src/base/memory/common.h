@@ -1,53 +1,55 @@
-#ifndef P_BASE_MEMORY_COMMON_H
-#define P_BASE_MEMORY_COMMON_H
+#ifndef RHO_BASE_MEMORY_COMMON_H
+#define RHO_BASE_MEMORY_COMMON_H
 
 #include "import.h"
 
-#define P_MEMORY_ALIGNMENT ((Int) 16)
+#define RHO_MEMORY_ALIGNMENT ((RInt) 16)
 
-#define P_MEMORY_KB ((Int) 1000ll)
-#define P_MEMORY_MB ((Int) 1000000ll)
-#define P_MEMORY_GB ((Int) 1000000000ll)
+#define RHO_MEMORY_KB ((RInt) 1000ll)
+#define RHO_MEMORY_MB ((RInt) 1000000ll)
+#define RHO_MEMORY_GB ((RInt) 1000000000ll)
 
-#define pMemoryKB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_KB ? 0 : value * P_MEMORY_KB)
-#define pMemoryMB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_MB ? 0 : value * P_MEMORY_MB)
-#define pMemoryGB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_GB ? 0 : value * P_MEMORY_GB)
+#define rho_memor_kb(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_KB ? 0 : value * RHO_MEMORY_KB)
+#define rho_memory_mb(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_MB ? 0 : value * RHO_MEMORY_MB)
+#define rho_memory_gb(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_GB ? 0 : value * RHO_MEMORY_GB)
 
-#define P_MEMORY_KIB ((Int) 0x00000400ll)
-#define P_MEMORY_MIB ((Int) 0x00100000ll)
-#define P_MEMORY_GIB ((Int) 0x40000000ll)
+#define RHO_MEMORY_KIB ((RInt) 0x00000400ll)
+#define RHO_MEMORY_MIB ((RInt) 0x00100000ll)
+#define RHO_MEMORY_GIB ((RInt) 0x40000000ll)
 
-#define pMemoryKIB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_KIB ? 0 : value * P_MEMORY_KIB)
-#define pMemoryMIB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_MIB ? 0 : value * P_MEMORY_MIB)
-#define pMemoryGIB(value) (value < 0 || value > P_INT_MAX / P_MEMORY_GIB ? 0 : value * P_MEMORY_GIB)
+#define rho_memory_kib(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_KIB ? 0 : value * RHO_MEMORY_KIB)
+#define rho_memory_mib(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_MIB ? 0 : value * RHO_MEMORY_MIB)
+#define rho_memory_gib(value) (value < 0 || value > RHO_INT_MAX / RHO_MEMORY_GIB ? 0 : value * RHO_MEMORY_GIB)
 
-#define pHostByteOrderIsNetwork() (pGetHostByteOrder() == PByteOrder_Network ? 1 : 0)
-#define pHostByteOrderIsReverse() (pGetHostByteOrder() == PByteOrder_Reverse ? 1 : 0)
+#define rho_host_byte_order_is_network() (rho_host_byte_order() == RByteOrder_Network ? 1 : 0)
+#define rho_host_byte_order_is_reverse() (rho_host_byte_order() == RByteOrder_Reverse ? 1 : 0)
 
-typedef enum PByteOrder
+typedef enum RByteOrder
 {
-    PByteOrder_None,
-    PByteOrder_Network,
-    PByteOrder_Reverse,
+    RByteOrder_None,
+    RByteOrder_Network,
+    RByteOrder_Reverse,
 }
-PByteOrder;
+RByteOrder;
 
-PByteOrder pGetHostByteOrder();
+RByteOrder rho_host_byte_order();
 
-void* pMemorySet(void* pntr, Int size, U8 value);
+void* rho_memory_set(void* pntr, RInt size, RUint8 value);
 
-void* pMemoryCopy(void* pntr, Int size, void* value);
+void* rho_memory_copy(void* pntr, RInt size, void* value);
 
-void* pMemoryCopyOrSet(void* pntr, Int size, void* value, U8 other);
+void* rho_memory_copy_be(void* pntr, RInt count, RInt size, void* value);
 
-void* pMemoryShiftForw(void* pntr, Int size, Int about, U8 value);
+void* rho_memory_copy_le(void* pntr, RInt count, RInt size, void* value);
 
-void* pMemoryShiftBack(void* pntr, Int size, Int about, U8 value);
+void* rho_memory_shift_forw(void* pntr, RInt size, RInt about, RUint8 value);
 
-void* pMemoryReverse(void* pntr, Int size);
+void* rho_memory_shift_back(void* pntr, RInt size, RInt about, RUint8 value);
 
-void* pMemoryAlignPntr(void* pntr, Uint align);
+void* rho_memory_flip(void* pntr, RInt size);
 
-Int pMemoryAlignSize(Int size, Uint align);
+void* rho_memory_align_pntr(void* pntr, RUint align);
+
+RInt rho_memory_align_size(RInt size, RUint align);
 
 #endif

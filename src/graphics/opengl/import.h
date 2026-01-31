@@ -1,5 +1,5 @@
-#ifndef P_GRAPHICS_OPENGL_IMPORT_H
-#define P_GRAPHICS_OPENGL_IMPORT_H
+#ifndef RHO_GRAPHICS_OPENGL_IMPORT_H
+#define RHO_GRAPHICS_OPENGL_IMPORT_H
 
 #include "../../base/memory/export.h"
 

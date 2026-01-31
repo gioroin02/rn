@@ -1,23 +1,23 @@
-#ifndef P_SYSTEM_MEMORY_COMMON_C
-#define P_SYSTEM_MEMORY_COMMON_C
+#ifndef RHO_SYSTEM_MEMORY_COMMON_C
+#define RHO_SYSTEM_MEMORY_COMMON_C
 
 #include "common.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __pSystemMemoryPageSize__ pWin32MemoryPageSize
-    #define __pSystemMemoryReserve__  pWin32MemoryReserve
-    #define __pSystemMemoryRelease__  pWin32MemoryRelease
+    #define __rho_system_memory_page_size__ rho_win32_memory_page_size
+    #define __rho_system_memory_reserve__   rho_win32_memory_reserve
+    #define __rho_system_memory_release__   rho_win32_memory_release
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __pSystemMemoryPageSize__ pLinuxMemoryPageSize
-    #define __pSystemMemoryReserve__  pLinuxMemoryReserve
-    #define __pSystemMemoryRelease__  pLinuxMemoryRelease
+    #define __rho_system_memory_page_size__ rho_linux_memory_page_size
+    #define __rho_system_memory_reserve__   rho_linux_memory_reserve
+    #define __rho_system_memory_release__   rho_linux_memory_release
 
 #else
 
@@ -25,19 +25,19 @@
 
 #endif
 
-Int pSystemMemoryPageSize()
+RInt rho_system_memory_page_size()
 {
-    return __pSystemMemoryPageSize__();
+    return __rho_system_memory_page_size__();
 }
 
-PMemoryArena pSystemMemoryReserve(Int size)
+RMemoryArena rho_system_memory_reserve(RInt size)
 {
-    return __pSystemMemoryReserve__(size);
+    return __rho_system_memory_reserve__(size);
 }
 
-B32 pSystemMemoryRelease(PMemoryArena* arena)
+RBool32 rho_system_memory_release(RMemoryArena* arena)
 {
-    return __pSystemMemoryRelease__(arena);
+    return __rho_system_memory_release__(arena);
 }
 
 #endif

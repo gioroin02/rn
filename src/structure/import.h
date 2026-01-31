@@ -1,5 +1,5 @@
-#ifndef P_STRUCTURE_IMPORT_H
-#define P_STRUCTURE_IMPORT_H
+#ifndef RHO_STRUCTURE_IMPORT_H
+#define RHO_STRUCTURE_IMPORT_H
 
 #include "../base/memory/export.h"
 

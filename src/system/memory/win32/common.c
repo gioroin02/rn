@@ -1,48 +1,48 @@
-#ifndef P_SYSTEM_WIN32_MEMORY_COMMON_C
-#define P_SYSTEM_WIN32_MEMORY_COMMON_C
+#ifndef RHO_SYSTEM_MEMORY_WIN32_COMMON_C
+#define RHO_SYSTEM_MEMORY_WIN32_COMMON_C
 
 #include "common.h"
 
-Int pWin32MemoryPageSize()
+RInt rho_win32_memory_page_size()
 {
     SYSTEM_INFO info = {0};
 
     GetSystemInfo(&info);
 
-    return (Int) info.dwPageSize;
+    return (RInt) info.dwPageSize;
 }
 
-PMemoryArena pWin32MemoryReserve(Int size)
+RMemoryArena rho_win32_memory_reserve(RInt size)
 {
-    PMemoryArena result = pMemoryArenaMake(NULL, 0);
+    RMemoryArena result = rho_memory_arena_make(NULL, 0);
 
     if (size <= 0) return result;
 
-    Int   page   = pWin32MemoryPageSize();
+    RInt  page   = rho_win32_memory_page_size();
     void* memory = NULL;
 
-    size = pMemoryAlignSize(size, page);
+    size = rho_memory_align_size(size, page);
 
     memory = VirtualAlloc(0, size,
         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
     if (memory == NULL) return result;
 
-    return pMemoryArenaMake(memory, size);
+    return rho_memory_arena_make(memory, size);
 }
 
-B32 pWin32MemoryRelease(PMemoryArena* arena)
+RBool32 rho_win32_memory_release(RMemoryArena* arena)
 {
-    Int   page   = pWin32MemoryPageSize();
-    void* memory = pMemoryArenaPntr(arena);
-    Int   size   = pMemoryArenaSize(arena);
+    RInt  page   = rho_win32_memory_page_size();
+    void* memory = rho_memory_arena_pntr(arena);
+    RInt  size   = rho_memory_arena_size(arena);
 
     if (memory == NULL || size <= 0 || size % page != 0)
         return 0;
 
     VirtualFree(arena, 0, MEM_RELEASE);
 
-    pMemorySet(arena, sizeof *arena, 0xAB);
+    rho_memory_set(arena, sizeof *arena, 0xAB);
 
     return 1;
 }

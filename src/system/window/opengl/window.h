@@ -1,12 +1,12 @@
-#ifndef P_SYSTEM_WINDOW_OPENGL_WINDOW_H
-#define P_SYSTEM_WINDOW_OPENGL_WINDOW_H
+#ifndef RHO_SYSTEM_WINDOW_OPENGL_WINDOW_H
+#define RHO_SYSTEM_WINDOW_OPENGL_WINDOW_H
 
 #include "import.h"
 
-B32 pWindowOpenglCreate(PWindow* self, POpenglContextAttribs attribs);
+RBool32 rho_window_opengl_create(RWindow* self, ROpenglContextAttribs attribs);
 
-void pWindowOpenglDestroy(PWindow* self);
+void rho_window_opengl_destroy(RWindow* self);
 
-B32 pWindowOpenglEnable(PWindow* self, B32 state);
+RBool32 rho_window_opengl_enable(RWindow* self, RBool32 state);
 
 #endif

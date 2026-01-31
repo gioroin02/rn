@@ -1,16 +1,22 @@
-#ifndef P_SYSTEM_TIME_CLOCK_H
-#define P_SYSTEM_TIME_CLOCK_H
+#ifndef RHO_SYSTEM_TIME_CLOCK_H
+#define RHO_SYSTEM_TIME_CLOCK_H
 
 #include "import.h"
 
-typedef struct PClock { U8 __private__; } PClock;
+typedef struct RClock { RUint8 __private__; } RClock;
 
-PClock* pClockReserve(PMemoryArena* arena);
+RClock* rho_clock_reserve(RMemoryArena* arena);
 
-B32 pClockCreate(PClock* self);
+RBool32 rho_clock_create(RClock* self);
 
-void pClockDestroy(PClock* self);
+void rho_clock_destroy(RClock* self);
 
-F32 pClockElapsed(PClock* self);
+void rho_clock_tick(RClock* self);
+
+RUint rho_clock_elapsed(RClock* self);
+
+RUint rho_clock_frequency(RClock* self);
+
+RFloat32 rho_clock_seconds(RClock* self);
 
 #endif

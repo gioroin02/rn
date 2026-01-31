@@ -1,154 +1,129 @@
-#ifndef P_SYSTEM_WINDOW_EVENT_H
-#define P_SYSTEM_WINDOW_EVENT_H
+#ifndef RHO_SYSTEM_WINDOW_EVENT_H
+#define RHO_SYSTEM_WINDOW_EVENT_H
 
 #include "import.h"
 
-typedef enum PWindowKeybdKey
+typedef enum RWindowKeyboardKey
 {
-    PWindowKeybd_None,
-    PWindowKeybd_A,
-    PWindowKeybd_B,
-    PWindowKeybd_C,
-    PWindowKeybd_D,
-    PWindowKeybd_E,
-    PWindowKeybd_F,
-    PWindowKeybd_G,
-    PWindowKeybd_H,
-    PWindowKeybd_I,
-    PWindowKeybd_J,
-    PWindowKeybd_K,
-    PWindowKeybd_L,
-    PWindowKeybd_M,
-    PWindowKeybd_N,
-    PWindowKeybd_O,
-    PWindowKeybd_P,
-    PWindowKeybd_Q,
-    PWindowKeybd_R,
-    PWindowKeybd_S,
-    PWindowKeybd_T,
-    PWindowKeybd_U,
-    PWindowKeybd_V,
-    PWindowKeybd_W,
-    PWindowKeybd_X,
-    PWindowKeybd_Y,
-    PWindowKeybd_Z,
-    PWindowKeybd_0,
-    PWindowKeybd_1,
-    PWindowKeybd_2,
-    PWindowKeybd_3,
-    PWindowKeybd_4,
-    PWindowKeybd_5,
-    PWindowKeybd_6,
-    PWindowKeybd_7,
-    PWindowKeybd_8,
-    PWindowKeybd_9,
-    PWindowKeybd_Space,
-    PWindowKeybd_Minus,
-    PWindowKeybd_Equal,
-    PWindowKeybd_SquareLeft,
-    PWindowKeybd_SquareRight,
-    PWindowKeybd_BackSlash,
-    PWindowKeybd_SemiColon,
-    PWindowKeybd_Apostrophe,
-    PWindowKeybd_Grave,
-    PWindowKeybd_Comma,
-    PWindowKeybd_Period,
-    PWindowKeybd_Slash,
-    PWindowKeybd_Up,
-    PWindowKeybd_Down,
-    PWindowKeybd_Left,
-    PWindowKeybd_Right,
-    PWindowKeybd_Home,
-    PWindowKeybd_End,
-    PWindowKeybd_PageUp,
-    PWindowKeybd_PageDown,
-    PWindowKeybd_Insert,
-    PWindowKeybd_Delete,
-    PWindowKeybd_F1,
-    PWindowKeybd_F2,
-    PWindowKeybd_F3,
-    PWindowKeybd_F4,
-    PWindowKeybd_F5,
-    PWindowKeybd_F6,
-    PWindowKeybd_F7,
-    PWindowKeybd_F8,
-    PWindowKeybd_F9,
-    PWindowKeybd_F10,
-    PWindowKeybd_F11,
-    PWindowKeybd_F12,
-    PWindowKeybd_Enter,
-    PWindowKeybd_Escape,
-    PWindowKeybd_BackSpace,
-    PWindowKeybd_Tab,
+    RWindowKeyboard_None,
+    RWindowKeyboard_A,
+    RWindowKeyboard_B,
+    RWindowKeyboard_C,
+    RWindowKeyboard_D,
+    RWindowKeyboard_E,
+    RWindowKeyboard_F,
+    RWindowKeyboard_G,
+    RWindowKeyboard_H,
+    RWindowKeyboard_I,
+    RWindowKeyboard_J,
+    RWindowKeyboard_K,
+    RWindowKeyboard_L,
+    RWindowKeyboard_M,
+    RWindowKeyboard_N,
+    RWindowKeyboard_O,
+    RWindowKeyboard_P,
+    RWindowKeyboard_Q,
+    RWindowKeyboard_R,
+    RWindowKeyboard_S,
+    RWindowKeyboard_T,
+    RWindowKeyboard_U,
+    RWindowKeyboard_V,
+    RWindowKeyboard_W,
+    RWindowKeyboard_X,
+    RWindowKeyboard_Y,
+    RWindowKeyboard_Z,
+    RWindowKeyboard_0,
+    RWindowKeyboard_1,
+    RWindowKeyboard_2,
+    RWindowKeyboard_3,
+    RWindowKeyboard_4,
+    RWindowKeyboard_5,
+    RWindowKeyboard_6,
+    RWindowKeyboard_7,
+    RWindowKeyboard_8,
+    RWindowKeyboard_9,
+    RWindowKeyboard_Space,
+    RWindowKeyboard_Minus,
+    RWindowKeyboard_Equal,
+    RWindowKeyboard_SquareLeft,
+    RWindowKeyboard_SquareRight,
+    RWindowKeyboard_BackSlash,
+    RWindowKeyboard_SemiColon,
+    RWindowKeyboard_Apostrophe,
+    RWindowKeyboard_Grave,
+    RWindowKeyboard_Comma,
+    RWindowKeyboard_Period,
+    RWindowKeyboard_Slash,
+    RWindowKeyboard_Up,
+    RWindowKeyboard_Down,
+    RWindowKeyboard_Left,
+    RWindowKeyboard_Right,
+    RWindowKeyboard_Home,
+    RWindowKeyboard_End,
+    RWindowKeyboard_PageUp,
+    RWindowKeyboard_PageDown,
+    RWindowKeyboard_Insert,
+    RWindowKeyboard_Delete,
+    RWindowKeyboard_F1,
+    RWindowKeyboard_F2,
+    RWindowKeyboard_F3,
+    RWindowKeyboard_F4,
+    RWindowKeyboard_F5,
+    RWindowKeyboard_F6,
+    RWindowKeyboard_F7,
+    RWindowKeyboard_F8,
+    RWindowKeyboard_F9,
+    RWindowKeyboard_F10,
+    RWindowKeyboard_F11,
+    RWindowKeyboard_F12,
+    RWindowKeyboard_Enter,
+    RWindowKeyboard_Escape,
+    RWindowKeyboard_BackSpace,
+    RWindowKeyboard_Tab,
 }
-PWindowKeybdKey;
+RWindowKeyboardKey;
 
-typedef enum PWindowEventKind
+typedef enum RWindowEventKind
 {
-    PWindowEvent_None,
-    PWindowEvent_Quit,
-    PWindowEvent_WindowCreate,
-    PWindowEvent_WindowDestroy,
-    PWindowEvent_KeybdKey,
+    RWindowEvent_None,
+    RWindowEvent_Quit,
+    RWindowEvent_KeyboardKey,
 }
-PWindowEventKind;
+RWindowEventKind;
 
-typedef struct PWindowEventQuit
+typedef struct RWindowEventQuit
 {
     void* window;
 }
-PWindowEventQuit;
+RWindowEventQuit;
 
-typedef struct PWindowEventWindowCreate
-{
-    void* window;
-}
-PWindowEventWindowCreate;
-
-typedef struct PWindowEventWindowDestroy
-{
-    void* window;
-}
-PWindowEventWindowDestroy;
-
-typedef struct PWindowEventKeybdKey
+typedef struct RWindowEventKeyboardKey
 {
     void* window;
 
-    PWindowKeybdKey key;
+    RWindowKeyboardKey key;
 
-    Int scan;
-    B32 pressed;
+    RInt    scan;
+    RBool32 pressed;
 }
-PWindowEventKeybdKey;
+RWindowEventKeyboardKey;
 
-typedef struct PWindowEvent
+typedef struct RWindowEvent
 {
-    PWindowEventKind kind;
+    RWindowEventKind kind;
 
     union
     {
-        PWindowEventQuit          quit;
-        PWindowEventWindowCreate  window_create;
-        PWindowEventWindowDestroy window_destroy;
-        PWindowEventKeybdKey      keybd_key;
+        RWindowEventQuit        quit;
+        RWindowEventKeyboardKey keyboard_key;
     };
 }
-PWindowEvent;
+RWindowEvent;
 
-PWindowEvent
-pWindowEventNone();
+RWindowEvent rho_window_event_none();
 
-PWindowEvent
-pWindowEventQuit(void* window);
+RWindowEvent rho_window_event_quit(void* window);
 
-PWindowEvent
-pWindowEventWindowCreate(void* window);
-
-PWindowEvent
-pWindowEventWindowDestroy(void* window);
-
-PWindowEvent
-pWindowEventKeybdKey(void* window, PWindowKeybdKey key, B32 pressed, Int scan);
+RWindowEvent rho_window_event_keyboard_key(void* window, RWindowKeyboardKey key, RBool32 pressed, RInt scan);
 
 #endif

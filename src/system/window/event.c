@@ -1,71 +1,42 @@
-#ifndef P_SYSTEM_WINDOW_EVENT_C
-#define P_SYSTEM_WINDOW_EVENT_C
+#ifndef RHO_SYSTEM_WINDOW_EVENT_C
+#define RHO_SYSTEM_WINDOW_EVENT_C
 
 #include "event.h"
 
-PWindowEvent
-pWindowEventNone()
+RWindowEvent rho_window_event_none()
 {
-    PWindowEvent result = {0};
+    RWindowEvent result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind = PWindowEvent_None;
+    result.kind = RWindowEvent_None;
 
     return result;
 }
 
-PWindowEvent
-pWindowEventQuit(void* window)
+RWindowEvent rho_window_event_quit(void* window)
 {
-    PWindowEvent result = {0};
+    RWindowEvent result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind        = PWindowEvent_Quit;
+    result.kind        = RWindowEvent_Quit;
     result.quit.window = window;
 
     return result;
 }
 
-PWindowEvent
-pWindowEventWindowCreate(void* window)
+RWindowEvent rho_window_event_keyboard_key(void* window, RWindowKeyboardKey key, RBool32 pressed, RInt scan)
 {
-    PWindowEvent result = {0};
+    RWindowEvent result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind                 = PWindowEvent_WindowCreate;
-    result.window_create.window = window;
-
-    return result;
-}
-
-PWindowEvent
-pWindowEventWindowDestroy(void* window)
-{
-    PWindowEvent result = {0};
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    result.kind                  = PWindowEvent_WindowDestroy;
-    result.window_destroy.window = window;
-
-    return result;
-}
-
-PWindowEvent
-pWindowEventKeybdKey(void* window, PWindowKeybdKey key, B32 pressed, Int scan)
-{
-    PWindowEvent result = {0};
-
-    pMemorySet(&result, sizeof result, 0xAB);
-
-    result.kind              = PWindowEvent_KeybdKey;
-    result.keybd_key.window  = window;
-    result.keybd_key.key     = key;
-    result.keybd_key.pressed = pressed != 0 ? 1 : 0;
-    result.keybd_key.scan    = scan;
+    result.kind                 = RWindowEvent_KeyboardKey;
+    result.keyboard_key.window  = window;
+    result.keyboard_key.key     = key;
+    result.keyboard_key.pressed = pressed != 0 ? 1 : 0;
+    result.keyboard_key.scan    = scan;
 
     return result;
 }

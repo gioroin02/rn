@@ -1,13 +1,13 @@
-#ifndef P_GRAPHICS_OPENGL_COMMON_C
-#define P_GRAPHICS_OPENGL_COMMON_C
+#ifndef RHO_GRAPHICS_OPENGL_COMMON_C
+#define RHO_GRAPHICS_OPENGL_COMMON_C
 
 #include "common.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __pOpenglLoader__ pWin32OpenglLoader
+    #define __rho_opengl_loader__ rWin32OpenglLoader
 
 #else
 
@@ -15,9 +15,9 @@
 
 #endif
 
-void* pOpenglLoader(void* symbol)
+void* rho_opengl_loader(void* symbol)
 {
-    return __pOpenglLoader__(symbol);
+    return __rho_opengl_loader__(symbol);
 }
 
 #endif

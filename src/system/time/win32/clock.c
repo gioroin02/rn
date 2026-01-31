@@ -1,51 +1,69 @@
-#ifndef P_SYSTEM_WIN32_TIME_CLOCK_C
-#define P_SYSTEM_WIN32_TIME_CLOCK_C
+#ifndef RHO_SYSTEM_TIME_WIN32_CLOCK_C
+#define RHO_SYSTEM_TIME_WIN32_CLOCK_C
 
 #include "clock.h"
 
-PWin32Clock* pWin32ClockReserve(PMemoryArena* arena)
+RWin32Clock* rho_win32_clock_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PWin32Clock);
+    return rho_memory_arena_reserve_of(arena, RWin32Clock, 1);
 }
 
-B32 pWin32ClockCreate(PWin32Clock* self)
+RBool32 rho_win32_clock_create(RWin32Clock* self)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
+
+    self->frequency.QuadPart = 0;
+    self->counter.QuadPart   = 0;
+    self->elapsed.QuadPart   = 0;
 
     BOOL status = QueryPerformanceFrequency(&self->frequency);
 
     if (status != 0) {
         status = QueryPerformanceCounter(&self->counter);
 
-        if (status != 0)
-            return 1;
+        if (status != 0) return 1;
     }
-
-    self->counter.QuadPart   = 0;
-    self->frequency.QuadPart = 0;
 
     return 0;
 }
 
-void pWin32ClockDestroy(PWin32Clock* self)
+void rho_win32_clock_destroy(RWin32Clock* self)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-F32 pWin32ClockElapsed(PWin32Clock* self)
+void rho_win32_clock_tick(RWin32Clock* self)
 {
     LARGE_INTEGER counter = {0};
 
     BOOL status = QueryPerformanceCounter(&counter);
 
-    if (status == 0) return P_F32_NAN;
+    if (status == 0) return;
 
-    Uint diff = counter.QuadPart - self->counter.QuadPart;
-    Uint freq = self->frequency.QuadPart;
+    RUint time_next = counter.QuadPart;
+    RUint time_curr = self->counter.QuadPart;
+
+    if (time_next < time_curr) {
+        RUint spare = RHO_UINT_MAX - time_curr;
+
+        time_next += spare;
+        time_curr  = 0;
+    }
+
+    self->elapsed.QuadPart =
+        time_next - time_curr;
 
     self->counter = counter;
+}
 
-    return (F32) diff / (F32) freq;
+RUint rho_win32_clock_elapsed(RWin32Clock* self)
+{
+    return (RUint) self->elapsed.QuadPart;
+}
+
+RUint rho_win32_clock_frequency(RWin32Clock* self)
+{
+    return (RUint) self->frequency.QuadPart;
 }
 
 #endif

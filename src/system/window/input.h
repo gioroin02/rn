@@ -1,39 +1,25 @@
-#ifndef P_SYSTEM_WINDOW_INPUT_H
-#define P_SYSTEM_WINDOW_INPUT_H
+#ifndef RHO_SYSTEM_WINDOW_INPUT_H
+#define RHO_SYSTEM_WINDOW_INPUT_H
 
 #include "event.h"
 
-#define pWindowKeybdIsActive(self, key) \
-    (pWindowKeybdGet(self, key) == PWindowKeybdKeyState_Active ? 1 : 0)
-
-#define pWindowKeybdIsPressed(self, key) \
-    (pWindowKeybdGet(self, key) == PWindowKeybdKeyState_Pressed ? 1 : 0)
-
-#define pWindowKeybdIsReleased(self, key) \
-   (pWindowKeybdGet(self, key) == PWindowKeybdKeyState_Released ? 1 : 0)
-
-typedef struct PWindowKeybd
+typedef struct RWindowKeyboard
 {
-    U8 state_prev[16];
-    U8 state_curr[16];
+    RUint8 state_prev[16];
+    RUint8 state_curr[16];
 }
-PWindowKeybd;
+RWindowKeyboard;
 
-typedef enum PWindowKeybdKeyState
-{
-    PWindowKeybdKeyState_None,
-    PWindowKeybdKeyState_Active,
-    PWindowKeybdKeyState_Pressed,
-    PWindowKeybdKeyState_Released,
-}
-PWindowKeybdKeyState;
+RWindowKeyboard rho_window_keyboard_make();
 
-PWindowKeybd pWindowKeybdMake();
+void rho_window_keyboard_update(RWindowKeyboard* self, RWindowKeyboardKey key, RBool32 state);
 
-void pWindowKeybdUpdate(PWindowKeybd* self, PWindowEventKeybdKey event);
+RBool32 rho_window_keyboard_is_active(RWindowKeyboard* self, RWindowKeyboardKey key);
 
-void pWindowKeybdSet(PWindowKeybd* self, PWindowKeybdKey key, B32 state);
+RBool32 rho_window_keyboard_is_starting(RWindowKeyboard* self, RWindowKeyboardKey key);
 
-PWindowKeybdKeyState pWindowKeybdGet(PWindowKeybd* self, PWindowKeybdKey key);
+RBool32 rho_window_keyboard_is_stopping(RWindowKeyboard* self, RWindowKeyboardKey key);
+
+void rho_window_keyboard_on_event(RWindowKeyboard* self, RWindowEventKeyboardKey event);
 
 #endif

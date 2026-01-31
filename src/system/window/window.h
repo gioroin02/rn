@@ -1,62 +1,62 @@
-#ifndef P_SYSTEM_WINDOW_WINDOW_H
-#define P_SYSTEM_WINDOW_WINDOW_H
+#ifndef RHO_SYSTEM_WINDOW_WINDOW_H
+#define RHO_SYSTEM_WINDOW_WINDOW_H
 
 #include "event.h"
 
-typedef enum PWindowVisibility
+typedef enum RWindowVisibility
 {
-    PWindowVisibility_None,
-    PWindowVisibility_Hide,
-    PWindowVisibility_Show,
+    RWindowVisibility_None,
+    RWindowVisibility_Hide,
+    RWindowVisibility_Show,
 }
-PWindowVisibility;
+RWindowVisibility;
 
-typedef enum PWindowTimer
+typedef enum RWindowTrigger
 {
-    PWindowTimer_None,
-    PWindowTimer_Paint,
+    RWindowTrigger_None,
+    RWindowTrigger_Paint,
 }
-PWindowTimer;
+RWindowTrigger;
 
-typedef struct PWindowAttribs
+typedef struct RWindowAttribs
 {
-    PWindowVisibility visibility;
+    RWindowVisibility visibility;
 
-    Int coord_x;
-    Int coord_y;
+    RInt coord_x;
+    RInt coord_y;
 
-    Int width;
-    Int width_max;
-    Int width_min;
+    RInt width;
+    RInt width_max;
+    RInt width_min;
 
-    Int height;
-    Int height_max;
-    Int height_min;
+    RInt height;
+    RInt height_max;
+    RInt height_min;
 }
-PWindowAttribs;
+RWindowAttribs;
 
-typedef struct PWindow { U8 __private__; } PWindow;
+typedef struct RWindow { RUint8 __private__; } RWindow;
 
-typedef void (PWindowTimerCallback) (void*, PWindowTimer);
+typedef void (RWindowCallback) (void*, RWindowTrigger);
 
-PWindowAttribs pWindowAttribsMake();
+RWindowAttribs rho_window_attribs_make();
 
-PWindow* pWindowReserve(PMemoryArena* arena);
+RWindow* rho_window_reserve(RMemoryArena* arena);
 
-B32 pWindowCreate(PWindow* self, PString8 title, Int width, Int height);
+RBool32 rho_window_create(RWindow* self, RString8 title, RInt width, RInt height);
 
-void pWindowDestroy(PWindow* self);
+void rho_window_destroy(RWindow* self);
 
-B32 pWindowPollEvent(PWindow* self, PWindowEvent* event);
+RBool32 rho_window_poll_event(RWindow* self, RWindowEvent* event);
 
-void pWindowSwapBuffers(PWindow* self);
+void rho_window_swap_buffers(RWindow* self);
 
-B32 pWindowSetAttribs(PWindow* self, PWindowAttribs attribs);
+RBool32 rho_window_set_attribs(RWindow* self, RWindowAttribs attribs);
 
-PWindowAttribs pWindowGetAttribs(PWindow* self);
+RWindowAttribs rho_window_get_attribs(RWindow* self);
 
-B32 pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc);
+RBool32 rho_window_set_callback(RWindow* self, void* ctxt, void* proc);
 
-void* pWindowGetTimerCallback(PWindow* self);
+void* rho_window_get_callback(RWindow* self);
 
 #endif

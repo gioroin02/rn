@@ -1,14 +1,12 @@
-#ifndef P_BASE_DEFINE_H
-#define P_BASE_DEFINE_H
+#ifndef RHO_BASE_DEFINE_H
+#define RHO_BASE_DEFINE_H
 
-#define pMin(v0, v1) ((v0) < (v1) ? (v0) : (v1))
-#define pMax(v0, v1) ((v0) < (v1) ? (v1) : (v0))
+#define rho_min(v0, v1) ((v0) < (v1) ? (v0) : (v1))
+#define rho_max(v0, v1) ((v0) < (v1) ? (v1) : (v0))
 
-#define pClampTop(val, max) pMin(val, max)
-#define pClampBot(val, min) pMax(val, min)
+#define rho_clamp_top(val, max) rho_min(val, max)
+#define rho_clamp_bot(val, min) rho_max(val, min)
 
-#define pClamp(val, min, max) pMax(min, pMin(val, max))
-
-#define pOffsetOf(self, mem) ((char*) &((self)->mem) - (char*) (self))
+#define rho_clamp(val, min, max) rho_max(min, rho_min(val, max))
 
 #endif

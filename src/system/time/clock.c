@@ -1,29 +1,33 @@
-#ifndef P_SYSTEM_TIME_CLOCK_C
-#define P_SYSTEM_TIME_CLOCK_C
+#ifndef RHO_SYSTEM_TIME_CLOCK_C
+#define RHO_SYSTEM_TIME_CLOCK_C
 
 #include "clock.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PClock__ PWin32Clock
+    #define __RClock__ RWin32Clock
 
-    #define __pClockReserve__ pWin32ClockReserve
-    #define __pClockCreate__  pWin32ClockCreate
-    #define __pClockDestroy__ pWin32ClockDestroy
-    #define __pClockElapsed__ pWin32ClockElapsed
+    #define __rho_clock_reserve__   rho_win32_clock_reserve
+    #define __rho_clock_create__    rho_win32_clock_create
+    #define __rho_clock_destroy__   rho_win32_clock_destroy
+    #define __rho_clock_tick__      rho_win32_clock_tick
+    #define __rho_clock_elapsed__   rho_win32_clock_elapsed
+    #define __rho_clock_frequency__ rho_win32_clock_frequency
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __PClock__ PLinuxClock
+    #define __RClock__ RLinuxClock
 
-    #define __pClockReserve__ pLinuxClockReserve
-    #define __pClockCreate__  pLinuxClockCreate
-    #define __pClockDestroy__ pLinuxClockDestroy
-    #define __pClockElapsed__ pLinuxClockElapsed
+    #define __rho_clock_reserve__   rho_linux_clock_reserve
+    #define __rho_clock_create__    rho_linux_clock_create
+    #define __rho_clock_destroy__   rho_linux_clock_destroy
+    #define __rho_clock_tick__      rho_linux_clock_tick
+    #define __rho_clock_elapsed__   rho_linux_clock_elapsed
+    #define __rho_clock_frequency__ rho_linux_clock_frequency
 
 #else
 
@@ -31,24 +35,42 @@
 
 #endif
 
-PClock* pClockReserve(PMemoryArena* arena)
+RClock* rho_clock_reserve(RMemoryArena* arena)
 {
-    return (PClock*) __pClockReserve__(arena);
+    return (RClock*) __rho_clock_reserve__(arena);
 }
 
-B32 pClockCreate(PClock* self)
+RBool32 rho_clock_create(RClock* self)
 {
-    return __pClockCreate__((__PClock__*) self);
+    return __rho_clock_create__((__RClock__*) self);
 }
 
-void pClockDestroy(PClock* self)
+void rho_clock_destroy(RClock* self)
 {
-    return __pClockDestroy__((__PClock__*) self);
+    return __rho_clock_destroy__((__RClock__*) self);
 }
 
-F32 pClockElapsed(PClock* self)
+void rho_clock_tick(RClock* self)
 {
-    return __pClockElapsed__((__PClock__*) self);
+    return __rho_clock_tick__((__RClock__*) self);
+}
+
+RUint rho_clock_elapsed(RClock* self)
+{
+    return __rho_clock_elapsed__((__RClock__*) self);
+}
+
+RUint rho_clock_frequency(RClock* self)
+{
+    return __rho_clock_frequency__((__RClock__*) self);
+}
+
+RFloat32 rho_clock_seconds(RClock* self)
+{
+    RFloat32 elapsed   = (RFloat32) rho_clock_elapsed(self);
+    RFloat32 frequency = (RFloat32) rho_clock_frequency(self);
+
+    return elapsed / frequency;
 }
 
 #endif

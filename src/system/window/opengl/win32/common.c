@@ -1,31 +1,21 @@
-#ifndef P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C
-#define P_SYSTEM_WIN32_WINDOW_OPENGL_COMMON_C
+#ifndef RHO_SYSTEM_WINDOW_OPENGL_WIN32_COMMON_C
+#define RHO_SYSTEM_WINDOW_OPENGL_WIN32_COMMON_C
 
 #include "common.h"
 
-static volatile LONG p_win32_opengl_count = 0;
+static volatile LONG rho_win32_opengl_count = 0;
 
 WglCreateContextAttribsARB wglCreateContextAttribsARB = (WglCreateContextAttribsARB) NULL;
 WglChoosePixelFormatARB    wglChoosePixelFormatARB    = (WglChoosePixelFormatARB)    NULL;
 
-B32 pWin32WindowOpenglStart()
+static RBool32 __rho_win32_window_opengl_start__()
 {
-    if (InterlockedIncrement(&p_win32_opengl_count) == 1)
-        return pWin32WindowOpenglStartImpl();
-
-    return 1;
-}
-
-B32 pWin32WindowOpenglStartImpl()
-{
-    HWND window = CreateWindowW(L"PWindowRegular", L"WindowDummy",
+    HWND window = CreateWindowW(L"RWindowRegular", L"RWindowDummy",
         0, 0, 0, 0, 0, NULL, NULL, NULL, NULL);
 
     if (window == NULL) return 0;
 
     PIXELFORMATDESCRIPTOR descr = {0};
-
-    pMemorySet(&descr, sizeof descr, 0x00);
 
     descr.nSize      = sizeof descr;
     descr.nVersion   = 1;
@@ -35,10 +25,9 @@ B32 pWin32WindowOpenglStartImpl()
     descr.cColorBits = 24;
     descr.cColorBits = 24;
 
-    HDC device = GetDC(window);
-    int format = ChoosePixelFormat(device, &descr);
-
-    HGLRC dummy = NULL;
+    HDC   device = GetDC(window);
+    int   format = ChoosePixelFormat(device, &descr);
+    HGLRC dummy  = NULL;
 
     if (format != 0 && SetPixelFormat(device, format, &descr) != 0) {
         HGLRC context = wglCreateContext(device);
@@ -67,16 +56,24 @@ B32 pWin32WindowOpenglStartImpl()
     return 0;
 }
 
-void pWin32WindowOpenglStop()
-{
-    if (InterlockedDecrement(&p_win32_opengl_count) == 0)
-        pWin32WindowOpenglStopImpl();
-}
-
-void pWin32WindowOpenglStopImpl()
+static void __rho_win32_window_opengl_stop__()
 {
     wglChoosePixelFormatARB    = NULL;
     wglCreateContextAttribsARB = NULL;
+}
+
+RBool32 rho_win32_window_opengl_start()
+{
+    if (InterlockedIncrement(&rho_win32_opengl_count) == 1)
+        return __rho_win32_window_opengl_start__();
+
+    return 1;
+}
+
+void rho_win32_window_opengl_stop()
+{
+    if (InterlockedDecrement(&rho_win32_opengl_count) == 0)
+        __rho_win32_window_opengl_stop__();
 }
 
 #endif

@@ -1,12 +1,12 @@
-#ifndef P_SYSTEM_MEMORY_COMMON_H
-#define P_SYSTEM_MEMORY_COMMON_H
+#ifndef RHO_SYSTEM_MEMORY_COMMON_H
+#define RHO_SYSTEM_MEMORY_COMMON_H
 
 #include "import.h"
 
-Int pSystemMemoryPageSize();
+RInt rho_system_memory_page_size();
 
-PMemoryArena pSystemMemoryReserve(Int size);
+RMemoryArena rho_system_memory_reserve(RInt size);
 
-B32 pSystemMemoryRelease(PMemoryArena* arena);
+RBool32 rho_system_memory_release(RMemoryArena* arena);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_LINUX_MEMORY_COMMON_H
-#define P_SYSTEM_LINUX_MEMORY_COMMON_H
+#ifndef RHO_SYSTEM_MEMORY_LINUX_COMMON_H
+#define RHO_SYSTEM_MEMORY_LINUX_COMMON_H
 
 #include "import.h"
 
@@ -14,10 +14,10 @@
 
 #include <sys/mman.h>
 
-Int pLinuxMemoryPageSize();
+RInt rho_linux_memory_page_size();
 
-PMemoryArena pLinuxMemoryReserve(Int size);
+RMemoryArena rho_linux_memory_reserve(RInt size);
 
-B32 pLinuxMemoryRelease(PMemoryArena* arena);
+RBool32 rho_linux_memory_release(RMemoryArena* arena);
 
 #endif

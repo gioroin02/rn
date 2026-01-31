@@ -1,82 +1,94 @@
-#ifndef P_BASE_TYPE_H
-#define P_BASE_TYPE_H
+#ifndef RHO_BASE_TYPE_H
+#define RHO_BASE_TYPE_H
 
 #include "define.h"
 #include "system.h"
 
-typedef char      I8;
-typedef short     I16;
-typedef long      I32;
-typedef long long I64;
+typedef unsigned char      RUint8;
+typedef unsigned short     RUint16;
+typedef unsigned long      RUint32;
+typedef unsigned long long RUint64;
 
-#define P_I8_MAX  ((I8)  0x7F)
-#define P_I16_MAX ((I16) 0x7FFF)
-#define P_I32_MAX ((I32) 0x7FFFFFFFl)
-#define P_I64_MAX ((I64) 0x7FFFFFFFFFFFFFFFll)
+#define RHO_UINT8_MAX  ((RUint8)  0xFFu)
+#define RHO_UINT16_MAX ((RUint16) 0xFFFFu)
+#define RHO_UINT32_MAX ((RUint32) 0xFFFFFFFFlu)
+#define RHO_UINT64_MAX ((RUint64) 0xFFFFFFFFFFFFFFFFllu)
 
-#define P_I8_MIN  ((I8)  0x80)
-#define P_I16_MIN ((I16) 0x8000)
-#define P_I32_MIN ((I32) 0x80000000l)
-#define P_I64_MIN ((I64) 0x8000000000000000ll)
+#define RHO_UINT8_MIN  ((RUint8)  0u)
+#define RHO_UINT16_MIN ((RUint16) 0u)
+#define RHO_UINT32_MIN ((RUint32) 0lu)
+#define RHO_UINT64_MIN ((RUint64) 0llu)
 
-typedef unsigned char      U8;
-typedef unsigned short     U16;
-typedef unsigned long      U32;
-typedef unsigned long long U64;
+typedef signed char      RInt8;
+typedef signed short     RInt16;
+typedef signed long      RInt32;
+typedef signed long long RInt64;
 
-#define P_U8_MAX  ((U8)  0xFFu)
-#define P_U16_MAX ((U16) 0xFFFFu)
-#define P_U32_MAX ((U32) 0xFFFFFFFFlu)
-#define P_U64_MAX ((U64) 0xFFFFFFFFFFFFFFFFllu)
+#define RHO_INT8_MAX  ((RInt8)  0x7F)
+#define RHO_INT16_MAX ((RInt16) 0x7FFF)
+#define RHO_INT32_MAX ((RInt32) 0x7FFFFFFFl)
+#define RHO_INT64_MAX ((RInt64) 0x7FFFFFFFFFFFFFFFll)
 
-#define P_U8_MIN  ((U8)  0u)
-#define P_U16_MIN ((U16) 0u)
-#define P_U32_MIN ((U32) 0lu)
-#define P_U64_MIN ((U64) 0llu)
+#define RHO_INT8_MIN  ((RInt8)  0x80)
+#define RHO_INT16_MIN ((RInt16) 0x8000)
+#define RHO_INT32_MIN ((RInt32) 0x80000000l)
+#define RHO_INT64_MIN ((RInt64) 0x8000000000000000ll)
 
-typedef float  F32;
-typedef double F64;
+typedef RUint8  RBool8;
+typedef RUint16 RBool16;
+typedef RUint32 RBool32;
+typedef RUint64 RBool64;
 
-#define P_F32_NAN (- ((F32) 0.0 / (F32) 0.0))
-#define P_F64_NAN (- ((F64) 0.0 / (F64) 0.0))
+typedef float  RFloat32;
+typedef double RFloat64;
 
-typedef U8  B8;
-typedef U16 B16;
-typedef U32 B32;
-typedef U64 B64;
+#define RHO_FLOAT32_NAN (- ((RFloat32) 0.0 / (RFloat32) 0.0))
+#define RHO_FLOAT64_NAN (- ((RFloat64) 0.0 / (RFloat64) 0.0))
 
-#if P_WORD == P_WORD_32
+typedef char  RChar8;
+typedef short RChar16;
+typedef long  RChar32;
 
-    typedef I32 Int;
-    typedef U32 Uint;
+typedef long RChar;
 
-    #define P_INT_MAX P_I32_MAX
-    #define P_INT_MIN P_I32_MIN
+#if RHO_WORD == RHO_WORD_64
 
-    #define P_UINT_MAX P_U32_MAX
-    #define P_UINT_MIN P_U32_MIN
+    typedef RUint64  RUint;
+    typedef RInt64   RInt;
+    typedef RFloat64 RFloat;
 
-#elif P_WORD == P_WORD_64
+    #define RHO_UINT_MAX RHO_UINT64_MAX
+    #define RHO_UINT_MIN RHO_UINT64_MIN
 
-    typedef I64 Int;
-    typedef U64 Uint;
+    #define RHO_INT_MAX RHO_INT64_MAX
+    #define RHO_INT_MIN RHO_INT64_MIN
 
-    #define P_INT_MAX P_I64_MAX
-    #define P_INT_MIN P_I64_MIN
+    #define RHO_FLOAT_NAN RHO_FLOAT64_NAN
 
-    #define P_UINT_MAX P_U64_MAX
-    #define P_UINT_MIN P_U64_MIN
+#elif RHO_WORD == RHO_WORD_32
+
+    typedef RUint32  RUint;
+    typedef Rint32   Rint;
+    typedef RFloat32 RFloat;
+
+    #define RHO_UINT_MAX RHO_UINT32_MAX
+    #define RHO_UINT_MIN RHO_UINT32_MIN
+
+    #define RHO_INT_MAX RHO_INT32_MAX
+    #define RHO_INT_MIN RHO_INT32_MIN
+
+    #define RHO_FLOAT_NAN RHO_FLOAT32_NAN
 
 #else
 
-    typedef I16 Int;
-    typedef U16 Uint;
+    typedef RUint16 RUint;
+    typedef Rint16  Rint;
 
-    #define P_INT_MAX P_I16_MAX
-    #define P_INT_MIN P_I16_MIN
+    #define RHO_UINT_MAX RHO_UINT16_MAX
+    #define RHO_UINT_MIN RHO_UINT16_MIN
 
-    #define P_UINT_MAX P_U16_MAX
-    #define P_UINT_MIN P_U16_MIN
+    #define RHO_INT_MAX RHO_INT16_MAX
+    #define RHO_INT_MIN RHO_INT16_MIN
 
 #endif
 

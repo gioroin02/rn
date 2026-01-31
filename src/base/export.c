@@ -1,5 +1,5 @@
-#ifndef P_BASE_EXPORT_C
-#define P_BASE_EXPORT_C
+#ifndef RHO_BASE_EXPORT_C
+#define RHO_BASE_EXPORT_C
 
 #include "type.c"
 

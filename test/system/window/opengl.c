@@ -1,198 +1,112 @@
 #include "../../../src/base/string/export.h"
 #include "../../../src/system/memory/export.h"
-#include "../../../src/system/time/export.h"
 #include "../../../src/system/window/export.h"
 #include "../../../src/system/window/opengl/export.h"
-
-#include "renderer/export.h"
+#include "../../../src/system/time/export.h"
 
 #include <stdio.h>
 #include <math.h>
 
-typedef struct Vertex
-{
-    struct { F32 x, y; }    coord;
-    struct { F32 r, g, b; } color;
-}
-Vertex;
-
-#define SOURCE_VERTEX                             \
-    "#version 330 core\n"                         \
-    "\n"                                          \
-    "layout (location = 0) in vec2 vert_coord;\n" \
-    "layout (location = 1) in vec3 vert_color;\n" \
-    "\n"                                          \
-    "out vec3 frag_color;\n"                      \
-    "\n"                                          \
-    "void main() {\n"                             \
-    "    frag_color  = vert_color;\n"             \
-    "    gl_Position = vec4(vert_coord, 1, 1);\n" \
-    "}\n"
-
-#define SOURCE_FRAGMENT             \
-    "#version 330 core\n"           \
-    "\n"                            \
-    "in  vec3 frag_color;\n"        \
-    "out vec3  out_color;\n"        \
-    "\n"                            \
-    "void main() {\n"               \
-    "    out_color = frag_color;\n" \
-    "}\n"
-
 typedef struct Context
 {
-    PWindow* window;
-    PClock*  clock;
+    RWindow* window;
+    RClock*  clock;
 
-    PWindowKeybd keyboard;
+    RWindowKeyboard keyboard;
 
-    PShader       shader;
-    PBufferVertex buff_vertex;
-    PBufferIndex  buff_index;
-
-    PVertexDescr descriptor;
-
-    B32 active;
-    F32 time;
+    RBool32  active;
+    RFloat32 time;
 }
 Context;
 
-void contextUpdate(Context* self)
+void context_update(Context* self)
 {
-    if (pWindowKeybdIsReleased(&self->keyboard, PWindowKeybd_Escape) != 0)
+    if (rho_window_keyboard_is_stopping(&self->keyboard, RWindowKeyboard_Escape) != 0)
         self->active = 0;
 
-    F32 elapsed = pClockElapsed(self->clock);
+    rho_clock_tick(self->clock);
+
+    RFloat32 elapsed = rho_clock_seconds(self->clock);
 
     printf("\x1b\x63%.3f Hz\n", 1.0 / elapsed);
 
     self->time += elapsed;
-
-    PWindowAttribs attribs = pWindowGetAttribs(self->window);
-
-    glViewport(0, 0, attribs.width, attribs.height);
-
-    glClearColor(
-        0.33 * (sin(self->time * 1) + 1),
-        0.33 * (sin(self->time * 2) + 1),
-        0.33 * (sin(self->time * 3) + 1),
-        1.0);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glUseProgram(self->shader.handle);
-
-    glBindVertexArray(self->descriptor.handle);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
-
-    pWindowSwapBuffers(self->window);
 }
 
-void windowTimerCallback(Context* self, PWindow* window)
+void context_paint(Context* self)
 {
-    contextUpdate(self);
+    RWindowAttribs attribs = rho_window_get_attribs(self->window);
+
+    rho_window_swap_buffers(self->window);
+}
+
+void context_window_callback(Context* self, RWindowTrigger trigger)
+{
+    context_update(self);
+
+    switch (trigger) {
+        case RWindowTrigger_Paint:
+            context_paint(self);
+        break;
+
+        default: break;
+    }
 }
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(8));
+    RMemoryArena arena = rho_system_memory_reserve(rho_memory_kib(8));
 
     Context context;
 
-    pMemorySet(&context, sizeof context, 0xAB);
+    rho_memory_set(&context, sizeof context, 0xAB);
 
-    context.window   = pWindowReserve(&arena);
-    context.clock    = pClockReserve(&arena);
-    context.keyboard = pWindowKeybdMake();
+    context.clock    = rho_clock_reserve(&arena);
+    context.window   = rho_window_reserve(&arena);
+    context.keyboard = rho_window_keyboard_make();
     context.active   = 1;
+    context.time     = 0;
 
-    pWindowCreate(context.window, pString8("Prova"), 800, 600);
+    ROpenglContextAttribs opengl = {0};
 
-    POpenglContextAttribs opengl = {0};
-
-    opengl.profile       = POpenglProfile_Core;
+    opengl.profile       = ROpenglProfile_Core;
+    opengl.flag          = ROpenglContextFlag_Debug;
     opengl.version_major = 3;
     opengl.version_minor = 3;
-    opengl.flag          = POpenglContextFlag_Debug;
 
-    pWindowOpenglCreate(context.window, opengl);
+    rho_window_create(context.window, rho_string8("Prova"), 800, 600);
+    rho_window_opengl_create(context.window, opengl);
 
-    pClockCreate(context.clock);
+    rho_clock_create(context.clock);
 
-    PShaderSchedule schedule = {0};
+    RWindowAttribs attribs = rho_window_get_attribs(context.window);
 
-    PString8 source_vertex = pString8(SOURCE_VERTEX);
+    attribs.visibility = RWindowVisibility_Show;
 
-    pShaderScheduleCreate(&schedule, PShaderStage_Vertex);
+    rho_window_set_callback(context.window,
+        &context, context_window_callback);
 
-    B32 status_vertex = pShaderScheduleCompile(&schedule,
-        PShaderStage_Vertex, pString8(SOURCE_VERTEX));
-
-    pShaderScheduleCreate(&schedule, PShaderStage_Fragment);
-
-    B32 status_fragment = pShaderScheduleCompile(&schedule,
-        PShaderStage_Fragment, pString8(SOURCE_FRAGMENT));
-
-    pShaderCreate(&context.shader);
-
-    pShaderLink(&context.shader, &schedule);
-
-    PVertexLayout layout = {0};
-
-    pVertexLayoutPush(&layout, PVertexField_F32, 2);
-    pVertexLayoutPush(&layout, PVertexField_F32, 3);
-
-    Vertex vertex_data[] = {
-        (Vertex) {.coord = {-0.75, -0.75}, .color = {1, 0, 0}},
-        (Vertex) {.coord = {+0.75, -0.75}, .color = {0, 1, 0}},
-        (Vertex) {.coord = {-0.75, +0.75}, .color = {0, 0, 0}},
-        (Vertex) {.coord = {+0.75, +0.75}, .color = {0, 0, 1}},
-    };
-
-    U32 index_data[] = {0, 1, 2, 1, 2, 3};
-
-    pBufferVertexCreateOf(&context.buff_vertex, Vertex, 32);
-    pBufferIndexCreateOf(&context.buff_index, U32, 256);
-
-    pBufferVertexWrite(&context.buff_vertex, (U8*) vertex_data, 0, sizeof vertex_data);
-    pBufferIndexWrite(&context.buff_index,   (U8*)  index_data, 0,  sizeof index_data);
-
-    pVertexDescrCreate(&context.descriptor);
-
-    pVertexDescrApplyLayout(&context.descriptor, &layout,
-        &context.buff_vertex, &context.buff_index);
-
-    PWindowAttribs attribs = pWindowGetAttribs(context.window);
-
-    attribs.visibility = PWindowVisibility_Show;
-
-    pWindowSetTimerCallback(context.window,
-        &context, windowTimerCallback);
-
-    pWindowSetAttribs(context.window, attribs);
+    rho_window_set_attribs(context.window, attribs);
 
     while (context.active != 0) {
-        PWindowEvent event = {0};
+        RWindowEvent event = {0};
 
-        pMemorySet(&event, sizeof event, 0xAB);
+        rho_memory_set(&event, sizeof event, 0xAB);
 
-        while (pWindowPollEvent(context.window, &event) != 0) {
+        while (rho_window_poll_event(context.window, &event) != 0) {
             switch (event.kind) {
-                case PWindowEvent_Quit: context.active = 0; break;
+                case RWindowEvent_Quit: context.active = 0; break;
 
-                case PWindowEvent_KeybdKey:
-                    pWindowKeybdUpdate(&context.keyboard, event.keybd_key);
+                case RWindowEvent_KeyboardKey:
+                    rho_window_keyboard_on_event(&context.keyboard, event.keyboard_key);
                 break;
 
                 default: break;
             }
 
-            pMemorySet(&event, sizeof event, 0xAB);
+            rho_memory_set(&event, sizeof event, 0xAB);
         }
-
-        contextUpdate(&context);
     }
 
-    pWindowDestroy(context.window);
+    rho_window_destroy(context.window);
 }

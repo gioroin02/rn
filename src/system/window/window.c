@@ -1,23 +1,23 @@
-#ifndef P_SYSTEM_WINDOW_WINDOW_C
-#define P_SYSTEM_WINDOW_WINDOW_C
+#ifndef RHO_SYSTEM_WINDOW_WINDOW_C
+#define RHO_SYSTEM_WINDOW_WINDOW_C
 
 #include "window.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PWindow__ PWin32Window
+    #define __RWindow__ RWin32Window
 
-    #define __pWindowReserve__          pWin32WindowReserve
-    #define __pWindowCreate__           pWin32WindowCreate
-    #define __pWindowDestroy__          pWin32WindowDestroy
-    #define __pWindowPollEvent__        pWin32WindowPollEvent
-    #define __pWindowSwapBuffers__      pWin32WindowSwapBuffers
-    #define __pWindowSetAttribs__       pWin32WindowSetAttribs
-    #define __pWindowGetAttribs__       pWin32WindowGetAttribs
-    #define __pWindowSetTimerCallback__ pWin32WindowSetTimerCallback
-    #define __pWindowGetTimerCallback__ pWin32WindowGetTimerCallback
+    #define __rho_window_reserve__      rho_win32_window_reserve
+    #define __rho_window_create__       rho_win32_window_create
+    #define __rho_window_destroy__      rho_win32_window_destroy
+    #define __rho_window_poll_event__   rho_win32_window_poll_event
+    #define __rho_window_swap_buffers__ rho_win32_window_swap_buffers
+    #define __rho_window_set_attribs__  rho_win32_window_set_attribs
+    #define __rho_window_get_attribs__  rho_win32_window_get_attribs
+    #define __rho_window_set_callback__ rho_win32_window_set_callback
+    #define __rho_window_get_callback__ rho_win32_window_get_callback
 
 #else
 
@@ -25,13 +25,13 @@
 
 #endif
 
-PWindowAttribs pWindowAttribsMake()
+RWindowAttribs rho_window_attribs_make()
 {
-    PWindowAttribs result = {0};
+    RWindowAttribs result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.visibility = PWindowVisibility_None;
+    result.visibility = RWindowVisibility_None;
     result.coord_x    = 0;
     result.coord_y    = 0;
     result.width      = 0;
@@ -44,49 +44,49 @@ PWindowAttribs pWindowAttribsMake()
     return result;
 }
 
-PWindow* pWindowReserve(PMemoryArena* arena)
+RWindow* rho_window_reserve(RMemoryArena* arena)
 {
-    return (PWindow*) __pWindowReserve__(arena);
+    return (RWindow*) __rho_window_reserve__(arena);
 }
 
-B32 pWindowCreate(PWindow* self, PString8 title, Int width, Int height)
+RBool32 rho_window_create(RWindow* self, RString8 title, RInt width, RInt height)
 {
-    return __pWindowCreate__((__PWindow__*) self, title, width, height);
+    return __rho_window_create__((__RWindow__*) self, title, width, height);
 }
 
-void pWindowDestroy(PWindow* self)
+void rho_window_destroy(RWindow* self)
 {
-    return __pWindowDestroy__((__PWindow__*) self);
+    return __rho_window_destroy__((__RWindow__*) self);
 }
 
-B32 pWindowPollEvent(PWindow* self, PWindowEvent* event)
+RBool32 rho_window_poll_event(RWindow* self, RWindowEvent* event)
 {
-    return __pWindowPollEvent__((__PWindow__*) self, event);
+    return __rho_window_poll_event__((__RWindow__*) self, event);
 }
 
-void pWindowSwapBuffers(PWindow* self)
+void rho_window_swap_buffers(RWindow* self)
 {
-    return __pWindowSwapBuffers__((__PWindow__*) self);
+    return __rho_window_swap_buffers__((__RWindow__*) self);
 }
 
-B32 pWindowSetAttribs(PWindow* self, PWindowAttribs attribs)
+RBool32 rho_window_set_attribs(RWindow* self, RWindowAttribs attribs)
 {
-    return __pWindowSetAttribs__((__PWindow__*) self, attribs);
+    return __rho_window_set_attribs__((__RWindow__*) self, attribs);
 }
 
-PWindowAttribs pWindowGetAttribs(PWindow* self)
+RWindowAttribs rho_window_get_attribs(RWindow* self)
 {
-    return __pWindowGetAttribs__((__PWindow__*) self);
+    return __rho_window_get_attribs__((__RWindow__*) self);
 }
 
-B32 pWindowSetTimerCallback(PWindow* self, void* ctxt, void* proc)
+RBool32 rho_window_set_callback(RWindow* self, void* ctxt, void* proc)
 {
-    return __pWindowSetTimerCallback__((__PWindow__*) self, ctxt, proc);
+    return __rho_window_set_callback__((__RWindow__*) self, ctxt, proc);
 }
 
-void* pWindowGetTimerCallback(PWindow* self)
+void* rho_window_get_callback(RWindow* self)
 {
-    return __pWindowGetTimerCallback__((__PWindow__*) self);
+    return __rho_window_get_callback__((__RWindow__*) self);
 }
 
 #endif
