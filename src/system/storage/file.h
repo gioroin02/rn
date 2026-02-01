@@ -1,58 +1,58 @@
-#ifndef P_SYSTEM_STORAGE_FILE_H
-#define P_SYSTEM_STORAGE_FILE_H
+#ifndef RHO_SYSTEM_STORAGE_FILE_H
+#define RHO_SYSTEM_STORAGE_FILE_H
 
 #include "import.h"
 
-typedef enum PFileKind
+typedef enum RFileKind
 {
-    PFileKind_None,
-    PFileKind_Regular,
-    PFileKind_Directory,
+    RFileKind_None,
+    RFileKind_Regular,
+    RFileKind_Directory,
 }
-PFileKind;
+RFileKind;
 
-typedef enum PFilePerm
+typedef enum RFilePerm
 {
-    PFilePerm_None  = 0,
-    PFilePerm_Read  = 1 << 0,
-    PFilePerm_Write = 1 << 1,
+    RFilePerm_None  = 0,
+    RFilePerm_Read  = 1 << 0,
+    RFilePerm_Write = 1 << 1,
 }
-PFilePerm;
+RFilePerm;
 
-typedef enum PFileMode
+typedef enum RFileMode
 {
-    PFileMode_None   = 0,
-    PFileMode_Read   = 1 << 0,
-    PFileMode_Write  = 1 << 1,
-    PFileMode_New    = 1 << 2,
-    PFileMode_Always = 1 << 3,
-    PFileMode_Empty  = 1 << 4,
+    RFileMode_None   = 0,
+    RFileMode_Read   = 1 << 0,
+    RFileMode_Write  = 1 << 1,
+    RFileMode_New    = 1 << 2,
+    RFileMode_Always = 1 << 3,
+    RFileMode_Empty  = 1 << 4,
 }
-PFileMode;
+RFileMode;
 
-typedef struct PFileAttribs
+typedef struct RFileAttribs
 {
-    PFileKind kind;
-    PFilePerm perm;
+    RFileKind kind;
+    RFilePerm perm;
 
-    Int size;
+    RInt size;
 }
-PFileAttribs;
+RFileAttribs;
 
-typedef struct PFile { U8 __private__; } PFile;
+typedef struct RFile { RUint8 __private__; } RFile;
 
-B32 pFileAttribs(PString8 name, PFileAttribs* attribs);
+RBool32 rho_file_find(RString8 name, RFileAttribs* attribs);
 
-B32 pFileDestroy(PString8 name);
+RBool32 rho_file_delete(RString8 name);
 
-PFile* pFileReserve(PMemoryArena* arena);
+RFile* rho_file_reserve(RMemoryArena* arena);
 
-B32 pFileOpen(PFile* self, PString8 name, PFileMode mode);
+RBool32 rho_file_open(RFile* self, RString8 name, RFileMode mode);
 
-void pFileClose(PFile* self);
+void rho_file_close(RFile* self);
 
-Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop);
+RInt rho_file_write(RFile* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pFileRead(PFile* self, U8* pntr, Int start, Int stop);
+RInt rho_file_read(RFile* self, RUint8* pntr, RInt start, RInt stop);
 
 #endif

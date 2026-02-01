@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_STORAGE_FILE_H
-#define P_SYSTEM_WIN32_STORAGE_FILE_H
+#ifndef RHO_SYSTEM_WIN32_STORAGE_FILE_H
+#define RHO_SYSTEM_WIN32_STORAGE_FILE_H
 
 #include "import.h"
 
@@ -8,25 +8,25 @@
 
 #include <windows.h>
 
-typedef struct PWin32File
+typedef struct RWin32File
 {
     HANDLE     handle;
     OVERLAPPED overlap;
 }
-PWin32File;
+RWin32File;
 
-B32 pWin32FileAttribs(PString8 name, PFileAttribs* attribs);
+RBool32 rho_win32_file_find(RString8 name, RFileAttribs* attribs);
 
-B32 pWin32FileDestroy(PString8 name);
+RBool32 rho_win32_file_delete(RString8 name);
 
-PWin32File* pWin32FileReserve(PMemoryArena* arena);
+RWin32File* rho_win32_file_reserve(RMemoryArena* arena);
 
-B32 pWin32FileOpen(PWin32File* self, PString8 name, PFileMode mode);
+RBool32 rho_win32_file_open(RWin32File* self, RString8 name, RFileMode mode);
 
-void pWin32FileClose(PWin32File* self);
+void rho_win32_file_close(RWin32File* self);
 
-Int pWin32FileWrite(PWin32File* self, U8* pntr, Int start, Int stop);
+RInt rho_win32_file_write(RWin32File* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pWin32FileRead(PWin32File* self, U8* pntr, Int start, Int stop);
+RInt rho_win32_file_read(RWin32File* self, RUint8* pntr, RInt start, RInt stop);
 
 #endif

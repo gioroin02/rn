@@ -126,7 +126,7 @@ RInt rho_win32_socket_udp_read(RWin32SocketUdp* self, RUint8* pntr, RInt start, 
 
     if (count > 0 && count <= size && length > 0) {
         if (host != NULL)
-            *host = rho_wn32_addr_storage_host(&storage);
+            *host = rho_win32_addr_storage_host(&storage);
 
         return count;
     }
@@ -136,7 +136,7 @@ RInt rho_win32_socket_udp_read(RWin32SocketUdp* self, RUint8* pntr, RInt start, 
 
 RHostIp rho_win32_socket_udp_host(RWin32SocketUdp* self)
 {
-    return rho_wn32_addr_storage_host(&self->storage);
+    return rho_win32_addr_storage_host(&self->storage);
 }
 
 #endif

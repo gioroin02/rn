@@ -1,27 +1,27 @@
-#ifndef P_SYSTEM_STORAGE_ASYNC_FILE_C
-#define P_SYSTEM_STORAGE_ASYNC_FILE_C
+#ifndef RHO_SYSTEM_STORAGE_ASYNC_FILE_C
+#define RHO_SYSTEM_STORAGE_ASYNC_FILE_C
 
 #include "file.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PAsyncIoQueue__ PWin32AsyncIoQueue
-    #define __PFile__         PWin32File
+    #define __RIoQueue__ RWin32IoQueue
+    #define __RFile__    RWin32File
 
-    #define __pFileWriteAsync__ pWin32FileWriteAsync
-    #define __pFileReadAsync__  pWin32FileReadAsync
+    #define __rho_file_async_write__ rho_win32_file_async_write
+    #define __rho_file_async_read__  rho_win32_file_async_read
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __PAsyncIoQueue__ PLinuxAsyncIoQueue
-    #define __PFile__         PLinuxFile
+    #define __RIoQueue__ RLinuxIoQueue
+    #define __RFile__    RLinuxFile
 
-    #define __pFileWriteAsync__ pLinuxFileWriteAsync
-    #define __pFileReadAsync__  pLinuxFileReadAsync
+    #define __rho_file_async_write__ rho_linux_file_async_write
+    #define __rho_file_async_read__  rho_linux_file_async_read
 
 
 #else
@@ -30,13 +30,14 @@
 
 #endif
 
-PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
+RFileEvent rho_file_event_write(RFile* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt)
 {
-    PFileEvent result = {0};
+    RFileEvent result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind        = PFileEvent_Write;
+    result.family      = RIoEventFamily_File;
+    result.kind        = RFileEvent_Write;
     result.write.ctxt  = ctxt;
     result.write.file  = self;
     result.write.pntr  = pntr;
@@ -47,13 +48,14 @@ PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes
     return result;
 }
 
-PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt)
+RFileEvent rho_file_event_read(RFile* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt)
 {
-    PFileEvent result = {0};
+    RFileEvent result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind       = PFileEvent_Read;
+    result.family     = RIoEventFamily_File;
+    result.kind       = RFileEvent_Read;
     result.read.ctxt  = ctxt;
     result.read.file  = self;
     result.read.pntr  = pntr;
@@ -64,14 +66,14 @@ PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes,
     return result;
 }
 
-B32 pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_file_async_write(RFile* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt)
 {
-    return __pFileWriteAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
+    return __rho_file_async_write__((__RFile__*) self, pntr, start, stop, (__RIoQueue__*) queue, ctxt);
 }
 
-B32 pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_file_async_read(RFile* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt)
 {
-    return __pFileReadAsync__((__PFile__*) self, pntr, start, stop, (__PAsyncIoQueue__*) queue, ctxt);
+    return __rho_file_async_read__((__RFile__*) self, pntr, start, stop, (__RIoQueue__*) queue, ctxt);
 }
 
 #endif

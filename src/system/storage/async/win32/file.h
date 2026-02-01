@@ -1,36 +1,36 @@
-#ifndef P_SYSTEM_WIN32_STORAGE_ASYNC_FILE_H
-#define P_SYSTEM_WIN32_STORAGE_ASYNC_FILE_H
+#ifndef RHO_SYSTEM_WIN32_STORAGE_ASYNC_FILE_H
+#define RHO_SYSTEM_WIN32_STORAGE_ASYNC_FILE_H
 
 #include "import.h"
 
-typedef struct PWin32FileWrite
+typedef struct RWin32FileWrite
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32File* self;
+    RWin32File* self;
     void*       ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PWin32FileWrite;
+RWin32FileWrite;
 
-typedef struct PWin32FileRead
+typedef struct RWin32FileRead
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32File* self;
+    RWin32File* self;
     void*       ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PWin32FileRead;
+RWin32FileRead;
 
-B32 pWin32FileWriteAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_file_async_write(RWin32File* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt);
 
-B32 pWin32FileReadAsync(PWin32File* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_file_async_read(RWin32File* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt);
 
 #endif

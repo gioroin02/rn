@@ -5,35 +5,35 @@
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
+    RMemoryArena arena = rho_system_memory_reserve(rho_memory_mib(2));
 
-    PFile* file = pFileReserve(&arena);
+    RFile* file = rho_file_reserve(&arena);
 
-    PString8     name    = pString8("README.md");
-    PFileAttribs attribs = {0};
+    RString8     name    = rho_string8("README.md");
+    RFileAttribs attribs = {0};
 
     if (argc >= 2) {
-        name.values = (U8*) argv[1];
+        name.values = (RChar8*) argv[1];
         name.size   = 0;
 
-        for (Int i = 0; i < 4096 && name.size == 0; i += 1) {
+        for (RInt i = 0; i < 4096 && name.size == 0; i += 1) {
             if (name.values[i] == 0)
                 name.size = i + 1;
         }
     }
 
-    pFileAttribs(name, &attribs);
+    rho_file_find(name, &attribs);
 
     printf("Reading file '%.*s' (%lli bytes):\n",
         (int) name.size, name.values, attribs.size);
 
-    pFileOpen(file, name, PFileMode_Read);
+    rho_file_open(file, name, RFileMode_Read);
 
-    U8* buffer = pMemoryArenaReserveManyOf(&arena, U8, attribs.size + 1);
+    RUint8* buffer = rho_memory_arena_reserve_of(&arena, RUint8, attribs.size + 1);
 
-    Int size = pFileRead(file, buffer, 0, attribs.size);
+    RInt size = rho_file_read(file, buffer, 0, attribs.size);
 
-    for (Int i = size; i > 0; i -= 1) {
+    for (RInt i = size; i > 0; i -= 1) {
         if (buffer[i] != 0 && buffer[i] != 10 && buffer[i] != 13)
             break;
 
@@ -42,5 +42,5 @@ int main(int argc, char** argv)
 
     printf("%.*s", (int) size, buffer);
 
-    pFileClose(file);
+    rho_file_close(file);
 }

@@ -1,72 +1,72 @@
-#ifndef P_SYSTEM_LINUX_STORAGE_FILE_C
-#define P_SYSTEM_LINUX_STORAGE_FILE_C
+#ifndef RHO_SYSTEM_LINUX_STORAGE_FILE_C
+#define RHO_SYSTEM_LINUX_STORAGE_FILE_C
 
 #include "file.h"
 
-B32 pLinuxFileAttribs(PString8 name, PFileAttribs* attribs)
+RBool32 rho_linux_file_find(RString8 name, RFileAttribs* attribs)
 {
-    PLinuxFileStat stats = {0};
+    RLinuxFileStat stats = {0};
 
     int status = 0;
 
-    pMemorySet(attribs, sizeof *attribs, 0xAB);
+    rho_memory_set(attribs, sizeof *attribs, 0xAB);
 
-    attribs->kind = PFileKind_None;
-    attribs->perm = PFilePerm_None;
+    attribs->kind = RFileKind_None;
+    attribs->perm = RFilePerm_None;
     attribs->size = 0;
 
     do {
-        status = stat((I8*) name.values, &stats);
+        status = stat((RChar8*) name.values, &stats);
     }
     while(status == -1 && errno == EINTR);
 
     if (status == -1) return 0;
 
-    if (S_ISREG(stats.st_mode) != 0) attribs->kind = PFileKind_Regular;
-    if (S_ISDIR(stats.st_mode) != 0) attribs->kind = PFileKind_Directory;
+    if (S_ISREG(stats.st_mode) != 0) attribs->kind = RFileKind_Regular;
+    if (S_ISDIR(stats.st_mode) != 0) attribs->kind = RFileKind_Directory;
 
-    if (attribs->kind == PFileKind_Regular) {
+    if (attribs->kind == RFileKind_Regular) {
         attribs->size = stats.st_size;
-        attribs->perm |= PFilePerm_Read;
+        attribs->perm |= RFilePerm_Read;
     }
 
-    if (attribs->kind != PFileKind_None) return 1;
+    if (attribs->kind != RFileKind_None) return 1;
 
     return 0;
 }
 
-B32 pLinuxFileDestroy(PString8 name)
+RBool32 rho_linux_file_delete(RString8 name)
 {
     return 0;
 }
 
-PLinuxFile* pLinuxFileReserve(PMemoryArena* arena)
+RLinuxFile* rho_linux_file_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PLinuxFile);
+    return rho_memory_arena_reserve_of(arena, RLinuxFile, 1);
 }
 
-B32 pLinuxFileOpen(PLinuxFile* self, PString8 name, PFileMode mode)
+RBool32 rho_linux_file_open(RLinuxFile* self, RString8 name, RFileMode mode)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle = -1;
 
-    Int action = O_CLOEXEC;
-    Int access = 0;
+    RInt action = O_CLOEXEC;
+    RInt access = 0;
 
-    if ((mode & PFileMode_New)    != 0) action |= O_EXCL;
-    if ((mode & PFileMode_Always) != 0) action |= O_CREAT;
-    if ((mode & PFileMode_Empty)  != 0) action |= O_TRUNC;
+    if ((mode & RFileMode_New)    != 0) action |= O_EXCL;
+    if ((mode & RFileMode_Always) != 0) action |= O_CREAT;
+    if ((mode & RFileMode_Empty)  != 0) action |= O_TRUNC;
 
-    if ((mode & PFileMode_Read)  != 0) access = O_RDONLY;
-    if ((mode & PFileMode_Write) != 0) access = O_WRONLY;
+    if ((mode & RFileMode_Read)  != 0) access = O_RDONLY;
+    if ((mode & RFileMode_Write) != 0) access = O_WRONLY;
 
-    if ((mode & PFileMode_Read) != 0 && (mode & PFileMode_Write) != 0)
+    if ((mode & RFileMode_Read) != 0 && (mode & RFileMode_Write) != 0)
         access = O_RDWR;
 
     if (name.size <= 0 || action == 0) return 0;
 
-    Int handle = open((I8*) name.values, access | action, 0);
+    RInt handle = open((RChar8*) name.values, access | action, 0);
 
     if (handle == -1) return 0;
 
@@ -75,7 +75,7 @@ B32 pLinuxFileOpen(PLinuxFile* self, PString8 name, PFileMode mode)
     return 1;
 }
 
-void pLinuxFileClose(PLinuxFile* self)
+void rho_linux_file_close(RLinuxFile* self)
 {
     int status = 0;
 
@@ -86,21 +86,23 @@ void pLinuxFileClose(PLinuxFile* self)
     }
     while (status == -1 && errno == EINTR);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-Int pLinuxFileWrite(PLinuxFile* self, U8* pntr, Int start, Int stop)
+RInt rho_linux_file_write(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int result = 0;
-    Int count  = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    result = 0;
+    RInt    count  = 0;
 
     while (result < size) {
-        count = write(self->handle, memory + result,
-            size - result);
+        do {
+            count = write(self->handle, memory + result, size - result);
+        }
+        while(count == -1 && errno == EINTR);
 
         if (count > 0 && count <= size - result)
             result += count;
@@ -111,13 +113,19 @@ Int pLinuxFileWrite(PLinuxFile* self, U8* pntr, Int start, Int stop)
     return result;
 }
 
-Int pLinuxFileRead(PLinuxFile* self, U8* pntr, Int start, Int stop)
+RInt rho_linux_file_read(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int count  = read(self->handle, memory, size);
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    count  = 0;
+    int     status = 0;
+
+    do {
+        count = read(self->handle, memory, size);
+    }
+    while (count == -1 && errno == EINTR);
 
     if (count > 0 && count <= size) return count;
 

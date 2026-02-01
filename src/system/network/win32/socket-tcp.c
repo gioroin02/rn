@@ -20,7 +20,7 @@ RBool32 rho_win32_socket_tcp_create(RWin32SocketTcp* self, RHostIp host)
     RWin32AddrStorage storage = rho_win32_addr_storage_make(
         host.address, host.port, &length);
 
-    if (length == || rho_win32_network_start() == 0) return 0;
+    if (length == 0 || rho_win32_network_start() == 0) return 0;
 
     SOCKET handle = WSASocketW(storage.ss_family,
         SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);

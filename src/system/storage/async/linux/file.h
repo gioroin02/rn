@@ -1,36 +1,36 @@
-#ifndef P_SYSTEM_LINUX_STORAGE_ASYNC_FILE_H
-#define P_SYSTEM_LINUX_STORAGE_ASYNC_FILE_H
+#ifndef RHO_SYSTEM_LINUX_STORAGE_ASYNC_FILE_H
+#define RHO_SYSTEM_LINUX_STORAGE_ASYNC_FILE_H
 
 #include "import.h"
 
-typedef struct PLinuxFileWrite
+typedef struct RLinuxFileWrite
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxFile* self;
+    RLinuxFile* self;
     void*       ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PLinuxFileWrite;
+RLinuxFileWrite;
 
-typedef struct PLinuxFileRead
+typedef struct RLinuxFileRead
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxFile* self;
+    RLinuxFile* self;
     void*       ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PLinuxFileRead;
+RLinuxFileRead;
 
-B32 pLinuxFileWriteAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_file_async_write(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt);
 
-B32 pLinuxFileReadAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_file_async_read(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt);
 
 #endif

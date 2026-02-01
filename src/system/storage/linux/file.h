@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_LINUX_STORAGE_FILE_H
-#define P_SYSTEM_LINUX_STORAGE_FILE_H
+#ifndef RHO_SYSTEM_LINUX_STORAGE_FILE_H
+#define RHO_SYSTEM_LINUX_STORAGE_FILE_H
 
 #include "import.h"
 
@@ -16,26 +16,26 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-typedef struct stat PLinuxFileStat;
+typedef struct stat RLinuxFileStat;
 
-typedef struct PLinuxFile
+typedef struct RLinuxFile
 {
-    Int handle;
+    RInt handle;
 }
-PLinuxFile;
+RLinuxFile;
 
-B32 pLinuxFileAttribs(PString8 name, PFileAttribs* attribs);
+RBool32 rho_linux_file_find(RString8 name, RFileAttribs* attribs);
 
-B32 pLinuxFileDestroy(PString8 name);
+RBool32 rho_linux_file_delete(RString8 name);
 
-PLinuxFile* pLinuxFileReserve(PMemoryArena* arena);
+RLinuxFile* rho_linux_file_reserve(RMemoryArena* arena);
 
-B32 pLinuxFileOpen(PLinuxFile* self, PString8 name, PFileMode mode);
+RBool32 rho_linux_file_open(RLinuxFile* self, RString8 name, RFileMode mode);
 
-void pLinuxFileClose(PLinuxFile* self);
+void rho_linux_file_close(RLinuxFile* self);
 
-Int pLinuxFileWrite(PLinuxFile* self, U8* pntr, Int start, Int stop);
+RInt rho_linux_file_write(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pLinuxFileRead(PLinuxFile* self, U8* pntr, Int start, Int stop);
+RInt rho_linux_file_read(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop);
 
 #endif

@@ -1,56 +1,57 @@
-#ifndef P_SYSTEM_STORAGE_ASYNC_FILE_H
-#define P_SYSTEM_STORAGE_ASYNC_FILE_H
+#ifndef RHO_SYSTEM_STORAGE_ASYNC_FILE_H
+#define RHO_SYSTEM_STORAGE_ASYNC_FILE_H
 
 #include "import.h"
 
-typedef enum PFileEventKind
+typedef enum RFileEventKind
 {
-    PFileEvent_None,
-    PFileEvent_Write,
-    PFileEvent_Read,
+    RFileEvent_None,
+    RFileEvent_Write,
+    RFileEvent_Read,
 }
-PFileEventKind;
+RFileEventKind;
 
-typedef struct PFileEventWrite
+typedef struct RFileEventWrite
 {
-    void*  ctxt;
-    PFile* file;
-    U8*    pntr;
-    Int    start;
-    Int    stop;
-    Int    bytes;
+    void*   ctxt;
+    RFile*  file;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
+    RInt    bytes;
 }
-PFileEventWrite;
+RFileEventWrite;
 
-typedef struct PFileEventRead
+typedef struct RFileEventRead
 {
-    void*  ctxt;
-    PFile* file;
-    U8*    pntr;
-    Int    start;
-    Int    stop;
-    Int    bytes;
+    void*   ctxt;
+    RFile*  file;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
+    RInt    bytes;
 }
-PFileEventRead;
+RFileEventRead;
 
-typedef struct PFileEvent
+typedef struct RFileEvent
 {
-    PFileEventKind kind;
+    RIoEventFamily family;
+    RFileEventKind kind;
 
     union
     {
-        PFileEventWrite write;
-        PFileEventRead  read;
+        RFileEventWrite write;
+        RFileEventRead  read;
     };
 }
-PFileEvent;
+RFileEvent;
 
-PFileEvent pFileEventWrite(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
+RFileEvent rho_file_event_write(RFile* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt);
 
-PFileEvent pFileEventRead(PFile* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
+RFileEvent rho_file_event_read(RFile* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt);
 
-B32 pFileWriteAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_file_async_write(RFile* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt);
 
-B32 pFileReadAsync(PFile* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_file_async_read(RFile* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt);
 
 #endif

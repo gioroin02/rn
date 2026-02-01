@@ -195,7 +195,7 @@ RBool32 rho_win32_socket_tcp_async_accept(RWin32SocketTcp* self, RWin32SocketTcp
         &queue->pool, RWin32SocketTcpAccept, 1);
 
     if (result != NULL) {
-        rMemorySet(result->__buff__, sizeof result->__buff__, 0x00);
+        rho_memory_set(result->__buff__, sizeof result->__buff__, 0x00);
 
         result->self      = self;
         result->value     = value;

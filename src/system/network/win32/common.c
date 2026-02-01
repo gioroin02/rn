@@ -149,7 +149,7 @@ RInt rho_win32_addr_storage_size(RWin32AddrStorage* self)
 
 RAddressIp rho_win32_addr_storage_address(RWin32AddrStorage* self)
 {
-    RAddressIp result = rAddressIpNone();
+    RAddressIp result = rho_address_ip_none();
 
     switch (self->ss_family) {
         case AF_INET: {

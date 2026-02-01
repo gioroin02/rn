@@ -33,6 +33,6 @@ RAddressIp rho_win32_addr_storage_address(RWin32AddrStorage* self);
 
 RUint16 rho_win32_addr_storage_port(RWin32AddrStorage* self);
 
-PHostIp rho_win32_addr_storage_host(RWin32AddrStorage* self);
+RHostIp rho_win32_addr_storage_host(RWin32AddrStorage* self);
 
 #endif

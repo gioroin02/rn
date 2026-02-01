@@ -1,14 +1,14 @@
-#ifndef P_SYSTEM_LINUX_STORAGE_ASYNC_FILE_C
-#define P_SYSTEM_LINUX_STORAGE_ASYNC_FILE_C
+#ifndef RHO_SYSTEM_LINUX_STORAGE_ASYNC_FILE_C
+#define RHO_SYSTEM_LINUX_STORAGE_ASYNC_FILE_C
 
 #include "file.h"
 
-static B32 pLinuxAsyncIoQueueBindFile(PLinuxAsyncIoQueue* self, PLinuxFile* file, PLinuxAsyncIoTask* task)
+static RBool32 rLinuxIoQueueBindFile(RLinuxIoQueue* self, RLinuxFile* file, RLinuxIoTask* task)
 {
     int handle = (int) file->handle;
     int queue  = (int) self->handle;
 
-    PEpollEvent notif = {0};
+    RLinuxEpollEvent notif = {0};
 
     notif.events   = EPOLLIN | EPOLLOUT;
     notif.data.ptr = task;
@@ -23,78 +23,70 @@ static B32 pLinuxAsyncIoQueueBindFile(PLinuxAsyncIoQueue* self, PLinuxFile* file
     return status != -1 ? 1 : 0;
 }
 
-static B32 pLinuxFileWriteBegin(PLinuxFileWrite* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_file_begin_write(RLinuxFileWrite* task, RLinuxIoQueue* queue)
 {
-    PLinuxFile* self = task->self;
+    RLinuxFile* self = task->self;
 
-    pLinuxAsyncIoQueueBindFile(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rLinuxIoQueueBindFile(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxFileWriteEnd(PLinuxFileWrite* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_file_end_write(RLinuxFileWrite* task, RMemoryArena* arena)
 {
-    PLinuxFile* self  = task->self;
-    U8*         pntr  = task->pntr;
-    Int         start = task->start;
-    Int         stop  = task->stop;
+    RLinuxFile* self  = task->self;
+    RUint8*     pntr  = task->pntr;
+    RInt        start = task->start;
+    RInt        stop  = task->stop;
 
-    Int bytes = pLinuxFileWrite(self, pntr, start, stop);
+    RInt bytes = rho_linux_file_write(self, pntr, start, stop);
 
-    PFileEvent* result =
-        pMemoryArenaReserveOneOf(arena, PFileEvent);
+    RFileEvent* result =
+        rho_memory_arena_reserve_of(arena, RFileEvent, 1);
 
-    if (result != NULL) {
-        *result = pFileEventWrite((PFile*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_file_event_write(
+        (RFile*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pLinuxFileReadBegin(PLinuxFileRead* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_file_begin_read(RLinuxFileRead* task, RLinuxIoQueue* queue)
 {
-    PLinuxFile* self = task->self;
+    RLinuxFile* self = task->self;
 
-    pLinuxAsyncIoQueueBindFile(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rLinuxIoQueueBindFile(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxFileReadEnd(PLinuxFileRead* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_file_end_read(RLinuxFileRead* task, RMemoryArena* arena)
 {
-    PLinuxFile* self  = task->self;
-    U8*         pntr  = task->pntr;
-    Int         start = task->start;
-    Int         stop  = task->stop;
+    RLinuxFile* self  = task->self;
+    RUint8*     pntr  = task->pntr;
+    RInt        start = task->start;
+    RInt        stop  = task->stop;
 
-    Int bytes = pLinuxFileRead(self, pntr, start, stop);
+    RInt bytes = rho_linux_file_read(self, pntr, start, stop);
 
-    PFileEvent* result =
-        pMemoryArenaReserveOneOf(arena, PFileEvent);
+    RFileEvent* result =
+        rho_memory_arena_reserve_of(arena, RFileEvent, 1);
 
-    if (result != NULL) {
-        *result = pFileEventRead((PFile*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_file_event_read(
+        (RFile*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-B32 pLinuxFileWriteAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_file_async_write(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxFileWrite* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxFileWrite);
+    RLinuxFileWrite* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxFileWrite, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -102,22 +94,22 @@ B32 pLinuxFileWriteAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinux
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxFileWriteEnd;
+        result->callback  = rho_linux_file_end_write;
         result->list_next = NULL;
 
-        if (pLinuxFileWriteBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_file_begin_write(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pLinuxFileReadAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_file_async_read(RLinuxFile* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxFileRead* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxFileRead);
+    RLinuxFileRead* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxFileRead, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -125,13 +117,13 @@ B32 pLinuxFileReadAsync(PLinuxFile* self, U8* pntr, Int start, Int stop, PLinuxA
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxFileReadEnd;
+        result->callback  = rho_linux_file_end_read;
         result->list_next = NULL;
 
-        if (pLinuxFileReadBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_file_begin_read(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;

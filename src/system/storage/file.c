@@ -1,35 +1,35 @@
-#ifndef P_SYSTEM_STORAGE_FILE_C
-#define P_SYSTEM_STORAGE_FILE_C
+#ifndef RHO_SYSTEM_STORAGE_FILE_C
+#define RHO_SYSTEM_STORAGE_FILE_C
 
 #include "file.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PFile__ PWin32File
+    #define __RFile__ RWin32File
 
-    #define __pFileAttribs__ pWin32FileAttribs
-    #define __pFileDestroy__ pWin32FileDestroy
-    #define __pFileReserve__ pWin32FileReserve
-    #define __pFileOpen__    pWin32FileOpen
-    #define __pFileClose__   pWin32FileClose
-    #define __pFileWrite__   pWin32FileWrite
-    #define __pFileRead__    pWin32FileRead
+    #define __rho_file_find__    rho_win32_file_find
+    #define __rho_file_delete__  rho_win32_file_delete
+    #define __rho_file_reserve__ rho_win32_file_reserve
+    #define __rho_file_open__    rho_win32_file_open
+    #define __rho_file_close__   rho_win32_file_close
+    #define __rho_file_write__   rho_win32_file_write
+    #define __rho_file_read__    rho_win32_file_read
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __PFile__ PLinuxFile
+    #define __RFile__ RLinuxFile
 
-    #define __pFileAttribs__ pLinuxFileAttribs
-    #define __pFileDestroy__ pLinuxFileDestroy
-    #define __pFileReserve__ pLinuxFileReserve
-    #define __pFileOpen__    pLinuxFileOpen
-    #define __pFileClose__   pLinuxFileClose
-    #define __pFileWrite__   pLinuxFileWrite
-    #define __pFileRead__    pLinuxFileRead
+    #define __rho_file_find__    rho_linux_file_find
+    #define __rho_file_delete__  rho_linux_file_delete
+    #define __rho_file_reserve__ rho_linux_file_reserve
+    #define __rho_file_open__    rho_linux_file_open
+    #define __rho_file_close__   rho_linux_file_close
+    #define __rho_file_write__   rho_linux_file_write
+    #define __rho_file_read__    rho_linux_file_read
 
 #else
 
@@ -37,39 +37,39 @@
 
 #endif
 
-B32 pFileAttribs(PString8 name, PFileAttribs* attribs)
+RBool32 rho_file_find(RString8 name, RFileAttribs* attribs)
 {
-    return __pFileAttribs__(name, attribs);
+    return __rho_file_find__(name, attribs);
 }
 
-B32 pFileDestroy(PString8 name)
+RBool32 rho_file_delete(RString8 name)
 {
-    return __pFileDestroy__(name);
+    return __rho_file_delete__(name);
 }
 
-PFile* pFileReserve(PMemoryArena* arena)
+RFile* rho_file_reserve(RMemoryArena* arena)
 {
-    return (PFile*) __pFileReserve__(arena);
+    return (RFile*) __rho_file_reserve__(arena);
 }
 
-B32 pFileOpen(PFile* self, PString8 name, PFileMode mode)
+RBool32 rho_file_open(RFile* self, RString8 name, RFileMode mode)
 {
-    return __pFileOpen__((__PFile__*) self, name, mode);
+    return __rho_file_open__((__RFile__*) self, name, mode);
 }
 
-void pFileClose(PFile* self)
+void rho_file_close(RFile* self)
 {
-    return __pFileClose__((__PFile__*) self);
+    return __rho_file_close__((__RFile__*) self);
 }
 
-Int pFileWrite(PFile* self, U8* pntr, Int start, Int stop)
+RInt rho_file_write(RFile* self, RUint8* pntr, RInt start, RInt stop)
 {
-    return __pFileWrite__((__PFile__*) self, pntr, start, stop);
+    return __rho_file_write__((__RFile__*) self, pntr, start, stop);
 }
 
-Int pFileRead(PFile* self, U8* pntr, Int start, Int stop)
+RInt rho_file_read(RFile* self, RUint8* pntr, RInt start, RInt stop)
 {
-    return __pFileRead__((__PFile__*) self, pntr, start, stop);
+    return __rho_file_read__((__RFile__*) self, pntr, start, stop);
 }
 
 #endif
