@@ -5,23 +5,23 @@
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
+    RMemoryArena arena = rho_system_memory_reserve(rho_memory_mib(2));
 
-    PSocketTcp* socket = pSocketTcpReserve(&arena);
+    RSocketTcp* socket = rho_socket_tcp_reserve(&arena);
 
-    pSocketTcpCreate(socket, pHostIpMake(pAddressIp4Any(), 0));
-    pSocketTcpConnect(socket, pHostIpMake(pAddressIp4Self(), 50000));
+    rho_socket_tcp_create(socket,  rho_host_ip_make(rho_address_ip4_any(), 0));
+    rho_socket_tcp_connect(socket, rho_host_ip_make(rho_address_ip4_self(), 50000));
 
-    U8 buffer_write[256] = {0};
-    U8 buffer_read[256]  = {0};
+    RUint8 buffer_write[256] = {0};
+    RUint8 buffer_read[256]  = {0};
 
-    Int size = snprintf((char*) buffer_write, sizeof buffer_write, "%s", "Ciao!");
+    RInt size = snprintf((RChar8*) buffer_write, sizeof buffer_write, "%s", "Ciao!");
 
-    pSocketTcpWrite(socket, buffer_write, 0, size);
+    rho_socket_tcp_write(socket, buffer_write, 0, size);
 
-    size = pSocketTcpRead(socket, buffer_read, 0, sizeof buffer_read);
+    size = rho_socket_tcp_read(socket, buffer_read, 0, sizeof buffer_read);
 
     printf("%.*s\n", ((int) size), buffer_read);
 
-    pSocketTcpDestroy(socket);
+    rho_socket_tcp_destroy(socket);
 }

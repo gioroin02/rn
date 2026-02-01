@@ -1,37 +1,37 @@
-#ifndef P_SYSTEM_NETWORK_SOCKET_UDP_C
-#define P_SYSTEM_NETWORK_SOCKET_UDP_C
+#ifndef RHO_SYSTEM_NETWORK_SOCKET_UDP_C
+#define RHO_SYSTEM_NETWORK_SOCKET_UDP_C
 
 #include "socket-udp.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PSocketUdp__ PWin32SocketUdp
+    #define __RSocketUdp__ RWin32SocketUdp
 
-    #define __pSocketUdpReserve__ pWin32SocketUdpReserve
-    #define __pSocketUdpCreate__  pWin32SocketUdpCreate
-    #define __pSocketUdpDestroy__ pWin32SocketUdpDestroy
-    #define __pSocketUdpBind__    pWin32SocketUdpBind
-    #define __pSocketUdpBindAs__  pWin32SocketUdpBindAs
-    #define __pSocketUdpWrite__   pWin32SocketUdpWrite
-    #define __pSocketUdpRead__    pWin32SocketUdpRead
-    #define __pSocketUdpGetHost__ pWin32SocketUdpGetHost
+    #define __rho_socket_udp_reserve__ rho_win32_socket_udp_reserve
+    #define __rho_socket_udp_create__  rho_win32_socket_udp_create
+    #define __rho_socket_udp_destroy__ rho_win32_socket_udp_destroy
+    #define __rho_socket_udp_bind__    rho_win32_socket_udp_bind
+    #define __rho_socket_udp_bind_as__ rho_win32_socket_udp_bind_as
+    #define __rho_socket_udp_write__   rho_win32_socket_udp_write
+    #define __rho_socket_udp_read__    rho_win32_socket_udp_read
+    #define __rho_socket_udp_host__    rho_win32_socket_udp_host
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __PSocketUdp__ PLinuxSocketUdp
+    #define __RSocketUdp__ RLinuxSocketUdp
 
-    #define __pSocketUdpReserve__ pLinuxSocketUdpReserve
-    #define __pSocketUdpCreate__  pLinuxSocketUdpCreate
-    #define __pSocketUdpDestroy__ pLinuxSocketUdpDestroy
-    #define __pSocketUdpBind__    pLinuxSocketUdpBind
-    #define __pSocketUdpBindAs__  pLinuxSocketUdpBindAs
-    #define __pSocketUdpWrite__   pLinuxSocketUdpWrite
-    #define __pSocketUdpRead__    pLinuxSocketUdpRead
-    #define __pSocketUdpGetHost__ pLinuxSocketUdpGetHost
+    #define __rho_socket_udp_reserve__ rho_linux_socket_udp_reserve
+    #define __rho_socket_udp_create__  rho_linux_socket_udp_create
+    #define __rho_socket_udp_destroy__ rho_linux_socket_udp_destroy
+    #define __rho_socket_udp_bind__    rho_linux_socket_udp_bind
+    #define __rho_socket_udp_bind_as__ rho_linux_socket_udp_bind_as
+    #define __rho_socket_udp_write__   rho_linux_socket_udp_write
+    #define __rho_socket_udp_read__    rho_linux_socket_udp_read
+    #define __rho_socket_udp_host__    rho_linux_socket_udp_host
 
 #else
 
@@ -39,44 +39,44 @@
 
 #endif
 
-PSocketUdp* pSocketUdpReserve(PMemoryArena* arena)
+RSocketUdp* rho_socket_udp_reserve(RMemoryArena* arena)
 {
-    return (PSocketUdp*) __pSocketUdpReserve__(arena);
+    return (RSocketUdp*) __rho_socket_udp_reserve__(arena);
 }
 
-B32 pSocketUdpCreate(PSocketUdp* self, PHostIp host)
+RBool32 rho_socket_udp_create(RSocketUdp* self, RHostIp host)
 {
-    return __pSocketUdpCreate__((__PSocketUdp__*) self, host);
+    return __rho_socket_udp_create__((__RSocketUdp__*) self, host);
 }
 
-void pSocketUdpDestroy(PSocketUdp* self)
+void rho_socket_udp_destroy(RSocketUdp* self)
 {
-    return __pSocketUdpDestroy__((__PSocketUdp__*) self);
+    return __rho_socket_udp_destroy__((__RSocketUdp__*) self);
 }
 
-B32 pSocketUdpBind(PSocketUdp* self)
+RBool32 rho_socket_udp_bind(RSocketUdp* self)
 {
-    return __pSocketUdpBind__((__PSocketUdp__*) self);
+    return __rho_socket_udp_bind__((__RSocketUdp__*) self);
 }
 
-B32 pSocketUdpBindAs(PSocketUdp* self, PHostIp host)
+RBool32 rho_socket_udp_bind_as(RSocketUdp* self, RHostIp host)
 {
-    return __pSocketUdpBindAs__((__PSocketUdp__*) self, host);
+    return __rho_socket_udp_bind_as__((__RSocketUdp__*) self, host);
 }
 
-Int pSocketUdpWrite(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host)
+RInt rho_socket_udp_write(RSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host)
 {
-    return __pSocketUdpWrite__((__PSocketUdp__*) self, pntr, start, stop, host);
+    return __rho_socket_udp_write__((__RSocketUdp__*) self, pntr, start, stop, host);
 }
 
-Int pSocketUdpRead(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host)
+RInt rho_socket_udp_read(RSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host)
 {
-    return __pSocketUdpRead__((__PSocketUdp__*) self, pntr, start, stop, host);
+    return __rho_socket_udp_read__((__RSocketUdp__*) self, pntr, start, stop, host);
 }
 
-PHostIp pSocketUdpGetHost(PSocketUdp* self)
+RHostIp rho_socket_udp_host(RSocketUdp* self)
 {
-    return __pSocketUdpGetHost__((__PSocketUdp__*) self);
+    return __rho_socket_udp_host__((__RSocketUdp__*) self);
 }
 
 #endif

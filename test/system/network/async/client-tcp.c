@@ -7,38 +7,42 @@
 
 typedef struct Client
 {
-    PAsyncIoQueue* queue;
-    PSocketTcp*    socket;
+    RIoQueue*   queue;
+    RSocketTcp* socket;
 
-    B32 active;
+    RBool32 active;
 }
 Client;
 
-void clientOnTcpConnect(Client* self, PMemoryArena* arena, PSocketTcpEventConnect event)
+void client_on_tcp_connect(Client* self, RMemoryArena* arena, RSocketTcpEventConnect event)
 {
     if (event.status != 0) {
         printf("[DEBUG] Connected!\n");
 
-        U8* buffer = pMemoryArenaReserveManyOf(arena, U8, 256);
-        Int count  = snprintf((I8*) buffer, 256, "%s", "Ciao");
+        RInt size = 256;
 
-        self->active = pSocketTcpWriteAsync(
+        RUint8* buffer = rho_memory_arena_reserve_of(arena, RUint8, size);
+        RInt    count  = snprintf((RChar8*) buffer, size, "%s", "Ciao");
+
+        self->active = rho_socket_tcp_async_write(
             self->socket, buffer, 0, count, self->queue, NULL);
     }
     else self->active = 0;
 }
 
-void clientOnTcpWrite(Client* self, PMemoryArena* arena, PSocketTcpEventWrite event)
+void client_on_tcp_write(Client* self, RMemoryArena* arena, RSocketTcpEventWrite event)
 {
-    U8* buffer = pMemoryArenaReserveManyOf(arena, U8, 256);
+    RInt size = 256;
 
-    self->active = pSocketTcpReadAsync(
-        event.socket, buffer, 0, 256, self->queue, NULL);
+    RUint8* buffer = rho_memory_arena_reserve_of(arena, RUint8, size);
+
+    self->active = rho_socket_tcp_async_read(
+        event.socket, buffer, 0, size, self->queue, NULL);
 
     printf("[DEBUG] Wrote!\n");
 }
 
-void clientOnTcpRead(Client* self, PMemoryArena* arena, PSocketTcpEventRead event)
+void client_on_tcp_read(Client* self, RMemoryArena* arena, RSocketTcpEventRead event)
 {
     printf("[DEBUG] Read '%.*s'!\n", ((int) event.bytes), event.pntr + event.start);
 
@@ -47,43 +51,42 @@ void clientOnTcpRead(Client* self, PMemoryArena* arena, PSocketTcpEventRead even
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
+    RMemoryArena arena = rho_system_memory_reserve(rho_memory_mib(2));
 
     Client client = {0};
 
-    client.queue  = pAsyncIoQueueReserve(&arena);
-    client.socket = pSocketTcpReserve(&arena);
+    client.queue  = rho_io_queue_reserve(&arena);
+    client.socket = rho_socket_tcp_reserve(&arena);
 
-    PMemoryPool pool = pMemoryPoolMake(
-        pMemoryArenaReserveManyOf(&arena, U8, pMemoryKIB(16)),
-        pMemoryKIB(16), 512);
+    RMemoryPool pool = rho_memory_pool_make(
+        rho_memory_arena_reserve_of(&arena, RUint8, rho_memory_kib(16)),
+        rho_memory_kib(16), 512);
 
-    pAsyncIoQueueCreate(client.queue, pool);
-    pSocketTcpCreate(client.socket, pHostIpMake(pAddressIp4Any(), 0));
+    rho_io_queue_create(client.queue, pool);
+    rho_socket_tcp_create(client.socket, rho_host_ip_make(rho_address_ip4_any(), 0));
 
     client.active = 1;
 
-    PHostIp server = pHostIpMake(pAddressIp4Self(), 50000);
+    RHostIp host = rho_host_ip_make(rho_address_ip4_self(), 50000);
 
-    client.active = pSocketTcpConnectAsync(client.socket, server, client.queue, NULL);
+    client.active = rho_socket_tcp_async_connect(client.socket, host, client.queue, NULL);
 
     while (client.active != 0) {
-        void*             marker = pMemoryArenaTell(&arena);
-        PAsyncIoEvent*    event  = NULL;
-        PAsyncIoEventKind kind   = pAsyncIoQueuePollEvent(client.queue, 10, &arena, &event);
+        void*     marker = rho_memory_arena_tell(&arena);
+        RIoEvent* event  = rho_io_queue_poll_event(client.queue, 10, &arena);
 
-        if (kind == PAsyncIoEvent_None) continue;
+        if (event == NULL || event->family == RIoEventFamily_None) continue;
 
-        switch (kind) {
-            case PAsyncIoEvent_Tcp: {
-                PSocketTcpEvent event_tcp = *(PSocketTcpEvent*) event;
+        switch (event->family) {
+            case RIoEventFamily_Tcp: {
+                RSocketTcpEvent event_tcp = *(RSocketTcpEvent*) event;
 
-                pMemoryArenaRewind(&arena, marker);
+                rho_memory_arena_rewind(&arena, marker);
 
                 switch (event_tcp.kind) {
-                    case PSocketTcpEvent_Connect: clientOnTcpConnect(&client, &arena, event_tcp.connect); break;
-                    case PSocketTcpEvent_Write:   clientOnTcpWrite(&client, &arena, event_tcp.write); break;
-                    case PSocketTcpEvent_Read:    clientOnTcpRead(&client, &arena, event_tcp.read); break;
+                    case RSocketTcpEvent_Connect: client_on_tcp_connect(&client, &arena, event_tcp.connect); break;
+                    case RSocketTcpEvent_Write:   client_on_tcp_write(&client, &arena, event_tcp.write); break;
+                    case RSocketTcpEvent_Read:    client_on_tcp_read(&client, &arena, event_tcp.read); break;
 
                     default: break;
                 }
@@ -93,6 +96,6 @@ int main(int argc, char** argv)
         }
     }
 
-    pSocketTcpDestroy(client.socket);
-    pAsyncIoQueueDestroy(client.queue);
+    rho_socket_tcp_destroy(client.socket);
+    rho_io_queue_destroy(client.queue);
 }

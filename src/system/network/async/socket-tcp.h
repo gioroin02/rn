@@ -1,85 +1,86 @@
-#ifndef P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
-#define P_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_ASYNC_SOCKET_TCP_H
 
 #include "import.h"
 
-typedef enum PSocketTcpEventKind
+typedef enum RSocketTcpEventKind
 {
-    PSocketTcpEvent_None,
-    PSocketTcpEvent_Accept,
-    PSocketTcpEvent_Connect,
-    PSocketTcpEvent_Write,
-    PSocketTcpEvent_Read,
+    RSocketTcpEvent_None,
+    RSocketTcpEvent_Accept,
+    RSocketTcpEvent_Connect,
+    RSocketTcpEvent_Write,
+    RSocketTcpEvent_Read,
 }
-PSocketTcpEventKind;
+RSocketTcpEventKind;
 
-typedef struct PSocketTcpEventAccept
+typedef struct RSocketTcpEventAccept
 {
     void*       ctxt;
-    PSocketTcp* socket;
-    PSocketTcp* value;
+    RSocketTcp* socket;
+    RSocketTcp* value;
 }
-PSocketTcpEventAccept;
+RSocketTcpEventAccept;
 
-typedef struct PSocketTcpEventConnect
+typedef struct RSocketTcpEventConnect
 {
     void*       ctxt;
-    PSocketTcp* socket;
-    PHostIp     host;
-    B32         status;
+    RSocketTcp* socket;
+    RHostIp     host;
+    RBool32     status;
 }
-PSocketTcpEventConnect;
+RSocketTcpEventConnect;
 
-typedef struct PSocketTcpEventWrite
+typedef struct RSocketTcpEventWrite
 {
     void*       ctxt;
-    PSocketTcp* socket;
-    U8*         pntr;
-    Int         start;
-    Int         stop;
-    Int         bytes;
+    RSocketTcp* socket;
+    RUint8*     pntr;
+    RInt        start;
+    RInt        stop;
+    RInt        bytes;
 }
-PSocketTcpEventWrite;
+RSocketTcpEventWrite;
 
-typedef struct PSocketTcpEventRead
+typedef struct RSocketTcpEventRead
 {
     void*       ctxt;
-    PSocketTcp* socket;
-    U8*         pntr;
-    Int         start;
-    Int         stop;
-    Int         bytes;
+    RSocketTcp* socket;
+    RUint8*     pntr;
+    RInt        start;
+    RInt        stop;
+    RInt        bytes;
 }
-PSocketTcpEventRead;
+RSocketTcpEventRead;
 
-typedef struct PSocketTcpEvent
+typedef struct RSocketTcpEvent
 {
-    PSocketTcpEventKind kind;
+    RIoEventFamily      family;
+    RSocketTcpEventKind kind;
 
     union
     {
-        PSocketTcpEventAccept  accept;
-        PSocketTcpEventConnect connect;
-        PSocketTcpEventWrite   write;
-        PSocketTcpEventRead    read;
+        RSocketTcpEventAccept  accept;
+        RSocketTcpEventConnect connect;
+        RSocketTcpEventWrite   write;
+        RSocketTcpEventRead    read;
     };
 }
-PSocketTcpEvent;
+RSocketTcpEvent;
 
-PSocketTcpEvent pSocketTcpEventAccept(PSocketTcp* self, PSocketTcp* value, void* ctxt);
+RSocketTcpEvent rho_socket_tcp_event_accept(RSocketTcp* self, RSocketTcp* value, void* ctxt);
 
-PSocketTcpEvent pSocketTcpEventConnect(PSocketTcp* self, PHostIp host, B32 status, void* ctxt);
+RSocketTcpEvent rho_socket_tcp_event_connect(RSocketTcp* self, RHostIp host, RBool32 status, void* ctxt);
 
-PSocketTcpEvent pSocketTcpEventWrite(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
+RSocketTcpEvent rho_socket_tcp_event_write(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt);
 
-PSocketTcpEvent pSocketTcpEventRead(PSocketTcp* self, U8* pntr, Int start, Int stop, Int bytes, void* ctxt);
+RSocketTcpEvent rho_socket_tcp_event_read(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RInt bytes, void* ctxt);
 
-B32 pSocketTcpAcceptAsync(PSocketTcp* self, PSocketTcp* value, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_socket_tcp_async_accept(RSocketTcp* self, RSocketTcp* value, RIoQueue* queue, void* ctxt);
 
-B32 pSocketTcpConnectAsync(PSocketTcp* self, PHostIp host, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_socket_tcp_async_connect(RSocketTcp* self, RHostIp host, RIoQueue* queue, void* ctxt);
 
-B32 pSocketTcpWriteAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_socket_tcp_async_write(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt);
 
-B32 pSocketTcpReadAsync(PSocketTcp* self, U8* pntr, Int start, Int stop, PAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_socket_tcp_async_read(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RIoQueue* queue, void* ctxt);
 
 #endif

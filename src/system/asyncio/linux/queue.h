@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_LINUX_ASYNCIO_QUEUE_H
-#define P_SYSTEM_LINUX_ASYNCIO_QUEUE_H
+#ifndef RHO_SYSTEM_ASYNCIO_LINUX_QUEUE_H
+#define RHO_SYSTEM_ASYNCIO_LINUX_QUEUE_H
 
 #include "import.h"
 
@@ -14,47 +14,47 @@
 
 #include <sys/epoll.h>
 
-typedef struct epoll_event PEpollEvent;
+typedef struct epoll_event RLinuxEpollEvent;
 
-#define __PLinuxAsyncIoTaskTag__ struct { \
-    Int   handle;                         \
-    void* callback;                       \
-                                          \
-    PLinuxAsyncIoTask* list_next;         \
+#define __RLinuxIoTaskTag__ struct { \
+    RInt  handle;                    \
+    void* callback;                  \
+                                     \
+    RLinuxIoTask* list_next;         \
 }
 
-typedef struct PLinuxAsyncIoTask PLinuxAsyncIoTask;
+typedef struct RLinuxIoTask RLinuxIoTask;
 
-typedef struct PLinuxAsyncIoTask
+typedef struct RLinuxIoTask
 {
-    Int   handle;
+    RInt  handle;
     void* callback;
 
-    PLinuxAsyncIoTask* list_next;
+    RLinuxIoTask* list_next;
 }
-PLinuxAsyncIoTask;
+RLinuxIoTask;
 
-typedef struct PLinuxAsyncIoQueue
+typedef struct RLinuxIoQueue
 {
-    Int handle;
+    RInt handle;
 
-    PMemoryPool pool;
+    RMemoryPool pool;
 
-    PLinuxAsyncIoTask* list_front;
-    PLinuxAsyncIoTask* list_back;
+    RLinuxIoTask* list_front;
+    RLinuxIoTask* list_back;
 }
-PLinuxAsyncIoQueue;
+RLinuxIoQueue;
 
-typedef PAsyncIoEventKind (PLinuxAsyncIoProc) (void*, PMemoryArena*, PAsyncIoEvent** event);
+typedef RIoEvent* (RLinuxIoProc) (void*, RMemoryArena*);
 
-PLinuxAsyncIoQueue* pLinuxAsyncIoQueueReserve(PMemoryArena* arena);
+RLinuxIoQueue* rho_linux_io_queue_reserve(RMemoryArena* arena);
 
-B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool);
+RBool32 rho_linux_io_queue_create(RLinuxIoQueue* self, RMemoryPool pool);
 
-void pLinuxAsyncIoQueueDestroy(PLinuxAsyncIoQueue* self);
+void rho_linux_io_queue_destroy(RLinuxIoQueue* self);
 
-PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
+RIoEvent* rho_linux_io_queue_poll_event(RLinuxIoQueue* self, RInt timeout, RMemoryArena* arena);
 
-B32 pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value);
+RBool32 rho_linux_io_queue_submit(RLinuxIoQueue* self, RLinuxIoTask* value);
 
 #endif

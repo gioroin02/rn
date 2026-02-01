@@ -1,35 +1,35 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_SOCKET_TCP_H
-#define P_SYSTEM_LINUX_NETWORK_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_LINUX_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_LINUX_SOCKET_TCP_H
 
 #include "common.h"
 
-typedef struct PLinuxSocketTcp
+typedef struct RLinuxSocketTcp
 {
-    Int               handle;
-    PLinuxAddrStorage storage;
+    RInt              handle;
+    RLinuxAddrStorage storage;
 }
-PLinuxSocketTcp;
+RLinuxSocketTcp;
 
-PLinuxSocketTcp* pLinuxSocketTcpReserve(PMemoryArena* arena);
+RLinuxSocketTcp* rho_linux_socket_tcp_reserve(RMemoryArena* arena);
 
-B32 pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host);
+RBool32 rho_linux_socket_tcp_create(RLinuxSocketTcp* self, RHostIp host);
 
-B32 pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value);
+RBool32 rho_linux_socket_tcp_accept(RLinuxSocketTcp* self, RLinuxSocketTcp* value);
 
-void pLinuxSocketTcpDestroy(PLinuxSocketTcp* self);
+void rho_linux_socket_tcp_destroy(RLinuxSocketTcp* self);
 
-B32 pLinuxSocketTcpBind(PLinuxSocketTcp* self);
+RBool32 rho_linux_socket_tcp_bind(RLinuxSocketTcp* self);
 
-B32 pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host);
+RBool32 rho_linux_socket_tcp_bind_as(RLinuxSocketTcp* self, RHostIp host);
 
-B32 pLinuxSocketTcpListen(PLinuxSocketTcp* self);
+RBool32 rho_linux_socket_tcp_listen(RLinuxSocketTcp* self);
 
-B32 pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host);
+RBool32 rho_linux_socket_tcp_connect(RLinuxSocketTcp* self, RHostIp host);
 
-Int pLinuxSocketTcpWrite(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_linux_socket_tcp_write(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pLinuxSocketTcpRead(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_linux_socket_tcp_read(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-PHostIp pLinuxSocketTcpGetHost(PLinuxSocketTcp* self);
+RHostIp rho_linux_socket_tcp_host(RLinuxSocketTcp* self);
 
 #endif

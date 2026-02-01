@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_COMMON_H
-#define P_SYSTEM_LINUX_NETWORK_COMMON_H
+#ifndef RHO_SYSTEM_NETWORK_LINUX_COMMON_H
+#define RHO_SYSTEM_NETWORK_LINUX_COMMON_H
 
 #include "import.h"
 
@@ -9,19 +9,21 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-typedef struct sockaddr_storage PLinuxAddrStorage;
-typedef struct sockaddr         PLinuxAddr;
-typedef struct sockaddr_in      PLinuxAddrIp4;
-typedef struct sockaddr_in6     PLinuxAddrIp6;
+typedef struct sockaddr_storage RLinuxAddrStorage;
+typedef struct sockaddr         RLinuxAddr;
+typedef struct sockaddr_in      RLinuxAddrIp4;
+typedef struct sockaddr_in6     RLinuxAddrIp6;
 
-PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size);
+RLinuxAddrStorage rho_linux_addr_storage_make(RAddressIp address, RUint16 port, RInt* size);
 
-PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size);
+RLinuxAddrStorage rho_linux_addr_storage_make_any(RAddressIpKind kind, RUint16 port, RInt* size);
 
-Int pLinuxAddrStorageGetSize(PLinuxAddrStorage* self);
+RInt rho_linux_addr_storage_size(RLinuxAddrStorage* self);
 
-PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self);
+RAddressIp rho_linux_addr_storage_address(RLinuxAddrStorage* self);
 
-U16 pLinuxAddrStorageGetPort(PLinuxAddrStorage* self);
+RUint16 rho_linux_addr_storage_port(RLinuxAddrStorage* self);
+
+RHostIp rho_linux_addr_storage_host(RLinuxAddrStorage* self);
 
 #endif

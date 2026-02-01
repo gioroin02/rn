@@ -1,29 +1,29 @@
-#ifndef P_SYSTEM_ASYNCIO_QUEUE_C
-#define P_SYSTEM_ASYNCIO_QUEUE_C
+#ifndef RHO_SYSTEM_ASYNCIO_QUEUE_C
+#define RHO_SYSTEM_ASYNCIO_QUEUE_C
 
 #include "queue.h"
 
-#if P_SYSTEM == P_SYSTEM_WINDOWS
+#if RHO_SYSTEM == RHO_SYSTEM_WINDOWS
 
     #include "win32/export.c"
 
-    #define __PAsyncIoQueue__ PWin32AsyncIoQueue
+    #define __RIoQueue__ RWin32IoQueue
 
-    #define __pAsyncIoQueueReserve__   pWin32AsyncIoQueueReserve
-    #define __pAsyncIoQueueCreate__    pWin32AsyncIoQueueCreate
-    #define __pAsyncIoQueueDestroy__   pWin32AsyncIoQueueDestroy
-    #define __pAsyncIoQueuePollEvent__ pWin32AsyncIoQueuePollEvent
+    #define __rho_io_queue_reserve__    rho_win32_io_queue_reserve
+    #define __rho_io_queue_create__     rho_win32_io_queue_create
+    #define __rho_io_queue_destroy__    rho_win32_io_queue_destroy
+    #define __rho_io_queue_poll_event__ rho_win32_io_queue_poll_event
 
-#elif P_SYSTEM == P_SYSTEM_LINUX
+#elif RHO_SYSTEM == RHO_SYSTEM_LINUX
 
     #include "linux/export.c"
 
-    #define __PAsyncIoQueue__ PLinuxAsyncIoQueue
+    #define __RIoQueue__ RLinuxIoQueue
 
-    #define __pAsyncIoQueueReserve__   pLinuxAsyncIoQueueReserve
-    #define __pAsyncIoQueueCreate__    pLinuxAsyncIoQueueCreate
-    #define __pAsyncIoQueueDestroy__   pLinuxAsyncIoQueueDestroy
-    #define __pAsyncIoQueuePollEvent__ pLinuxAsyncIoQueuePollEvent
+    #define __rho_io_queue_reserve__    rho_linux_io_queue_reserve
+    #define __rho_io_queue_create__     rho_linux_io_queue_create
+    #define __rho_io_queue_destroy__    rho_linux_io_queue_destroy
+    #define __rho_io_queue_poll_event__ rho_linux_io_queue_poll_event
 
 
 #else
@@ -32,24 +32,24 @@
 
 #endif
 
-PAsyncIoQueue* pAsyncIoQueueReserve(PMemoryArena* arena)
+RIoQueue* rho_io_queue_reserve(RMemoryArena* arena)
 {
-    return (PAsyncIoQueue*) __pAsyncIoQueueReserve__(arena);
+    return (RIoQueue*) __rho_io_queue_reserve__(arena);
 }
 
-B32 pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool)
+RBool32 rho_io_queue_create(RIoQueue* self, RMemoryPool pool)
 {
-    return __pAsyncIoQueueCreate__((__PAsyncIoQueue__*) self, pool);
+    return __rho_io_queue_create__((__RIoQueue__*) self, pool);
 }
 
-void pAsyncIoQueueDestroy(PAsyncIoQueue* self)
+void rho_io_queue_destroy(RIoQueue* self)
 {
-    return __pAsyncIoQueueDestroy__((__PAsyncIoQueue__*) self);
+    return __rho_io_queue_destroy__((__RIoQueue__*) self);
 }
 
-PAsyncIoEventKind pAsyncIoQueuePollEvent(PAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event)
+RIoEvent* rho_io_queue_poll_event(RIoQueue* self, RInt timeout, RMemoryArena* arena)
 {
-    return __pAsyncIoQueuePollEvent__((__PAsyncIoQueue__*) self, timeout, arena, event);
+    return __rho_io_queue_poll_event__((__RIoQueue__*) self, timeout, arena);
 }
 
 #endif

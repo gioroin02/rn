@@ -1,9 +1,9 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_ASYNC_SOCKET_TCP_C
-#define P_SYSTEM_WIN32_NETWORK_ASYNC_SOCKET_TCP_C
+#ifndef RHO_SYSTEM_NETWORK_ASYNC_WIN32_SOCKET_TCP_C
+#define RHO_SYSTEM_NETWORK_ASYNC_WIN32_SOCKET_TCP_C
 
 #include "socket-tcp.h"
 
-static B32 pWin32AsyncIoQueueBindSocketTcp(PWin32AsyncIoQueue* self, PWin32SocketTcp* socket)
+static RBool32 rho_win32_io_queue_bind_socket_tcp(RWin32IoQueue* self, RWin32SocketTcp* socket)
 {
     HANDLE handle = (HANDLE) socket->handle;
     HANDLE result = CreateIoCompletionPort(handle, self->handle, 0, 0);
@@ -11,16 +11,16 @@ static B32 pWin32AsyncIoQueueBindSocketTcp(PWin32AsyncIoQueue* self, PWin32Socke
     return result != NULL ? 1 : 0;
 }
 
-static B32 pWin32SocketTcpAcceptBegin(PWin32SocketTcpAccept* task, PWin32AsyncIoQueue* queue)
+static RBool32 rho_win32_socket_tcp_begin_accept(RWin32SocketTcpAccept* task, RWin32IoQueue* queue)
 {
-    PWin32SocketTcp* self   = task->self;
-    PWin32SocketTcp* value  = task->value;
-    U8*              buffer = task->__buff__;
-    Int              size   = sizeof task->__buff__ / 2;
+    RWin32SocketTcp* self   = task->self;
+    RWin32SocketTcp* value  = task->value;
+    RUint8*          buffer = task->__buff__;
+    RInt             size   = sizeof task->__buff__ / 2;
 
-    if (pWin32AsyncIoQueueBindSocketTcp(queue, value) == 0) return 0;
+    if (rho_win32_io_queue_bind_socket_tcp(queue, value) == 0) return 0;
 
-    pWin32AsyncIoQueueBindSocketTcp(queue, self);
+    rho_win32_io_queue_bind_socket_tcp(queue, self);
 
     BOOL status = WSAAcceptEx(self->handle, value->handle,
         buffer, 0, size, size, NULL, &task->overlap);
@@ -31,52 +31,48 @@ static B32 pWin32SocketTcpAcceptBegin(PWin32SocketTcpAccept* task, PWin32AsyncIo
     return 1;
 }
 
-static PAsyncIoEventKind pWin32SocketTcpAcceptEnd(PWin32SocketTcpAccept* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_win32_socket_tcp_end_accept(RWin32SocketTcpAccept* task, RInt bytes, RMemoryArena* arena)
 {
-    PWin32SocketTcp* self  = task->self;
-    PWin32SocketTcp* value = task->value;
+    RWin32SocketTcp* self  = task->self;
+    RWin32SocketTcp* value = task->value;
 
     setsockopt(value->handle, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT,
-        (I8*) &self->handle, sizeof self->handle);
+        (RChar8*) &self->handle, sizeof self->handle);
 
-    PWin32AddrStorage storage = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
-    Int               length   = sizeof storage;
+    RWin32AddrStorage storage = {0};
+    RWin32Addr*       sockaddr = (RWin32Addr*) &storage;
+    RInt              length   = sizeof storage;
 
     getsockname(value->handle, sockaddr, (int*) &length);
 
     value->storage = storage;
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventAccept((PSocketTcp*) self,
-            (PSocketTcp*) value, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_accept(
+        (RSocketTcp*) self, (RSocketTcp*) value, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pWin32SocketTcpConnectBegin(PWin32SocketTcpConnect* task, PWin32AsyncIoQueue* queue)
+static RBool32 rho_win32_socket_tcp_begin_connect(RWin32SocketTcpConnect* task, RWin32IoQueue* queue)
 {
-    PWin32SocketTcp* self = task->self;
-    PHostIp          host = task->host;
+    RWin32SocketTcp* self   = task->self;
+    RHostIp          host   = task->host;
+    RInt             length = 0;
 
-    pWin32AsyncIoQueueBindSocketTcp(queue, self);
+    rho_win32_io_queue_bind_socket_tcp(queue, self);
 
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
-    Int               length   = 0;
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32Addr* sockaddr = (RWin32Addr*) &storage;
 
-    BOOL status = WSAConnectEx(self->handle, sockaddr,
-        length, 0, 0, NULL, &task->overlap);
+    BOOL status = WSAConnectEx(self->handle, sockaddr, length,
+        0, 0, NULL, &task->overlap);
 
     if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
         return 0;
@@ -84,47 +80,44 @@ static B32 pWin32SocketTcpConnectBegin(PWin32SocketTcpConnect* task, PWin32Async
     return 1;
 }
 
-static PAsyncIoEventKind pWin32SocketTcpConnectEnd(PWin32SocketTcpConnect* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_win32_socket_tcp_end_connect(RWin32SocketTcpConnect* task, RInt bytes, RMemoryArena* arena)
 {
-    PWin32SocketTcp* self = task->self;
-    PHostIp          host = task->host;
+    RWin32SocketTcp* self = task->self;
+    RHostIp          host = task->host;
 
     // NOTE(Gio): This is useless but must not be null.
-    Int flag = 0;
+    RInt flag = 0;
 
     setsockopt(self->handle, SOL_SOCKET, SO_UPDATE_CONNECT_CONTEXT, NULL, 0);
+
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
+
+    if (result == NULL) return NULL;
 
     BOOL status = WSAGetOverlappedResult(self->handle,
         &task->overlap, (DWORD*) &bytes, 0, (DWORD*) &flag);
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    *result = rho_socket_tcp_event_connect(
+        (RSocketTcp*) self, host, status, task->ctxt);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventConnect((PSocketTcp*) self,
-            host, status != 0 ? 1 : 0, task->ctxt);
-
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
-
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pWin32SocketTcpWriteBegin(PWin32SocketTcpWrite* task, PWin32AsyncIoQueue* queue)
+static RBool32 rho_win32_socket_tcp_begin_write(RWin32SocketTcpWrite* task, RWin32IoQueue* queue)
 {
-    PWin32SocketTcp* self   = task->self;
-    I8*              pntr   = ((I8*) task->pntr) + task->start;
-    Int              size   = task->stop - task->start;
+    RWin32SocketTcp* self   = task->self;
+    RChar8*          pntr   = ((RChar8*) task->pntr) + task->start;
+    RInt             size   = task->stop - task->start;
     WSABUF*          buffer = &task->buffer;
 
-    pWin32AsyncIoQueueBindSocketTcp(queue, self);
+    rho_win32_io_queue_bind_socket_tcp(queue, self);
 
     buffer->buf = pntr;
     buffer->len = size;
 
-    int status = WSASend(self->handle, buffer, 1, NULL, 0, &task->overlap, NULL);
+    int status = WSASend(self->handle, buffer, 1, NULL, 0,
+        &task->overlap, NULL);
 
     if (status == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING)
         return 0;
@@ -132,39 +125,35 @@ static B32 pWin32SocketTcpWriteBegin(PWin32SocketTcpWrite* task, PWin32AsyncIoQu
     return 1;
 }
 
-static PAsyncIoEventKind pWin32SocketTcpWriteEnd(PWin32SocketTcpWrite* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_win32_socket_tcp_end_write(RWin32SocketTcpWrite* task, RInt bytes, RMemoryArena* arena)
 {
-    PWin32SocketTcp* self  = task->self;
-    U8*              pntr  = task->pntr;
-    Int              start = task->start;
-    Int              stop  = task->stop;
+    RWin32SocketTcp* self  = task->self;
+    RUint8*          pntr  = task->pntr;
+    RInt             start = task->start;
+    RInt             stop  = task->stop;
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventWrite((PSocketTcp*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_write(
+        (RSocketTcp*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pWin32SocketTcpReadBegin(PWin32SocketTcpRead* task, PWin32AsyncIoQueue* queue)
+static RBool32 rho_win32_socket_tcp_begin_read(RWin32SocketTcpRead* task, RWin32IoQueue* queue)
 {
-    PWin32SocketTcp* self   = task->self;
-    I8*              pntr   = ((I8*) task->pntr) + task->start;
-    Int              size   = task->stop - task->start;
+    RWin32SocketTcp* self   = task->self;
+    RChar8*          pntr   = ((RChar8*) task->pntr) + task->start;
+    RInt             size   = task->stop - task->start;
     WSABUF*          buffer = &task->buffer;
 
     // NOTE(Gio): This parameter is useless but must not be null.
-    Int flag = 0;
+    RInt flag = 0;
 
-    pWin32AsyncIoQueueBindSocketTcp(queue, self);
+    rho_win32_io_queue_bind_socket_tcp(queue, self);
 
     buffer->buf = pntr;
     buffer->len = size;
@@ -178,84 +167,80 @@ static B32 pWin32SocketTcpReadBegin(PWin32SocketTcpRead* task, PWin32AsyncIoQueu
     return 1;
 }
 
-static PAsyncIoEventKind pWin32SocketTcpReadEnd(PWin32SocketTcpRead* task, Int bytes, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_win32_socket_tcp_end_read(RWin32SocketTcpRead* task, RInt bytes, RMemoryArena* arena)
 {
-    PWin32SocketTcp* self  = task->self;
-    U8*              pntr  = task->pntr;
-    Int              start = task->start;
-    Int              stop  = task->stop;
+    RWin32SocketTcp* self  = task->self;
+    RUint8*          pntr  = task->pntr;
+    RInt             start = task->start;
+    RInt             stop  = task->stop;
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventRead((PSocketTcp*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_read(
+        (RSocketTcp*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-B32 pWin32SocketTcpAcceptAsync(PWin32SocketTcp* self, PWin32SocketTcp* value, PWin32AsyncIoQueue* queue, void* ctxt)
+RBool32 rho_win32_socket_tcp_async_accept(RWin32SocketTcp* self, RWin32SocketTcp* value, RWin32IoQueue* queue, void* ctxt)
 {
-    PHostIp host = pWin32SocketTcpGetHost(self);
+    RHostIp host = rho_win32_socket_tcp_host(self);
 
-    if (pWin32SocketTcpCreate(value, host) == 0) return 0;
+    if (rho_win32_socket_tcp_create(value, host) == 0) return 0;
 
-    PWin32SocketTcpAccept* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpAccept);
+    RWin32SocketTcpAccept* result = rho_memory_pool_reserve_of(
+        &queue->pool, RWin32SocketTcpAccept, 1);
 
     if (result != NULL) {
-        pMemorySet(result->__buff__, sizeof result->__buff__, 0x00);
+        rMemorySet(result->__buff__, sizeof result->__buff__, 0x00);
 
         result->self      = self;
         result->value     = value;
         result->ctxt      = ctxt;
         result->overlap   = (OVERLAPPED) {0};
-        result->callback  = pWin32SocketTcpAcceptEnd;
+        result->callback  = rho_win32_socket_tcp_end_accept;
         result->list_next = NULL;
 
-        if (pWin32SocketTcpAcceptBegin(result, queue) != 0)
-            return pWin32AsyncIoQueueSubmit(queue, (PWin32AsyncIoTask*) result);
+        if (rho_win32_socket_tcp_begin_accept(result, queue) != 0)
+            return rho_win32_io_queue_submit(queue, (RWin32IoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pWin32SocketTcpConnectAsync(PWin32SocketTcp* self, PHostIp host, PWin32AsyncIoQueue* queue, void* ctxt)
+RBool32 rho_win32_socket_tcp_async_connect(RWin32SocketTcp* self, RHostIp host, RWin32IoQueue* queue, void* ctxt)
 {
-    if (pWin32SocketTcpBind(self) == 0) return 0;
+    if (rho_win32_socket_tcp_bind(self) == 0) return 0;
 
-    PWin32SocketTcpConnect* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpConnect);
+    RWin32SocketTcpConnect* result = rho_memory_pool_reserve_of(
+        &queue->pool, RWin32SocketTcpConnect, 1);
 
     if (result != NULL) {
         result->self      = self;
         result->host      = host;
         result->ctxt      = ctxt;
         result->overlap   = (OVERLAPPED) {0};
-        result->callback  = pWin32SocketTcpConnectEnd;
+        result->callback  = rho_win32_socket_tcp_end_connect;
         result->list_next = NULL;
 
-        if (pWin32SocketTcpConnectBegin(result, queue) != 0)
-            return pWin32AsyncIoQueueSubmit(queue, (PWin32AsyncIoTask*) result);
+        if (rho_win32_socket_tcp_begin_connect(result, queue) != 0)
+            return rho_win32_io_queue_submit(queue, (RWin32IoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pWin32SocketTcpWriteAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
+RBool32 rho_win32_socket_tcp_async_write(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt)
 {
-    PWin32SocketTcpWrite* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpWrite);
+    RWin32SocketTcpWrite* result = rho_memory_pool_reserve_of(
+        &queue->pool, RWin32SocketTcpWrite, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -264,22 +249,22 @@ B32 pWin32SocketTcpWriteAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int st
         result->stop      = stop;
         result->ctxt      = ctxt;
         result->overlap   = (OVERLAPPED) {0};
-        result->callback  = pWin32SocketTcpWriteEnd;
+        result->callback  = rho_win32_socket_tcp_end_write;
         result->list_next = NULL;
 
-        if (pWin32SocketTcpWriteBegin(result, queue) != 0)
-            return pWin32AsyncIoQueueSubmit(queue, (PWin32AsyncIoTask*) result);
+        if (rho_win32_socket_tcp_begin_write(result, queue) != 0)
+            return rho_win32_io_queue_submit(queue, (RWin32IoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pWin32SocketTcpReadAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt)
+RBool32 rho_win32_socket_tcp_async_read(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt)
 {
-    PWin32SocketTcpRead* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PWin32SocketTcpRead);
+    RWin32SocketTcpRead* result = rho_memory_pool_reserve_of(
+        &queue->pool, RWin32SocketTcpRead, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -288,13 +273,13 @@ B32 pWin32SocketTcpReadAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int sto
         result->stop      = stop;
         result->ctxt      = ctxt;
         result->overlap   = (OVERLAPPED) {0};
-        result->callback  = pWin32SocketTcpReadEnd;
+        result->callback  = rho_win32_socket_tcp_end_read;
         result->list_next = NULL;
 
-        if (pWin32SocketTcpReadBegin(result, queue) != 0)
-            return pWin32AsyncIoQueueSubmit(queue, (PWin32AsyncIoTask*) result);
+        if (rho_win32_socket_tcp_begin_read(result, queue) != 0)
+            return rho_win32_io_queue_submit(queue, (RWin32IoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;

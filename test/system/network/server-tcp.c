@@ -5,28 +5,29 @@
 
 int main(int argc, char** argv)
 {
-    PMemoryArena arena = pSystemMemoryReserve(pMemoryMIB(2));
+    RMemoryArena arena = rho_system_memory_reserve(rho_memory_mib(2));
 
-    PSocketTcp* listener = pSocketTcpReserve(&arena);
+    RSocketTcp* listener = rho_socket_tcp_reserve(&arena);
 
-    pSocketTcpCreate(listener, pHostIpMake(pAddressIp4Any(), 50000));
-    pSocketTcpBind(listener);
-    pSocketTcpListen(listener);
+    rho_socket_tcp_create(listener, rho_host_ip_make(rho_address_ip4_any(), 50000));
 
-    for (Int conns = 0; conns < 2; conns += 1) {
-        PSocketTcp* socket = pSocketTcpReserve(&arena);
+    rho_socket_tcp_bind(listener);
+    rho_socket_tcp_listen(listener);
 
-        pSocketTcpAccept(listener, socket);
+    for (RInt conns = 0; conns < 2; conns += 1) {
+        RSocketTcp* socket = rho_socket_tcp_reserve(&arena);
 
-        U8 buffer[256] = {0};
+        rho_socket_tcp_accept(listener, socket);
 
-        Int size = pSocketTcpRead(socket, buffer, 0, sizeof buffer);
+        RUint8 buffer[256] = {0};
+
+        RInt size = rho_socket_tcp_read(socket, buffer, 0, sizeof buffer);
 
         printf("%.*s\n", ((int) size), buffer);
 
-        pSocketTcpWrite(socket, buffer, 0, size);
-        pSocketTcpDestroy(socket);
+        rho_socket_tcp_write(socket, buffer, 0, size);
+        rho_socket_tcp_destroy(socket);
     }
 
-    pSocketTcpDestroy(listener);
+    rho_socket_tcp_destroy(listener);
 }

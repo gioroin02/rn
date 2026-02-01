@@ -1,66 +1,66 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_ASYNC_SOCKET_TCP_H
-#define P_SYSTEM_WIN32_NETWORK_ASYNC_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_ASYNC_WIN32_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_ASYNC_WIN32_SOCKET_TCP_H
 
 #include "import.h"
 
-typedef struct PWin32SocketTcpAccept
+typedef struct RWin32SocketTcpAccept
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32SocketTcp* self;
+    RWin32SocketTcp* self;
     void*            ctxt;
 
-    PWin32SocketTcp* value;
+    RWin32SocketTcp* value;
 
-    U8 __buff__[sizeof (PWin32AddrStorage) * 2];
+    RUint8 __buff__[sizeof (RWin32AddrStorage) * 2];
 }
-PWin32SocketTcpAccept;
+RWin32SocketTcpAccept;
 
-typedef struct PWin32SocketTcpConnect
+typedef struct RWin32SocketTcpConnect
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32SocketTcp* self;
+    RWin32SocketTcp* self;
     void*            ctxt;
 
-    PHostIp host;
+    RHostIp host;
 }
-PWin32SocketTcpConnect;
+RWin32SocketTcpConnect;
 
-typedef struct PWin32SocketTcpWrite
+typedef struct RWin32SocketTcpWrite
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32SocketTcp* self;
+    RWin32SocketTcp* self;
     void*            ctxt;
 
-    U8*    pntr;
-    Int    start;
-    Int    stop;
-    WSABUF buffer;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
+    WSABUF  buffer;
 }
-PWin32SocketTcpWrite;
+RWin32SocketTcpWrite;
 
-typedef struct PWin32SocketTcpRead
+typedef struct RWin32SocketTcpRead
 {
-    __PWin32AsyncIoTaskTag__;
+    __RWin32IoTaskTag__;
 
-    PWin32SocketTcp* self;
+    RWin32SocketTcp* self;
     void*            ctxt;
 
-    U8*    pntr;
-    Int    start;
-    Int    stop;
-    WSABUF buffer;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
+    WSABUF  buffer;
 }
-PWin32SocketTcpRead;
+RWin32SocketTcpRead;
 
-B32 pWin32SocketTcpAcceptAsync(PWin32SocketTcp* self, PWin32SocketTcp* value, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_socket_tcp_async_accept(RWin32SocketTcp* self, RWin32SocketTcp* value, RWin32IoQueue* queue, void* ctxt);
 
-B32 pWin32SocketTcpConnectAsync(PWin32SocketTcp* self, PHostIp host, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_socket_tcp_async_connect(RWin32SocketTcp* self, RHostIp host, RWin32IoQueue* queue, void* ctxt);
 
-B32 pWin32SocketTcpWriteAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_socket_tcp_async_write(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt);
 
-B32 pWin32SocketTcpReadAsync(PWin32SocketTcp* self, U8* pntr, Int start, Int stop, PWin32AsyncIoQueue* queue, void* ctxt);
+RBool32 rho_win32_socket_tcp_async_read(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop, RWin32IoQueue* queue, void* ctxt);
 
 #endif

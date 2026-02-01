@@ -1,30 +1,30 @@
-#ifndef P_SYSTEM_NETWORK_SOCKET_TCP_H
-#define P_SYSTEM_NETWORK_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_SOCKET_TCP_H
 
 #include "address-ip.h"
 
-typedef struct PSocketTcp { U8 __private__; } PSocketTcp;
+typedef struct RSocketTcp { RUint8 __private__; } RSocketTcp;
 
-PSocketTcp* pSocketTcpReserve(PMemoryArena* arena);
+RSocketTcp* rho_socket_tcp_reserve(RMemoryArena* arena);
 
-B32 pSocketTcpCreate(PSocketTcp* self, PHostIp host);
+RBool32 rho_socket_tcp_create(RSocketTcp* self, RHostIp host);
 
-B32 pSocketTcpAccept(PSocketTcp* self, PSocketTcp* value);
+RBool32 rho_socket_tcp_accept(RSocketTcp* self, RSocketTcp* value);
 
-void pSocketTcpDestroy(PSocketTcp* self);
+void rho_socket_tcp_destroy(RSocketTcp* self);
 
-B32 pSocketTcpBind(PSocketTcp* self);
+RBool32 rho_socket_tcp_bind(RSocketTcp* self);
 
-B32 pSocketTcpBindAs(PSocketTcp* self, PHostIp host);
+RBool32 rho_socket_tcp_bind_as(RSocketTcp* self, RHostIp host);
 
-B32 pSocketTcpListen(PSocketTcp* self);
+RBool32 rho_socket_tcp_listen(RSocketTcp* self);
 
-B32 pSocketTcpConnect(PSocketTcp* self, PHostIp host);
+RBool32 rho_socket_tcp_connect(RSocketTcp* self, RHostIp host);
 
-Int pSocketTcpWrite(PSocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_socket_tcp_write(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pSocketTcpRead(PSocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_socket_tcp_read(RSocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-PHostIp pSocketTcpGetHost(PSocketTcp* self);
+RHostIp rho_socket_tcp_host(RSocketTcp* self);
 
 #endif

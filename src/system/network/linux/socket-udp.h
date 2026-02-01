@@ -1,29 +1,29 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_H
-#define P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_H
+#ifndef RHO_SYSTEM_NETWORK_LINUX_SOCKET_UDP_H
+#define RHO_SYSTEM_NETWORK_LINUX_SOCKET_UDP_H
 
 #include "common.h"
 
-typedef struct PLinuxSocketUdp
+typedef struct RLinuxSocketUdp
 {
-    Int               handle;
-    PLinuxAddrStorage storage;
+    RInt              handle;
+    RLinuxAddrStorage storage;
 }
-PLinuxSocketUdp;
+RLinuxSocketUdp;
 
-PLinuxSocketUdp* pLinuxSocketUdpReserve(PMemoryArena* arena);
+RLinuxSocketUdp* rho_linux_socket_udp_reserve(RMemoryArena* arena);
 
-B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host);
+RBool32 rho_linux_socket_udp_create(RLinuxSocketUdp* self, RHostIp host);
 
-void pLinuxSocketUdpDestroy(PLinuxSocketUdp* self);
+void rho_linux_socket_udp_destroy(RLinuxSocketUdp* self);
 
-B32 pLinuxSocketUdpBind(PLinuxSocketUdp* self);
+RBool32 rho_linux_socket_udp_bind(RLinuxSocketUdp* self);
 
-B32 pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host);
+RBool32 rho_linux_socket_udp_bind_as(RLinuxSocketUdp* self, RHostIp host);
 
-Int pLinuxSocketUdpWrite(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host);
+RInt rho_linux_socket_udp_write(RLinuxSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host);
 
-Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host);
+RInt rho_linux_socket_udp_read(RLinuxSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host);
 
-PHostIp pLinuxSocketUdpGetHost(PLinuxSocketUdp* self);
+RHostIp rho_linux_socket_udp_host(RLinuxSocketUdp* self);
 
 #endif

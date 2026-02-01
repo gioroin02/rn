@@ -1,6 +1,4 @@
-# Pax software components
-
-## Missing features
+# Rho software components
 
 List of missing features:
 

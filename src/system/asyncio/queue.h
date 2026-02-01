@@ -1,26 +1,31 @@
-#ifndef P_SYSTEM_ASYNCIO_QUEUE_H
-#define P_SYSTEM_ASYNCIO_QUEUE_H
+#ifndef RHO_SYSTEM_ASYNCIO_QUEUE_H
+#define RHO_SYSTEM_ASYNCIO_QUEUE_H
 
 #include "import.h"
 
-typedef enum PAsyncIoEventKind
+typedef enum RIoEventFamily
 {
-    PAsyncIoEvent_None,
-    PAsyncIoEvent_File,
-    PAsyncIoEvent_Tcp,
-    PAsyncIoEvent_Udp,
+    RIoEventFamily_None,
+    RIoEventFamily_File,
+    RIoEventFamily_Tcp,
+    RIoEventFamily_Udp,
 }
-PAsyncIoEventKind;
+RIoEventFamily;
 
-typedef struct PAsyncIoEvent { U8 __private__; } PAsyncIoEvent;
-typedef struct PAsyncIoQueue { U8 __private__; } PAsyncIoQueue;
+typedef struct RIoEvent
+{
+    RIoEventFamily family;
+}
+RIoEvent;
 
-PAsyncIoQueue* pAsyncIoQueueReserve(PMemoryArena* arena);
+typedef struct RIoQueue { RUint8 __private__; } RIoQueue;
 
-B32 pAsyncIoQueueCreate(PAsyncIoQueue* self, PMemoryPool pool);
+RIoQueue* rho_io_queue_reserve(RMemoryArena* arena);
 
-void pAsyncIoQueueDestroy(PAsyncIoQueue* self);
+RBool32 rho_io_queue_create(RIoQueue* self, RMemoryPool pool);
 
-PAsyncIoEventKind pAsyncIoQueuePollEvent(PAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
+void rho_io_queue_destroy(RIoQueue* self);
+
+RIoEvent* rho_io_queue_poll_event(RIoQueue* self, RInt timeout, RMemoryArena* arena);
 
 #endif

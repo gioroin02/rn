@@ -1,35 +1,35 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_COMMON_C
-#define P_SYSTEM_LINUX_NETWORK_COMMON_C
+#ifndef RHO_SYSTEM_NETWORK_LINUX_COMMON_C
+#define RHO_SYSTEM_NETWORK_LINUX_COMMON_C
 
 #include "common.h"
 
-PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size)
+RLinuxAddrStorage rho_linux_addr_storage_make(RAddressIp address, RUint16 port, RInt* size)
 {
-    PLinuxAddrStorage result = {0};
+    RLinuxAddrStorage result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     switch (address.kind) {
-        case PAddressIp_Ver4: {
-            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) &result;
+        case RAddressIp_Ver4: {
+            RLinuxAddrIp4* ip4 = (RLinuxAddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
 
-            pMemoryCopy(&ip4->sin_addr.s_addr,
-                P_ADDRESS_IP4_SIZE, address.ip4.values);
+            rho_memory_copy(&ip4->sin_addr.s_addr,
+                RHO_ADDRESS_IP4_SIZE, address.ip4.values);
 
             if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PAddressIp_Ver6: {
-            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) &result;
+        case RAddressIp_Ver6: {
+            RLinuxAddrIp6* ip6 = (RLinuxAddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
 
-            pMemoryCopy(ip6->sin6_addr.s6_addr,
-                P_ADDRESS_IP6_SIZE, address.ip6.values);
+            rho_memory_copy(ip6->sin6_addr.s6_addr,
+                RHO_ADDRESS_IP6_SIZE, address.ip6.values);
 
             if (size != 0) *size = sizeof *ip6;
         } break;
@@ -40,35 +40,35 @@ PLinuxAddrStorage pLinuxAddrStorageMake(PAddressIp address, U16 port, Int* size)
     return result;
 }
 
-PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size)
+RLinuxAddrStorage rho_linux_addr_storage_make_any(RAddressIpKind kind, RUint16 port, RInt* size)
 {
-    PLinuxAddrStorage result = {0};
+    RLinuxAddrStorage result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     switch (kind) {
-        case PAddressIp_Ver4: {
-            U32 in4addr_any = INADDR_ANY;
+        case RAddressIp_Ver4: {
+            RUint32 in4addr_any = INADDR_ANY;
 
-            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) &result;
+            RLinuxAddrIp4* ip4 = (RLinuxAddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
 
-            pMemoryCopy(&ip4->sin_addr.s_addr,
-                P_ADDRESS_IP4_SIZE, &in4addr_any);
+            rho_memory_copy(&ip4->sin_addr.s_addr,
+                RHO_ADDRESS_IP4_SIZE, &in4addr_any);
 
             if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PAddressIp_Ver6: {
-            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) &result;
+        case RAddressIp_Ver6: {
+            RLinuxAddrIp6* ip6 = (RLinuxAddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
 
-            pMemoryCopy(ip6->sin6_addr.s6_addr,
-                P_ADDRESS_IP6_SIZE, (void*) &in6addr_any);
+            rho_memory_copy(ip6->sin6_addr.s6_addr,
+                RHO_ADDRESS_IP6_SIZE, (void*) &in6addr_any);
 
             if (size != 0) *size = sizeof *ip6;
         } break;
@@ -79,11 +79,11 @@ PLinuxAddrStorage pLinuxAddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
     return result;
 }
 
-Int pLinuxAddrStorageGetSize(PLinuxAddrStorage* self)
+RInt rho_linux_addr_storage_size(RLinuxAddrStorage* self)
 {
     switch (self->ss_family) {
-        case AF_INET:  return sizeof (PLinuxAddrIp4);
-        case AF_INET6: return sizeof (PLinuxAddrIp6);
+        case AF_INET:  return sizeof (RLinuxAddrIp4);
+        case AF_INET6: return sizeof (RLinuxAddrIp6);
 
         default: break;
     }
@@ -91,27 +91,27 @@ Int pLinuxAddrStorageGetSize(PLinuxAddrStorage* self)
     return 0;
 }
 
-PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self)
+RAddressIp rho_linux_addr_storage_address(RLinuxAddrStorage* self)
 {
-    PAddressIp result = pAddressIpNone();
+    RAddressIp result = rho_address_ip_none();
 
     switch (self->ss_family) {
         case AF_INET: {
-            PLinuxAddrIp4* ip4 = (PLinuxAddrIp4*) self;
+            RLinuxAddrIp4* ip4 = (RLinuxAddrIp4*) self;
 
-            result.kind = PAddressIp_Ver4;
+            result.kind = RAddressIp_Ver4;
 
-            pMemoryCopy(result.ip4.values,
-                P_ADDRESS_IP4_SIZE, &ip4->sin_addr.s_addr);
+            rho_memory_copy(result.ip4.values,
+                RHO_ADDRESS_IP4_SIZE, &ip4->sin_addr.s_addr);
         } break;
 
         case AF_INET6: {
-            PLinuxAddrIp6* ip6 = (PLinuxAddrIp6*) self;
+            RLinuxAddrIp6* ip6 = (RLinuxAddrIp6*) self;
 
-            result.kind = PAddressIp_Ver6;
+            result.kind = RAddressIp_Ver6;
 
-            pMemoryCopy(result.ip6.values,
-                P_ADDRESS_IP6_SIZE, &ip6->sin6_addr.s6_addr);
+            rho_memory_copy(result.ip6.values,
+                RHO_ADDRESS_IP6_SIZE, &ip6->sin6_addr.s6_addr);
         } break;
 
         default: return result;
@@ -120,19 +120,27 @@ PAddressIp pLinuxAddrStorageGetAddress(PLinuxAddrStorage* self)
     return result;
 }
 
-U16 pLinuxAddrStorageGetPort(PLinuxAddrStorage* self)
+RUint16 rho_linux_addr_storage_port(RLinuxAddrStorage* self)
 {
     switch (self->ss_family) {
         case AF_INET:
-            return ntohs(((PLinuxAddrIp4*) self)->sin_port);
+            return ntohs(((RLinuxAddrIp4*) self)->sin_port);
 
         case AF_INET6:
-            return ntohs(((PLinuxAddrIp6*) self)->sin6_port);
+            return ntohs(((RLinuxAddrIp6*) self)->sin6_port);
 
         default: break;
     }
 
     return 0;
+}
+
+RHostIp rho_linux_addr_storage_host(RLinuxAddrStorage* self)
+{
+    RAddressIp address = rho_linux_addr_storage_address(self);
+    RUint16    port    = rho_linux_addr_storage_port(self);
+
+    return rho_host_ip_make(address, port);
 }
 
 #endif

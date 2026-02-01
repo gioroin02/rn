@@ -1,11 +1,11 @@
-#ifndef P_SYSTEM_NETWORK_ADDRESS_IP_C
-#define P_SYSTEM_NETWORK_ADDRESS_IP_C
+#ifndef RHO_SYSTEM_NETWORK_ADDRESS_IP_C
+#define RHO_SYSTEM_NETWORK_ADDRESS_IP_C
 
 #include "address-ip.h"
 
-static B32 pAddressIp4IsEqual(PAddressIp4 self, PAddressIp4 value)
+static RBool32 rho_address_ip4_is_equal(RAddressIp4 self, RAddressIp4 value)
 {
-    for (Int i = 0; i < P_ADDRESS_IP4_SIZE; i += 1) {
+    for (RInt i = 0; i < RHO_ADDRESS_IP4_SIZE; i += 1) {
         if (self.values[i] != value.values[i])
             return 0;
     }
@@ -13,9 +13,9 @@ static B32 pAddressIp4IsEqual(PAddressIp4 self, PAddressIp4 value)
     return 1;
 }
 
-static B32 pAddressIp6IsEqual(PAddressIp6 self, PAddressIp6 value)
+static RBool32 rho_address_ip6_is_equal(RAddressIp6 self, RAddressIp6 value)
 {
-    for (Int i = 0; i < P_ADDRESS_IP6_SIZE; i += 1) {
+    for (RInt i = 0; i < RHO_ADDRESS_IP6_SIZE; i += 1) {
         if (self.values[i] != value.values[i])
             return 0;
     }
@@ -23,13 +23,13 @@ static B32 pAddressIp6IsEqual(PAddressIp6 self, PAddressIp6 value)
     return 1;
 }
 
-PAddressIp pAddressIp4Make(U8 v0, U8 v1, U8 v2, U8 v3)
+RAddressIp rho_address_ip4_make(RUint8 v0, RUint8 v1, RUint8 v2, RUint8 v3)
 {
-    PAddressIp result = {0};
+    RAddressIp result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind   = PAddressIp_Ver4;
+    result.kind   = RAddressIp_Ver4;
     result.ip4.v0 = v0;
     result.ip4.v1 = v1;
     result.ip4.v2 = v2;
@@ -38,13 +38,13 @@ PAddressIp pAddressIp4Make(U8 v0, U8 v1, U8 v2, U8 v3)
     return result;
 }
 
-PAddressIp pAddressIp6Make(U16 v0, U16 v1, U16 v2, U16 v3, U16 v4, U16 v5, U16 v6, U16 v7)
+RAddressIp rho_address_ip6_make(RUint16 v0, RUint16 v1, RUint16 v2, RUint16 v3, RUint16 v4, RUint16 v5, RUint16 v6, RUint16 v7)
 {
-    PAddressIp result = {0};
+    RAddressIp result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind   = PAddressIp_Ver6;
+    result.kind   = RAddressIp_Ver6;
     result.ip6.v0 = v0;
     result.ip6.v1 = v1;
     result.ip6.v2 = v2;
@@ -57,24 +57,24 @@ PAddressIp pAddressIp6Make(U16 v0, U16 v1, U16 v2, U16 v3, U16 v4, U16 v5, U16 v
     return result;
 }
 
-PAddressIp pAddressIpNone()
+RAddressIp rho_address_ip_none()
 {
-    PAddressIp result = {0};
+    RAddressIp result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
-    result.kind = PAddressIp_None;
+    result.kind = RAddressIp_None;
 
     return result;
 }
 
-PAddressIp pAddressIpAny(PAddressIpKind kind)
+RAddressIp rho_address_ip_any(RAddressIpKind kind)
 {
-    PAddressIp result = pAddressIpNone();
+    RAddressIp result = rho_address_ip_none();
 
     switch (kind) {
-        case PAddressIp_Ver4: return pAddressIp4Any();
-        case PAddressIp_Ver6: return pAddressIp6Any();
+        case RAddressIp_Ver4: return rho_address_ip4_any();
+        case RAddressIp_Ver6: return rho_address_ip6_any();
 
         default: break;
     }
@@ -82,13 +82,13 @@ PAddressIp pAddressIpAny(PAddressIpKind kind)
     return result;
 }
 
-PAddressIp pAddressIpSelf(PAddressIpKind kind)
+RAddressIp rho_address_ip_self(RAddressIpKind kind)
 {
-    PAddressIp result = pAddressIpNone();
+    RAddressIp result = rho_address_ip_none();
 
     switch (kind) {
-        case PAddressIp_Ver4: return pAddressIp4Self();
-        case PAddressIp_Ver6: return pAddressIp6Self();
+        case RAddressIp_Ver4: return rho_address_ip4_self();
+        case RAddressIp_Ver6: return rho_address_ip6_self();
 
         default: break;
     }
@@ -96,16 +96,16 @@ PAddressIp pAddressIpSelf(PAddressIpKind kind)
     return result;
 }
 
-B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value)
+RBool32 rho_address_ip_is_equal(RAddressIp self, RAddressIp value)
 {
     if (self.kind != value.kind) return 0;
 
     switch (self.kind) {
-        case PAddressIp_Ver4:
-            return pAddressIp4IsEqual(self.ip4, value.ip4);
+        case RAddressIp_Ver4:
+            return rho_address_ip4_is_equal(self.ip4, value.ip4);
 
-        case PAddressIp_Ver6:
-            return pAddressIp6IsEqual(self.ip6, value.ip6);
+        case RAddressIp_Ver6:
+            return rho_address_ip6_is_equal(self.ip6, value.ip6);
 
         default: break;
     }
@@ -113,11 +113,11 @@ B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value)
     return 0;
 }
 
-PHostIp pHostIpMake(PAddressIp address, U16 port)
+RHostIp rho_host_ip_make(RAddressIp address, RUint16 port)
 {
-    PHostIp result = {0};
+    RHostIp result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     result.address = address;
     result.port    = port;

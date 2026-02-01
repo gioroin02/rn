@@ -1,14 +1,14 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_ASYNC_SOCKET_TCP_C
-#define P_SYSTEM_LINUX_NETWORK_ASYNC_SOCKET_TCP_C
+#ifndef RHO_SYSTEM_NETWORK_LINUX_ASYNC_SOCKET_TCP_C
+#define RHO_SYSTEM_NETWORK_LINUX_ASYNC_SOCKET_TCP_C
 
 #include "socket-tcp.h"
 
-static B32 pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSocketTcp* socket, PLinuxAsyncIoTask* task)
+static RBool32 rho_linux_io_queue_bind_socket_tcp(RLinuxIoQueue* self, RLinuxSocketTcp* socket, RLinuxIoTask* task)
 {
     int handle = (int) socket->handle;
     int queue  = (int) self->handle;
 
-    PEpollEvent notif = {0};
+    RLinuxEpollEvent notif = {0};
 
     notif.events   = EPOLLIN | EPOLLOUT;
     notif.data.ptr = task;
@@ -23,188 +23,172 @@ static B32 pLinuxAsyncIoQueueBindSocketTcp(PLinuxAsyncIoQueue* self, PLinuxSocke
     return status != -1 ? 1 : 0;
 }
 
-static B32 pLinuxSocketTcpAcceptBegin(PLinuxSocketTcpAccept* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_socket_tcp_begin_accept(RLinuxSocketTcpAccept* task, RLinuxIoQueue* queue)
 {
-    PLinuxSocketTcp* self  = task->self;
-    PLinuxSocketTcp* value = task->value;
+    RLinuxSocketTcp* self  = task->self;
+    RLinuxSocketTcp* value = task->value;
 
-    pLinuxAsyncIoQueueBindSocketTcp(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rho_linux_io_queue_bind_socket_tcp(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxSocketTcpAcceptEnd(PLinuxSocketTcpAccept* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_socket_tcp_end_accept(RLinuxSocketTcpAccept* task, RMemoryArena* arena)
 {
-    PLinuxSocketTcp* self  = task->self;
-    PLinuxSocketTcp* value = task->value;
+    RLinuxSocketTcp* self  = task->self;
+    RLinuxSocketTcp* value = task->value;
 
-    B32 status = pLinuxSocketTcpAccept(self, value);
+    RBool32 status = rho_linux_socket_tcp_accept(self, value);
 
-    if (status == 0) return PAsyncIoEvent_None;
+    if (status == 0) return NULL;
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventAccept((PSocketTcp*) self,
-            (PSocketTcp*) value, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_accept(
+        (RSocketTcp*) self, (RSocketTcp*) value, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pLinuxSocketTcpConnectBegin(PLinuxSocketTcpConnect* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_socket_tcp_begin_connect(RLinuxSocketTcpConnect* task, RLinuxIoQueue* queue)
 {
-    PLinuxSocketTcp* self = task->self;
-    PHostIp          host = task->host;
+    RLinuxSocketTcp* self = task->self;
+    RHostIp          host = task->host;
 
-    pLinuxAsyncIoQueueBindSocketTcp(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rho_linux_io_queue_bind_socket_tcp(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxSocketTcpConnectEnd(PLinuxSocketTcpConnect* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_socket_tcp_end_connect(RLinuxSocketTcpConnect* task, RMemoryArena* arena)
 {
-    PLinuxSocketTcp* self = task->self;
-    PHostIp          host = task->host;
+    RLinuxSocketTcp* self = task->self;
+    RHostIp          host = task->host;
 
-    B32 status = pLinuxSocketTcpConnect(self, host);
+    RBool32 status = rho_linux_socket_tcp_connect(self, host);
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventConnect((PSocketTcp*) self,
-            host, status != 0 ? 1 : 0, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_connect(
+        (RSocketTcp*) self, host, status, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pLinuxSocketTcpWriteBegin(PLinuxSocketTcpWrite* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_socket_tcp_begin_write(RLinuxSocketTcpWrite* task, RLinuxIoQueue* queue)
 {
-    PLinuxSocketTcp* self = task->self;
+    RLinuxSocketTcp* self = task->self;
 
-    pLinuxAsyncIoQueueBindSocketTcp(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rho_linux_io_queue_bind_socket_tcp(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxSocketTcpWriteEnd(PLinuxSocketTcpWrite* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_socket_tcp_end_write(RLinuxSocketTcpWrite* task, RMemoryArena* arena)
 {
-    PLinuxSocketTcp* self  = task->self;
-    U8*              pntr  = task->pntr;
-    Int              start = task->start;
-    Int              stop  = task->stop;
+    RLinuxSocketTcp* self  = task->self;
+    RUint8*          pntr  = task->pntr;
+    RInt             start = task->start;
+    RInt             stop  = task->stop;
 
-    Int bytes = pLinuxSocketTcpWrite(self, pntr, start, stop);
+    RInt bytes = rho_linux_socket_tcp_write(self, pntr, start, stop);
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventWrite((PSocketTcp*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_write(
+        (RSocketTcp*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-static B32 pLinuxSocketTcpReadBegin(PLinuxSocketTcpRead* task, PLinuxAsyncIoQueue* queue)
+static RBool32 rho_linux_socket_tcp_begin_read(RLinuxSocketTcpRead* task, RLinuxIoQueue* queue)
 {
-    PLinuxSocketTcp* self = task->self;
+    RLinuxSocketTcp* self = task->self;
 
-    pLinuxAsyncIoQueueBindSocketTcp(queue,
-        self, (PLinuxAsyncIoTask*) task);
+    rho_linux_io_queue_bind_socket_tcp(queue,
+        self, (RLinuxIoTask*) task);
 
     return 1;
 }
 
-static PAsyncIoEventKind pLinuxSocketTcpReadEnd(PLinuxSocketTcpRead* task, PMemoryArena* arena, PAsyncIoEvent** event)
+static RIoEvent* rho_linux_socket_tcp_end_read(RLinuxSocketTcpRead* task, RMemoryArena* arena)
 {
-    PLinuxSocketTcp* self  = task->self;
-    U8*              pntr  = task->pntr;
-    Int              start = task->start;
-    Int              stop  = task->stop;
+    RLinuxSocketTcp* self  = task->self;
+    RUint8*          pntr  = task->pntr;
+    RInt             start = task->start;
+    RInt             stop  = task->stop;
 
-    Int bytes = pLinuxSocketTcpRead(self, pntr, start, stop);
+    RInt bytes = rho_linux_socket_tcp_read(self, pntr, start, stop);
 
-    PSocketTcpEvent* result =
-        pMemoryArenaReserveOneOf(arena, PSocketTcpEvent);
+    RSocketTcpEvent* result =
+        rho_memory_arena_reserve_of(arena, RSocketTcpEvent, 1);
 
-    if (result != NULL) {
-        *result = pSocketTcpEventRead((PSocketTcp*) self,
-            pntr, start, stop, bytes, task->ctxt);
+    if (result == NULL) return NULL;
 
-        if (event != NULL) *event = (PAsyncIoEvent*) result;
+    *result = rho_socket_tcp_event_read(
+        (RSocketTcp*) self, pntr, start, stop, bytes, task->ctxt);
 
-        return PAsyncIoEvent_Tcp;
-    }
-
-    return PAsyncIoEvent_None;
+    return (RIoEvent*) result;
 }
 
-B32 pLinuxSocketTcpAcceptAsync(PLinuxSocketTcp* self, PLinuxSocketTcp* value, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_socket_tcp_async_accept(RLinuxSocketTcp* self, RLinuxSocketTcp* value, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxSocketTcpAccept* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpAccept);
+    RLinuxSocketTcpAccept* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxSocketTcpAccept, 1);
 
     if (result != NULL) {
         result->self      = self;
         result->value     = value;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxSocketTcpAcceptEnd;
+        result->callback  = rho_linux_socket_tcp_end_accept;
         result->list_next = NULL;
 
-        if (pLinuxSocketTcpAcceptBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_socket_tcp_begin_accept(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pLinuxSocketTcpConnectAsync(PLinuxSocketTcp* self, PHostIp host, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_socket_tcp_async_connect(RLinuxSocketTcp* self, RHostIp host, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxSocketTcpConnect* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpConnect);
+    RLinuxSocketTcpConnect* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxSocketTcpConnect, 1);
 
     if (result != NULL) {
         result->self      = self;
         result->host      = host;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxSocketTcpConnectEnd;
+        result->callback  = rho_linux_socket_tcp_end_connect;
         result->list_next = NULL;
 
-        if (pLinuxSocketTcpConnectBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_socket_tcp_begin_connect(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_socket_tcp_async_write(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxSocketTcpWrite* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpWrite);
+    RLinuxSocketTcpWrite* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxSocketTcpWrite, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -212,22 +196,22 @@ B32 pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int st
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxSocketTcpWriteEnd;
+        result->callback  = rho_linux_socket_tcp_end_write;
         result->list_next = NULL;
 
-        if (pLinuxSocketTcpWriteBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_socket_tcp_begin_write(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;
 }
 
-B32 pLinuxSocketTcpReadAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt)
+RBool32 rho_linux_socket_tcp_async_read(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt)
 {
-    PLinuxSocketTcpRead* result =
-        pMemoryPoolReserveOneOf(&queue->pool, PLinuxSocketTcpRead);
+    RLinuxSocketTcpRead* result = rho_memory_pool_reserve_of(
+        &queue->pool, RLinuxSocketTcpRead, 1);
 
     if (result != NULL) {
         result->self      = self;
@@ -235,13 +219,13 @@ B32 pLinuxSocketTcpReadAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int sto
         result->start     = start;
         result->stop      = stop;
         result->ctxt      = ctxt;
-        result->callback  = pLinuxSocketTcpReadEnd;
+        result->callback  = rho_linux_socket_tcp_end_read;
         result->list_next = NULL;
 
-        if (pLinuxSocketTcpReadBegin(result, queue) != 0)
-            return pLinuxAsyncIoQueueSubmit(queue, (PLinuxAsyncIoTask*) result);
+        if (rho_linux_socket_tcp_begin_read(result, queue) != 0)
+            return rho_linux_io_queue_submit(queue, (RLinuxIoTask*) result);
 
-        pMemoryPoolRelease(&queue->pool, result);
+        rho_memory_pool_release(&queue->pool, result);
     }
 
     return 0;

@@ -1,9 +1,9 @@
-#ifndef P_SYSTEM_WIN32_ASYNCIO_QUEUE_C
-#define P_SYSTEM_WIN32_ASYNCIO_QUEUE_C
+#ifndef RHO_SYSTEM_ASYNCIO_WIN32_QUEUE_C
+#define RHO_SYSTEM_ASYNCIO_WIN32_QUEUE_C
 
 #include "queue.h"
 
-static void pWin32AsyncIoQueueInsertBack(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value)
+static void rho_win32_io_queue_insert_back(RWin32IoQueue* self, RWin32IoTask* value)
 {
     if (self->list_front != NULL)
         self->list_back->list_next = value;
@@ -13,9 +13,9 @@ static void pWin32AsyncIoQueueInsertBack(PWin32AsyncIoQueue* self, PWin32AsyncIo
     self->list_back = value;
 }
 
-static PWin32AsyncIoTask* pWin32AsyncIoQueueRemoveFront(PWin32AsyncIoQueue* self)
+static RWin32IoTask* rho_win32_io_queue_remove_front(RWin32IoQueue* self)
 {
-    PWin32AsyncIoTask* result = self->list_front;
+    RWin32IoTask* result = self->list_front;
 
     if (result == NULL) return result;
 
@@ -27,12 +27,12 @@ static PWin32AsyncIoTask* pWin32AsyncIoQueueRemoveFront(PWin32AsyncIoQueue* self
     return result;
 }
 
-static PWin32AsyncIoTask* pWin32AsyncIoQueueRemove(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* prev)
+static RWin32IoTask* rho_win32_io_queue_remove(RWin32IoQueue* self, RWin32IoTask* prev)
 {
     if (prev == NULL)
-        return pWin32AsyncIoQueueRemoveFront(self);
+        return rho_win32_io_queue_remove_front(self);
 
-    PWin32AsyncIoTask* result = prev->list_next;
+    RWin32IoTask* result = prev->list_next;
 
     if (result == NULL) return NULL;
 
@@ -41,14 +41,14 @@ static PWin32AsyncIoTask* pWin32AsyncIoQueueRemove(PWin32AsyncIoQueue* self, PWi
     return result;
 }
 
-static PWin32AsyncIoTask* pWin32AsyncIoQueueRemoveByOverlapped(PWin32AsyncIoQueue* self, OVERLAPPED* overlap)
+static RWin32IoTask* rho_win32_io_queue_remove_by_overlap(RWin32IoQueue* self, OVERLAPPED* overlap)
 {
-    PWin32AsyncIoTask* prev = NULL;
-    PWin32AsyncIoTask* task = self->list_front;
+    RWin32IoTask* prev = NULL;
+    RWin32IoTask* task = self->list_front;
 
     while (task != 0) {
         if (&task->overlap == overlap)
-            return pWin32AsyncIoQueueRemove(self, prev);
+            return rho_win32_io_queue_remove(self, prev);
 
         prev = task;
         task = task->list_next;
@@ -57,17 +57,17 @@ static PWin32AsyncIoTask* pWin32AsyncIoQueueRemoveByOverlapped(PWin32AsyncIoQueu
     return NULL;
 }
 
-PWin32AsyncIoQueue* pWin32AsyncIoQueueReserve(PMemoryArena* arena)
+RWin32IoQueue* rho_win32_io_queue_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PWin32AsyncIoQueue);
+    return rho_memory_arena_reserve_of(arena, RWin32IoQueue, 1);
 }
 
-B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool)
+RBool32 rho_win32_io_queue_create(RWin32IoQueue* self, RMemoryPool pool)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle     = NULL;
-    self->pool       = pMemoryPoolMake(NULL, 0, 0);
+    self->pool       = rho_memory_pool_make(NULL, 0, 0);
     self->list_front = NULL;
     self->list_back  = NULL;
 
@@ -82,45 +82,45 @@ B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool)
     return 1;
 }
 
-void pWin32AsyncIoQueueDestroy(PWin32AsyncIoQueue* self)
+void rho_win32_io_queue_destroy(RWin32IoQueue* self)
 {
     if (self->handle != NULL)
         CloseHandle(self->handle);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event)
+RIoEvent* rho_win32_io_queue_poll_event(RWin32IoQueue* self, RInt timeout, RMemoryArena* arena)
 {
-    Int time = timeout >= 0 ? timeout : INFINITE;
-
-    PAsyncIoEventKind result  = PAsyncIoEvent_None;
-    Int               bytes   = 0;
-    OVERLAPPED*       overlap = NULL;
+    RInt time = timeout >= 0 ? timeout : INFINITE;
 
     // Note(Gio): This is useless but must not be null.
     ULONG_PTR complet = 0;
 
-    BOOL status = GetQueuedCompletionStatus(self->handle,
-        (DWORD*) &bytes, &complet, &overlap, time);
+    RIoEvent*   result  = NULL;
+    RInt        bytes   = 0;
+    OVERLAPPED* overlap = NULL;
+
+    BOOL status = GetQueuedCompletionStatus(self->handle, (DWORD*) &bytes,
+        &complet, &overlap, time);
 
     if (status == 0 && GetLastError() != WAIT_TIMEOUT) return result;
 
-    PWin32AsyncIoTask* value = pWin32AsyncIoQueueRemoveByOverlapped(self, overlap);
+    RWin32IoTask* value = rho_win32_io_queue_remove_by_overlap(self, overlap);
 
     if (value != NULL && value->callback != NULL)
-        result = ((PWin32AsyncIoProc*) value->callback)(value, bytes, arena, event);
+        result = ((RWin32IoProc*) value->callback)(value, bytes, arena);
 
-    pMemoryPoolRelease(&self->pool, value);
+    rho_memory_pool_release(&self->pool, value);
 
     return result;
 }
 
-B32 pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value)
+RBool32 rho_win32_io_queue_submit(RWin32IoQueue* self, RWin32IoTask* value)
 {
     if (value == NULL) return 0;
 
-    pWin32AsyncIoQueueInsertBack(self, value);
+    rho_win32_io_queue_insert_back(self, value);
 
     return 1;
 }

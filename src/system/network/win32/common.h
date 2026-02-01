@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_COMMON_H
-#define P_SYSTEM_WIN32_NETWORK_COMMON_H
+#ifndef RHO_SYSTEM_NETWORK_WIN32_COMMON_H
+#define RHO_SYSTEM_NETWORK_WIN32_COMMON_H
 
 #include "import.h"
 
@@ -11,30 +11,28 @@
 #include <ws2tcpip.h>
 #include <mswsock.h>
 
-typedef struct sockaddr_storage PWin32AddrStorage;
-typedef struct sockaddr         PWin32Addr;
-typedef struct sockaddr_in      PWin32AddrIp4;
-typedef struct sockaddr_in6     PWin32AddrIp6;
+typedef struct sockaddr_storage RWin32AddrStorage;
+typedef struct sockaddr         RWin32Addr;
+typedef struct sockaddr_in      RWin32AddrIp4;
+typedef struct sockaddr_in6     RWin32AddrIp6;
 
 extern LPFN_CONNECTEX WSAConnectEx;
 extern LPFN_ACCEPTEX  WSAAcceptEx;
 
-B32 pWin32NetworkStart();
+RBool32 rho_win32_network_start();
 
-B32 pWin32NetworkStartImpl();
+void rho_win32_network_stop();
 
-void pWin32NetworkStop();
+RWin32AddrStorage rho_win32_addr_storage_make(RAddressIp address, RUint16 port, RInt* size);
 
-void pWin32NetworkStopImpl();
+RWin32AddrStorage rho_win32_addr_storage_make_any(RAddressIpKind kind, RUint16 port, RInt* size);
 
-PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size);
+RInt rho_win32_addr_storage_size(RWin32AddrStorage* self);
 
-PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size);
+RAddressIp rho_win32_addr_storage_address(RWin32AddrStorage* self);
 
-Int pWin32AddrStorageGetSize(PWin32AddrStorage* self);
+RUint16 rho_win32_addr_storage_port(RWin32AddrStorage* self);
 
-PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self);
-
-U16 pWin32AddrStorageGetPort(PWin32AddrStorage* self);
+PHostIp rho_win32_addr_storage_host(RWin32AddrStorage* self);
 
 #endif

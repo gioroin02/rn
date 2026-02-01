@@ -1,30 +1,30 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_C
-#define P_SYSTEM_LINUX_NETWORK_SOCKET_UDP_C
+#ifndef RHO_SYSTEM_NETWORK_LINUX_SOCKET_UDP_C
+#define RHO_SYSTEM_NETWORK_LINUX_SOCKET_UDP_C
 
 #include "socket-udp.h"
 
-PLinuxSocketUdp* pLinuxSocketUdpReserve(PMemoryArena* arena)
+RLinuxSocketUdp* rho_linux_socket_udp_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PLinuxSocketUdp);
+    return rho_memory_arena_reserve_of(arena, RLinuxSocketUdp, 1);
 }
 
-B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
+RBool32 rho_linux_socket_udp_create(RLinuxSocketUdp* self, RHostIp host)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle = -1;
-    self->storage = (PLinuxAddrStorage) {0};
+    self->storage = (RLinuxAddrStorage) {0};
 
-    PLinuxAddrStorage storage = {0};
-    Int               length  = 0;
-    int               option  = 1;
-    int               status  = 0;
+    RInt length  = 0;
+    int  option  = 1;
+    int  status  = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
 
     if (length == 0) return 0;
 
-    Int handle = socket(storage.ss_family,
+    RInt handle = socket(storage.ss_family,
         SOCK_DGRAM | SOCK_CLOEXEC, IPPROTO_UDP);
 
     if (handle != -1) {
@@ -50,7 +50,7 @@ B32 pLinuxSocketUdpCreate(PLinuxSocketUdp* self, PHostIp host)
     return 0;
 }
 
-void pLinuxSocketUdpDestroy(PLinuxSocketUdp* self)
+void rho_linux_socket_udp_destroy(RLinuxSocketUdp* self)
 {
     int status = 0;
 
@@ -61,13 +61,13 @@ void pLinuxSocketUdpDestroy(PLinuxSocketUdp* self)
     }
     while (status == -1 && errno == EINTR);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-B32 pLinuxSocketUdpBind(PLinuxSocketUdp* self)
+RBool32 rho_linux_socket_udp_bind(RLinuxSocketUdp* self)
 {
-    PLinuxAddr* sockaddr = (PLinuxAddr*) &self->storage;
-    Int         length   = pLinuxAddrStorageGetSize(&self->storage);
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &self->storage;
+    RInt        length   = rho_linux_addr_storage_size(&self->storage);
     int         status   = 0;
 
     if (length == 0) return 0;
@@ -82,14 +82,15 @@ B32 pLinuxSocketUdpBind(PLinuxSocketUdp* self)
     return 1;
 }
 
-B32 pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host)
+RBool32 rho_linux_socket_udp_bind_as(RLinuxSocketUdp* self, RHostIp host)
 {
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
-    Int               length   = 0;
-    int               status   = 0;
+    RInt length = 0;
+    int  status = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
+
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &storage;
 
     if (storage.ss_family != self->storage.ss_family)
         return 0;
@@ -106,20 +107,20 @@ B32 pLinuxSocketUdpBindAs(PLinuxSocketUdp* self, PHostIp host)
     return 1;
 }
 
-Int pLinuxSocketUdpWrite(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host)
+RInt rho_linux_socket_udp_write(RLinuxSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
-    Int               length   = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    result = 0;
+    RInt    count  = 0;
+    RInt    length = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int result = 0;
-    Int count  = 0;
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &storage;
 
     while (result < size) {
         do {
@@ -137,19 +138,19 @@ Int pLinuxSocketUdpWrite(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, P
     return result;
 }
 
-Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host)
+RInt rho_linux_socket_udp_read(RLinuxSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
-    int               length   = sizeof storage;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    count  = 0;
 
-    pMemorySet(&storage, sizeof storage, 0xAB);
+    RLinuxAddrStorage storage  = {0};
+    RLinuxAddr*       sockaddr = (RLinuxAddr*) &storage;
+    socklen_t         length   = sizeof storage;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int count  = 0;
+    rho_memory_set(&storage, sizeof storage, 0xAB);
 
     do {
         count = recvfrom(self->handle, memory, size, 0, sockaddr, &length);
@@ -157,11 +158,8 @@ Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PH
     while (count == -1 && errno == EINTR);
 
     if (count > 0 && count <= size && length > 0) {
-        if (host != NULL) {
-            *host = pHostIpMake(
-                pLinuxAddrStorageGetAddress(&storage),
-                pLinuxAddrStorageGetPort(&storage));
-        }
+        if (host != NULL)
+            *host = rho_linux_addr_storage_host(&storage);
 
         return count;
     }
@@ -169,11 +167,9 @@ Int pLinuxSocketUdpRead(PLinuxSocketUdp* self, U8* pntr, Int start, Int stop, PH
     return 0;
 }
 
-PHostIp pLinuxSocketUdpGetHost(PLinuxSocketUdp* self)
+RHostIp rho_linux_socket_udp_host(RLinuxSocketUdp* self)
 {
-    return pHostIpMake(
-        pLinuxAddrStorageGetAddress(&self->storage),
-        pLinuxAddrStorageGetPort(&self->storage));
+    return rho_linux_addr_storage_host(&self->storage);
 }
 
 #endif

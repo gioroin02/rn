@@ -1,78 +1,78 @@
-#ifndef P_SYSTEM_NETWORK_ADDRESS_IP_H
-#define P_SYSTEM_NETWORK_ADDRESS_IP_H
+#ifndef RHO_SYSTEM_NETWORK_ADDRESS_IP_H
+#define RHO_SYSTEM_NETWORK_ADDRESS_IP_H
 
 #include "import.h"
 
-#define P_ADDRESS_IP4_SIZE ((Int) 4)
-#define P_ADDRESS_IP6_SIZE ((Int) 8)
+#define RHO_ADDRESS_IP4_SIZE ((RInt) 4)
+#define RHO_ADDRESS_IP6_SIZE ((RInt) 8)
 
-#define pAddressIp4Any()  pAddressIp4Make(0x00, 0x00, 0x00, 0x00)
-#define pAddressIp4Self() pAddressIp4Make(0x7f, 0x00, 0x00, 0x01)
+#define rho_address_ip4_any()  rho_address_ip4_make(0x00, 0x00, 0x00, 0x00)
+#define rho_address_ip4_self() rho_address_ip4_make(0x7f, 0x00, 0x00, 0x01)
 
-#define pAddressIp6Any()  pAddressIp6Make(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
-#define pAddressIp6Self() pAddressIp6Make(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01)
+#define rho_address_ip6_any()  rho_address_ip6_make(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+#define rho_address_ip6_self() rho_address_ip6_make(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01)
 
-typedef enum PAddressIpKind
+typedef enum RAddressIpKind
 {
-    PAddressIp_None,
-    PAddressIp_Ver4,
-    PAddressIp_Ver6,
+    RAddressIp_None,
+    RAddressIp_Ver4,
+    RAddressIp_Ver6,
 }
-PAddressIpKind;
+RAddressIpKind;
 
-typedef union PAddressIp4
+typedef union RAddressIp4
 {
-    U8 values[P_ADDRESS_IP4_SIZE];
+    RUint8 values[RHO_ADDRESS_IP4_SIZE];
 
     struct
     {
-        U8 v0, v1, v2, v3;
+        RUint8 v0, v1, v2, v3;
     };
 }
-PAddressIp4;
+RAddressIp4;
 
-typedef union PAddressIp6
+typedef union RAddressIp6
 {
-    U16 values[P_ADDRESS_IP6_SIZE];
+    RUint16 values[RHO_ADDRESS_IP6_SIZE];
 
     struct
     {
-        U16 v0, v1, v2, v3, v4, v5, v6, v7;
+        RUint16 v0, v1, v2, v3, v4, v5, v6, v7;
     };
 }
-PAddressIp6;
+RAddressIp6;
 
-typedef struct PAddressIp
+typedef struct RAddressIp
 {
-    PAddressIpKind kind;
+    RAddressIpKind kind;
 
     union
     {
-        PAddressIp4 ip4;
-        PAddressIp6 ip6;
+        RAddressIp4 ip4;
+        RAddressIp6 ip6;
     };
 }
-PAddressIp;
+RAddressIp;
 
-typedef struct PHostIp
+typedef struct RHostIp
 {
-    PAddressIp address;
-    U16        port;
+    RAddressIp address;
+    RUint16        port;
 }
-PHostIp;
+RHostIp;
 
-PAddressIp pAddressIp4Make(U8 v0, U8 v1, U8 v2, U8 v3);
+RAddressIp rho_address_ip4_make(RUint8 v0, RUint8 v1, RUint8 v2, RUint8 v3);
 
-PAddressIp pAddressIp6Make(U16 v0, U16 v1, U16 v2, U16 v3, U16 v4, U16 v5, U16 v6, U16 v7);
+RAddressIp rho_address_ip6_make(RUint16 v0, RUint16 v1, RUint16 v2, RUint16 v3, RUint16 v4, RUint16 v5, RUint16 v6, RUint16 v7);
 
-PAddressIp pAddressIpNone();
+RAddressIp rho_address_ip_none();
 
-PAddressIp pAddressIpAny(PAddressIpKind kind);
+RAddressIp rho_address_ip_any(RAddressIpKind kind);
 
-PAddressIp pAddressIpSelf(PAddressIpKind kind);
+RAddressIp rho_address_ip_self(RAddressIpKind kind);
 
-B32 pAddressIpIsEqual(PAddressIp self, PAddressIp value);
+RBool32 rho_address_ip_is_equal(RAddressIp self, RAddressIp value);
 
-PHostIp pHostIpMake(PAddressIp address, U16 port);
+RHostIp rho_host_ip_make(RAddressIp address, RUint16 port);
 
 #endif

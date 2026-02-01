@@ -1,35 +1,35 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_SOCKET_TCP_H
-#define P_SYSTEM_WIN32_NETWORK_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_WIN32_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_WIN32_SOCKET_TCP_H
 
 #include "common.h"
 
-typedef struct PWin32SocketTcp
+typedef struct RWin32SocketTcp
 {
     SOCKET            handle;
-    PWin32AddrStorage storage;
+    RWin32AddrStorage storage;
 }
-PWin32SocketTcp;
+RWin32SocketTcp;
 
-PWin32SocketTcp* pWin32SocketTcpReserve(PMemoryArena* arena);
+RWin32SocketTcp* rho_win32_socket_tcp_reserve(RMemoryArena* arena);
 
-B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host);
+RBool32 rho_win32_socket_tcp_create(RWin32SocketTcp* self, RHostIp host);
 
-B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value);
+RBool32 rho_win32_socket_tcp_accept(RWin32SocketTcp* self, RWin32SocketTcp* value);
 
-void pWin32SocketTcpDestroy(PWin32SocketTcp* self);
+void rho_win32_socket_tcp_destroy(RWin32SocketTcp* self);
 
-B32 pWin32SocketTcpBind(PWin32SocketTcp* self);
+RBool32 rho_win32_socket_tcp_bind(RWin32SocketTcp* self);
 
-B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host);
+RBool32 rho_win32_socket_tcp_bind_as(RWin32SocketTcp* self, RHostIp host);
 
-B32 pWin32SocketTcpListen(PWin32SocketTcp* self);
+RBool32 rho_win32_socket_tcp_listen(RWin32SocketTcp* self);
 
-B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host);
+RBool32 rho_win32_socket_tcp_connect(RWin32SocketTcp* self, RHostIp host);
 
-Int pWin32SocketTcpWrite(PWin32SocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_win32_socket_tcp_write(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-Int pWin32SocketTcpRead(PWin32SocketTcp* self, U8* pntr, Int start, Int stop);
+RInt rho_win32_socket_tcp_read(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop);
 
-PHostIp pWin32SocketTcpGetHost(PWin32SocketTcp* self);
+RHostIp rho_win32_socket_tcp_host(RWin32SocketTcp* self);
 
 #endif

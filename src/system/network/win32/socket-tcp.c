@@ -1,26 +1,26 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_SOCKET_TCP_C
-#define P_SYSTEM_WIN32_NETWORK_SOCKET_TCP_C
+#ifndef RHO_SYSTEM_NETWORK_WIN32_SOCKET_TCP_C
+#define RHO_SYSTEM_NETWORK_WIN32_SOCKET_TCP_C
 
 #include "socket-tcp.h"
 
-PWin32SocketTcp* pWin32SocketTcpReserve(PMemoryArena* arena)
+RWin32SocketTcp* rho_win32_socket_tcp_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PWin32SocketTcp);
+    return rho_memory_arena_reserve_of(arena, RWin32SocketTcp, 1);
 }
 
-B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
+RBool32 rho_win32_socket_tcp_create(RWin32SocketTcp* self, RHostIp host)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle  = (SOCKET) NULL;
-    self->storage = (PWin32AddrStorage) {0};
+    self->storage = (RWin32AddrStorage) {0};
 
-    PWin32AddrStorage storage = {0};
-    Int               length  = 0;
+    RInt length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
 
-    if (pWin32NetworkStart() == 0 || length == 0) return 0;
+    if (length == || rho_win32_network_start() == 0) return 0;
 
     SOCKET handle = WSASocketW(storage.ss_family,
         SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
@@ -32,25 +32,25 @@ B32 pWin32SocketTcpCreate(PWin32SocketTcp* self, PHostIp host)
         return 1;
     }
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 
     return 0;
 }
 
-B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value)
+RBool32 rho_win32_socket_tcp_accept(RWin32SocketTcp* self, RWin32SocketTcp* value)
 {
-    pMemorySet(value, sizeof *value, 0xAB);
+    rho_memory_set(value, sizeof *value, 0xAB);
 
     value->handle  = (SOCKET) NULL;
-    value->storage = (PWin32AddrStorage) {0};
+    value->storage = (RWin32AddrStorage) {0};
 
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
+    RWin32AddrStorage storage  = {0};
+    RWin32Addr*       sockaddr = (RWin32Addr*) &storage;
     int               length   = sizeof storage;
 
-    pMemorySet(&storage, sizeof storage, 0xAB);
+    rho_memory_set(&storage, sizeof storage, 0xAB);
 
-    if (pWin32NetworkStart() == 0) return 0;
+    if (rho_win32_network_start() == 0) return 0;
 
     SOCKET handle = accept(self->handle, sockaddr, &length);
 
@@ -61,25 +61,25 @@ B32 pWin32SocketTcpAccept(PWin32SocketTcp* self, PWin32SocketTcp* value)
         return 1;
     }
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 
     return 0;
 }
 
-void pWin32SocketTcpDestroy(PWin32SocketTcp* self)
+void rho_win32_socket_tcp_destroy(RWin32SocketTcp* self)
 {
     if (self->handle != INVALID_SOCKET)
         closesocket(self->handle);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 }
 
-B32 pWin32SocketTcpBind(PWin32SocketTcp* self)
+RBool32 rho_win32_socket_tcp_bind(RWin32SocketTcp* self)
 {
-    PWin32Addr* sockaddr = (PWin32Addr*) &self->storage;
-    Int         length   = pWin32AddrStorageGetSize(&self->storage);
+    RWin32Addr* sockaddr = (RWin32Addr*) &self->storage;
+    RInt        length   = rho_win32_addr_storage_size(&self->storage);
 
     if (length == 0) return 0;
 
@@ -89,13 +89,14 @@ B32 pWin32SocketTcpBind(PWin32SocketTcp* self)
     return 1;
 }
 
-B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
+RBool32 rho_win32_socket_tcp_bind_as(RWin32SocketTcp* self, RHostIp host)
 {
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &self->storage;
-    Int               length   = 0;
+    RInt length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
+
+    RWin32Addr* sockaddr = (RWin32Addr*) &storage;
 
     if (storage.ss_family != self->storage.ss_family) return 0;
 
@@ -107,7 +108,7 @@ B32 pWin32SocketTcpBindAs(PWin32SocketTcp* self, PHostIp host)
     return 1;
 }
 
-B32 pWin32SocketTcpListen(PWin32SocketTcp* self)
+RBool32 rho_win32_socket_tcp_listen(RWin32SocketTcp* self)
 {
     if (listen(self->handle, SOMAXCONN) == SOCKET_ERROR)
         return 0;
@@ -115,13 +116,14 @@ B32 pWin32SocketTcpListen(PWin32SocketTcp* self)
     return 1;
 }
 
-B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host)
+RBool32 rho_win32_socket_tcp_connect(RWin32SocketTcp* self, RHostIp host)
 {
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
-    Int               length   = 0;
+    RInt length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
+
+    RWin32Addr* sockaddr = (RWin32Addr*) &storage;
 
     if (host.port == 0 || length == 0) return 0;
 
@@ -131,18 +133,17 @@ B32 pWin32SocketTcpConnect(PWin32SocketTcp* self, PHostIp host)
     return 1;
 }
 
-Int pWin32SocketTcpWrite(PWin32SocketTcp* self, U8* pntr, Int start, Int stop)
+RInt rho_win32_socket_tcp_write(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int result = 0;
-    Int count  = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    result = 0;
+    RInt    count  = 0;
 
     while (result < size) {
-        count = send(self->handle,
-            memory + result, size - result, 0);
+        count = send(self->handle, memory + result, size - result, 0);
 
         if (count > 0 && count <= size - result)
             result += count;
@@ -153,24 +154,24 @@ Int pWin32SocketTcpWrite(PWin32SocketTcp* self, U8* pntr, Int start, Int stop)
     return result;
 }
 
-Int pWin32SocketTcpRead(PWin32SocketTcp* self, U8* pntr, Int start, Int stop)
+RInt rho_win32_socket_tcp_read(RWin32SocketTcp* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int count  = recv(self->handle, memory, size, 0);
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    count  = 0;
+
+    count = recv(self->handle, memory, size, 0);
 
     if (count > 0 && count <= size) return count;
 
     return 0;
 }
 
-PHostIp pWin32SocketTcpGetHost(PWin32SocketTcp* self)
+RHostIp rho_win32_socket_tcp_host(RWin32SocketTcp* self)
 {
-    return pHostIpMake(
-        pWin32AddrStorageGetAddress(&self->storage),
-        pWin32AddrStorageGetPort(&self->storage));
+    return rho_win32_addr_storage_host(&self->storage);
 }
 
 #endif

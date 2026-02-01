@@ -1,62 +1,62 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_ASYNC_SOCKET_TCP_H
-#define P_SYSTEM_LINUX_NETWORK_ASYNC_SOCKET_TCP_H
+#ifndef RHO_SYSTEM_NETWORK_LINUX_ASYNC_SOCKET_TCP_H
+#define RHO_SYSTEM_NETWORK_LINUX_ASYNC_SOCKET_TCP_H
 
 #include "import.h"
 
-typedef struct PLinuxSocketTcpAccept
+typedef struct RLinuxSocketTcpAccept
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxSocketTcp* self;
+    RLinuxSocketTcp* self;
     void*            ctxt;
 
-    PLinuxSocketTcp* value;
+    RLinuxSocketTcp* value;
 }
-PLinuxSocketTcpAccept;
+RLinuxSocketTcpAccept;
 
-typedef struct PLinuxSocketTcpConnect
+typedef struct RLinuxSocketTcpConnect
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxSocketTcp* self;
+    RLinuxSocketTcp* self;
     void*            ctxt;
 
-    PHostIp host;
+    RHostIp host;
 }
-PLinuxSocketTcpConnect;
+RLinuxSocketTcpConnect;
 
-typedef struct PLinuxSocketTcpWrite
+typedef struct RLinuxSocketTcpWrite
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxSocketTcp* self;
+    RLinuxSocketTcp* self;
     void*            ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PLinuxSocketTcpWrite;
+RLinuxSocketTcpWrite;
 
-typedef struct PLinuxSocketTcpRead
+typedef struct RLinuxSocketTcpRead
 {
-    __PLinuxAsyncIoTaskTag__;
+    __RLinuxIoTaskTag__;
 
-    PLinuxSocketTcp* self;
+    RLinuxSocketTcp* self;
     void*            ctxt;
 
-    U8* pntr;
-    Int start;
-    Int stop;
+    RUint8* pntr;
+    RInt    start;
+    RInt    stop;
 }
-PLinuxSocketTcpRead;
+RLinuxSocketTcpRead;
 
-B32 pLinuxSocketTcpAcceptAsync(PLinuxSocketTcp* self, PLinuxSocketTcp* value, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_socket_tcp_async_accept(RLinuxSocketTcp* self, RLinuxSocketTcp* value, RLinuxIoQueue* queue, void* ctxt);
 
-B32 pLinuxSocketTcpConnectAsync(PLinuxSocketTcp* self, PHostIp host, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_socket_tcp_async_connect(RLinuxSocketTcp* self, RHostIp host, RLinuxIoQueue* queue, void* ctxt);
 
-B32 pLinuxSocketTcpWriteAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_socket_tcp_async_write(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt);
 
-B32 pLinuxSocketTcpReadAsync(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop, PLinuxAsyncIoQueue* queue, void* ctxt);
+RBool32 rho_linux_socket_tcp_async_read(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop, RLinuxIoQueue* queue, void* ctxt);
 
 #endif

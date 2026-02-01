@@ -1,29 +1,29 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_SOCKET_UDP_H
-#define P_SYSTEM_WIN32_NETWORK_SOCKET_UDP_H
+#ifndef RHO_SYSTEM_NETWORK_WIN32_SOCKET_UDP_H
+#define RHO_SYSTEM_NETWORK_WIN32_SOCKET_UDP_H
 
 #include "common.h"
 
-typedef struct PWin32SocketUdp
+typedef struct RWin32SocketUdp
 {
     SOCKET            handle;
-    PWin32AddrStorage storage;
+    RWin32AddrStorage storage;
 }
-PWin32SocketUdp;
+RWin32SocketUdp;
 
-PWin32SocketUdp* pWin32SocketUdpReserve(PMemoryArena* arena);
+RWin32SocketUdp* rho_win32_socket_udp_reserve(RMemoryArena* arena);
 
-B32 pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host);
+RBool32 rho_win32_socket_udp_create(RWin32SocketUdp* self, RHostIp host);
 
-void pWin32SocketUdpDestroy(PWin32SocketUdp* self);
+void rho_win32_socket_udp_destroy(RWin32SocketUdp* self);
 
-B32 pWin32SocketUdpBind(PWin32SocketUdp* self);
+RBool32 rho_win32_socket_udp_bind(RWin32SocketUdp* self);
 
-B32 pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host);
+RBool32 rho_win32_socket_udp_bind_as(RWin32SocketUdp* self, RHostIp host);
 
-Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host);
+RInt rho_win32_socket_udp_write(RWin32SocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host);
 
-Int pWin32SocketUdpRead(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host);
+RInt rho_win32_socket_udp_read(RWin32SocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host);
 
-PHostIp pWin32SocketUdpGetHost(PWin32SocketUdp* self);
+RHostIp rho_win32_socket_udp_host(RWin32SocketUdp* self);
 
 #endif

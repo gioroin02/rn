@@ -1,24 +1,24 @@
-#ifndef P_SYSTEM_NETWORK_SOCKET_UDP_H
-#define P_SYSTEM_NETWORK_SOCKET_UDP_H
+#ifndef RHO_SYSTEM_NETWORK_SOCKET_UDP_H
+#define RHO_SYSTEM_NETWORK_SOCKET_UDP_H
 
 #include "address-ip.h"
 
-typedef struct PSocketUdp { U8 __private__; } PSocketUdp;
+typedef struct RSocketUdp { RUint8 __private__; } RSocketUdp;
 
-PSocketUdp* pSocketUdpReserve(PMemoryArena* arena);
+RSocketUdp* rho_socket_udp_reserve(RMemoryArena* arena);
 
-B32 pSocketUdpCreate(PSocketUdp* self, PHostIp host);
+RBool32 rho_socket_udp_create(RSocketUdp* self, RHostIp host);
 
-void pSocketUdpDestroy(PSocketUdp* self);
+void rho_socket_udp_destroy(RSocketUdp* self);
 
-B32 pSocketUdpBind(PSocketUdp* self);
+RBool32 rho_socket_udp_bind(RSocketUdp* self);
 
-B32 pSocketUdpBindAs(PSocketUdp* self, PHostIp host);
+RBool32 rho_socket_udp_bind_as(RSocketUdp* self, RHostIp host);
 
-Int pSocketUdpWrite(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host);
+RInt rho_socket_udp_write(RSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host);
 
-Int pSocketUdpRead(PSocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host);
+RInt rho_socket_udp_read(RSocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host);
 
-PHostIp pSocketUdpGetHost(PSocketUdp* self);
+RHostIp rho_socket_udp_host(RSocketUdp* self);
 
 #endif

@@ -1,26 +1,26 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_SOCKET_UDP_C
-#define P_SYSTEM_WIN32_NETWORK_SOCKET_UDP_C
+#ifndef RHO_SYSTEM_NETWORK_WIN32_SOCKET_UDP_C
+#define RHO_SYSTEM_NETWORK_WIN32_SOCKET_UDP_C
 
 #include "socket-udp.h"
 
-PWin32SocketUdp* pWin32SocketUdpReserve(PMemoryArena* arena)
+RWin32SocketUdp* rho_win32_socket_udp_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PWin32SocketUdp);
+    return rho_memory_arena_reserve_of(arena, RWin32SocketUdp, 1);
 }
 
-B32 pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host)
+RBool32 rho_win32_socket_udp_create(RWin32SocketUdp* self, RHostIp host)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle  = (SOCKET) NULL;
-    self->storage = (PWin32AddrStorage) {0};
+    self->storage = (RWin32AddrStorage) {0};
 
-    PWin32AddrStorage storage = {0};
-    Int               length  = 0;
+    RInt length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
 
-    if (pWin32NetworkStart() == 0 || length == 0) return 0;
+    if (length == 0 || rho_win32_network_start() == 0) return 0;
 
     SOCKET handle = WSASocketW(storage.ss_family,
         SOCK_DGRAM, IPPROTO_UDP, 0, 0, WSA_FLAG_OVERLAPPED);
@@ -32,25 +32,25 @@ B32 pWin32SocketUdpCreate(PWin32SocketUdp* self, PHostIp host)
         return 1;
     }
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 
     return 0;
 }
 
-void pWin32SocketUdpDestroy(PWin32SocketUdp* self)
+void rho_win32_socket_udp_destroy(RWin32SocketUdp* self)
 {
     if (self->handle != INVALID_SOCKET)
         closesocket(self->handle);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 }
 
-B32 pWin32SocketUdpBind(PWin32SocketUdp* self)
+RBool32 rho_win32_socket_udp_bind(RWin32SocketUdp* self)
 {
-    PWin32Addr* sockaddr = (PWin32Addr*) &self->storage;
-    Int         length   = pWin32AddrStorageGetSize(&self->storage);
+    RWin32Addr* sockaddr = (RWin32Addr*) &self->storage;
+    RInt        length   = rho_win32_addr_storage_size(&self->storage);
 
     if (length == 0) return 0;
 
@@ -60,13 +60,14 @@ B32 pWin32SocketUdpBind(PWin32SocketUdp* self)
     return 1;
 }
 
-B32 pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host)
+RBool32 rho_win32_socket_udp_bind_as(RWin32SocketUdp* self, RHostIp host)
 {
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
-    Int               length   = 0;
+    RInt length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
+
+    RWin32Addr* sockaddr = (RWin32Addr*) &storage;
 
     if (storage.ss_family != self->storage.ss_family)
         return 0;
@@ -79,20 +80,20 @@ B32 pWin32SocketUdpBindAs(PWin32SocketUdp* self, PHostIp host)
     return 1;
 }
 
-Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PHostIp host)
+RInt rho_win32_socket_udp_write(RWin32SocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp host)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
-    Int               length   = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    result = 0;
+    RInt    count  = 0;
+    RInt    length = 0;
 
-    storage = pWin32AddrStorageMake(host.address, host.port, &length);
+    RWin32AddrStorage storage = rho_win32_addr_storage_make(
+        host.address, host.port, &length);
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int result = 0;
-    Int count  = 0;
+    RWin32Addr* sockaddr = (RWin32Addr*) &storage;
 
     while (result < size) {
         count = sendto(self->handle, memory + result,
@@ -107,26 +108,25 @@ Int pWin32SocketUdpWrite(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, P
     return result;
 }
 
-Int pWin32SocketUdpRead(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PHostIp* host)
+RInt rho_win32_socket_udp_read(RWin32SocketUdp* self, RUint8* pntr, RInt start, RInt stop, RHostIp* host)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    PWin32AddrStorage storage  = {0};
-    PWin32Addr*       sockaddr = (PWin32Addr*) &storage;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    count  = 0;
+
+    RWin32AddrStorage storage  = {0};
+    RWin32Addr*       sockaddr = (RWin32Addr*) &storage;
     int               length   = sizeof storage;
 
-    pMemorySet(&storage, sizeof storage, 0xAB);
+    rho_memory_set(&storage, sizeof storage, 0xAB);
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int count  = recvfrom(self->handle, memory, size, 0, sockaddr, &length);
+    count = recvfrom(self->handle, memory, size, 0, sockaddr, &length);
 
     if (count > 0 && count <= size && length > 0) {
-        if (host != NULL) {
-            *host = pHostIpMake(
-                pWin32AddrStorageGetAddress(&storage),
-                pWin32AddrStorageGetPort(&storage));
-        }
+        if (host != NULL)
+            *host = rho_wn32_addr_storage_host(&storage);
 
         return count;
     }
@@ -134,11 +134,9 @@ Int pWin32SocketUdpRead(PWin32SocketUdp* self, U8* pntr, Int start, Int stop, PH
     return 0;
 }
 
-PHostIp pWin32SocketUdpGetHost(PWin32SocketUdp* self)
+RHostIp rho_win32_socket_udp_host(RWin32SocketUdp* self)
 {
-    return pHostIpMake(
-        pWin32AddrStorageGetAddress(&self->storage),
-        pWin32AddrStorageGetPort(&self->storage));
+    return rho_wn32_addr_storage_host(&self->storage);
 }
 
 #endif

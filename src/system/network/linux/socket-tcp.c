@@ -1,30 +1,30 @@
-#ifndef P_SYSTEM_LINUX_NETWORK_SOCKET_TCP_C
-#define P_SYSTEM_LINUX_NETWORK_SOCKET_TCP_C
+#ifndef RHO_SYSTEM_NETWORK_LINUX_SOCKET_TCP_C
+#define RHO_SYSTEM_NETWORK_LINUX_SOCKET_TCP_C
 
 #include "socket-tcp.h"
 
-PLinuxSocketTcp* pLinuxSocketTcpReserve(PMemoryArena* arena)
+RLinuxSocketTcp* rho_linux_socket_tcp_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PLinuxSocketTcp);
+    return rho_memory_arena_reserve_of(arena, RLinuxSocketTcp, 1);
 }
 
-B32 pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host)
+RBool32 rho_linux_socket_tcp_create(RLinuxSocketTcp* self, RHostIp host)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle  = -1;
-    self->storage = (PLinuxAddrStorage) {0};
+    self->storage = (RLinuxAddrStorage) {0};
 
-    PLinuxAddrStorage storage = {0};
-    Int               length  = 0;
-    int               option  = 1;
-    int               status  = 0;
+    RInt length = 0;
+    int  option = 1;
+    int  status = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
 
     if (length == 0) return 0;
 
-    Int handle = socket(storage.ss_family,
+    RInt handle = socket(storage.ss_family,
         SOCK_STREAM | SOCK_CLOEXEC, IPPROTO_TCP);
 
     if (handle != -1) {
@@ -50,18 +50,18 @@ B32 pLinuxSocketTcpCreate(PLinuxSocketTcp* self, PHostIp host)
     return 0;
 }
 
-B32 pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value)
+RBool32 rho_linux_socket_tcp_accept(RLinuxSocketTcp* self, RLinuxSocketTcp* value)
 {
-    pMemorySet(value, sizeof *value, 0xAB);
+    rho_memory_set(value, sizeof *value, 0xAB);
 
     value->handle  = -1;
-    value->storage = (PLinuxAddrStorage) {0};
+    value->storage = (RLinuxAddrStorage) {0};
 
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
-    int               length   = sizeof storage;
+    RLinuxAddrStorage storage  = {0};
+    RLinuxAddr*       sockaddr = (RLinuxAddr*) &storage;
+    socklen_t         length   = sizeof storage;
 
-    pMemorySet(&storage, sizeof storage, 0xAB);
+    rho_memory_set(&storage, sizeof storage, 0xAB);
 
     int handle = -1;
 
@@ -80,7 +80,7 @@ B32 pLinuxSocketTcpAccept(PLinuxSocketTcp* self, PLinuxSocketTcp* value)
     return 0;
 }
 
-void pLinuxSocketTcpDestroy(PLinuxSocketTcp* self)
+void rho_linux_socket_tcp_destroy(RLinuxSocketTcp* self)
 {
     int status = 0;
 
@@ -91,13 +91,13 @@ void pLinuxSocketTcpDestroy(PLinuxSocketTcp* self)
     }
     while (status == -1 && errno == EINTR);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-B32 pLinuxSocketTcpBind(PLinuxSocketTcp* self)
+RBool32 rho_linux_socket_tcp_bind(RLinuxSocketTcp* self)
 {
-    PLinuxAddr* sockaddr = (PLinuxAddr*) &self->storage;
-    Int         length   = pLinuxAddrStorageGetSize(&self->storage);
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &self->storage;
+    RInt        length   = rho_linux_addr_storage_size(&self->storage);
     int         status   = 0;
 
     if (length == 0) return 0;
@@ -112,14 +112,15 @@ B32 pLinuxSocketTcpBind(PLinuxSocketTcp* self)
     return 1;
 }
 
-B32 pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host)
+RBool32 rho_linux_socket_tcp_bind_as(RLinuxSocketTcp* self, RHostIp host)
 {
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &self->storage;
-    Int               length   = 0;
-    int               status   = 0;
+    RInt length = 0;
+    int  status = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
+
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &storage;
 
     if (storage.ss_family != self->storage.ss_family)
         return 0;
@@ -136,7 +137,7 @@ B32 pLinuxSocketTcpBindAs(PLinuxSocketTcp* self, PHostIp host)
     return 1;
 }
 
-B32 pLinuxSocketTcpListen(PLinuxSocketTcp* self)
+RBool32 rho_linux_socket_tcp_listen(RLinuxSocketTcp* self)
 {
     int status = 0;
 
@@ -150,14 +151,15 @@ B32 pLinuxSocketTcpListen(PLinuxSocketTcp* self)
     return 1;
 }
 
-B32 pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host)
+RBool32 rho_linux_socket_tcp_connect(RLinuxSocketTcp* self, RHostIp host)
 {
-    PLinuxAddrStorage storage  = {0};
-    PLinuxAddr*       sockaddr = (PLinuxAddr*) &storage;
-    Int               length   = 0;
-    int               status   = 0;
+    RInt length = 0;
+    int  status = 0;
 
-    storage = pLinuxAddrStorageMake(host.address, host.port, &length);
+    RLinuxAddrStorage storage = rho_linux_addr_storage_make(
+        host.address, host.port, &length);
+
+    RLinuxAddr* sockaddr = (RLinuxAddr*) &storage;
 
     if (host.port == 0 || length == 0) return 0;
 
@@ -171,19 +173,18 @@ B32 pLinuxSocketTcpConnect(PLinuxSocketTcp* self, PHostIp host)
     return 1;
 }
 
-Int pLinuxSocketTcpWrite(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop)
+RInt rho_linux_socket_tcp_write(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int result = 0;
-    Int count  = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    result = 0;
+    RInt    count  = 0;
 
     while (result < size) {
         do {
-            count = send(self->handle,
-                memory + result, size - result, 0);
+            count = send(self->handle, memory + result, size - result, 0);
         }
         while (count == -1 && errno == EINTR);
 
@@ -196,13 +197,13 @@ Int pLinuxSocketTcpWrite(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop)
     return result;
 }
 
-Int pLinuxSocketTcpRead(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop)
+RInt rho_linux_socket_tcp_read(RLinuxSocketTcp* self, RUint8* pntr, RInt start, RInt stop)
 {
     if (pntr == NULL || stop <= start || start < 0) return 0;
 
-    I8* memory = ((I8*) pntr + start);
-    Int size   = stop - start;
-    Int count  = 0;
+    RChar8* memory = ((RChar8*) pntr + start);
+    RInt    size   = stop - start;
+    RInt    count  = 0;
 
     do {
         count = recv(self->handle, memory, size, 0);
@@ -214,11 +215,9 @@ Int pLinuxSocketTcpRead(PLinuxSocketTcp* self, U8* pntr, Int start, Int stop)
     return 0;
 }
 
-PHostIp pLinuxSocketTcpGetHost(PLinuxSocketTcp* self)
+RHostIp rho_linux_socket_tcp_host(RLinuxSocketTcp* self)
 {
-    return pHostIpMake(
-        pLinuxAddrStorageGetAddress(&self->storage),
-        pLinuxAddrStorageGetPort(&self->storage));
+    return rho_linux_addr_storage_host(&self->storage);
 }
 
 #endif

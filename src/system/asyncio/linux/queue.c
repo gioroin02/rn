@@ -1,9 +1,9 @@
-#ifndef P_SYSTEM_LINUX_ASYNCIO_QUEUE_C
-#define P_SYSTEM_LINUX_ASYNCIO_QUEUE_C
+#ifndef RHO_SYSTEM_ASYNCIO_LINUX_QUEUE_C
+#define RHO_SYSTEM_ASYNCIO_LINUX_QUEUE_C
 
 #include "queue.h"
 
-static void pLinuxAsyncIoQueueInsertBack(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value)
+static void rho_linux_io_queue_insert_back(RLinuxIoQueue* self, RLinuxIoTask* value)
 {
     if (self->list_front != NULL)
         self->list_back->list_next = value;
@@ -13,9 +13,9 @@ static void pLinuxAsyncIoQueueInsertBack(PLinuxAsyncIoQueue* self, PLinuxAsyncIo
     self->list_back = value;
 }
 
-static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemoveFront(PLinuxAsyncIoQueue* self)
+static RLinuxIoTask* rho_linux_io_queue_remove_front(RLinuxIoQueue* self)
 {
-    PLinuxAsyncIoTask* result = self->list_front;
+    RLinuxIoTask* result = self->list_front;
 
     if (result == NULL) return result;
 
@@ -27,12 +27,12 @@ static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemoveFront(PLinuxAsyncIoQueue* self
     return result;
 }
 
-static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemove(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* prev)
+static RLinuxIoTask* rho_linux_io_queue_remove(RLinuxIoQueue* self, RLinuxIoTask* prev)
 {
     if (prev == NULL)
-        return pLinuxAsyncIoQueueRemoveFront(self);
+        return rho_linux_io_queue_remove_front(self);
 
-    PLinuxAsyncIoTask* result = prev->list_next;
+    RLinuxIoTask* result = prev->list_next;
 
     if (result == NULL) return NULL;
 
@@ -41,14 +41,14 @@ static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemove(PLinuxAsyncIoQueue* self, PLi
     return result;
 }
 
-static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemoveByAddress(PLinuxAsyncIoQueue* self, void* address)
+static RLinuxIoTask* rho_linux_io_queue_remove_by_address(RLinuxIoQueue* self, void* address)
 {
-    PLinuxAsyncIoTask* prev = NULL;
-    PLinuxAsyncIoTask* task = self->list_front;
+    RLinuxIoTask* prev = NULL;
+    RLinuxIoTask* task = self->list_front;
 
     while (task != 0) {
         if (task == address)
-            return pLinuxAsyncIoQueueRemove(self, prev);
+            return rho_linux_io_queue_remove(self, prev);
 
         prev = task;
         task = task->list_next;
@@ -57,17 +57,17 @@ static PLinuxAsyncIoTask* pLinuxAsyncIoQueueRemoveByAddress(PLinuxAsyncIoQueue* 
     return NULL;
 }
 
-PLinuxAsyncIoQueue* pLinuxAsyncIoQueueReserve(PMemoryArena* arena)
+RLinuxIoQueue* rho_linux_io_queue_reserve(RMemoryArena* arena)
 {
-    return pMemoryArenaReserveOneOf(arena, PLinuxAsyncIoQueue);
+    return rho_memory_arena_reserve_of(arena, RLinuxIoQueue, 1);
 }
 
-B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool)
+RBool32 rho_linux_io_queue_create(RLinuxIoQueue* self, RMemoryPool pool)
 {
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 
     self->handle     = -1;
-    self->pool       = pMemoryPoolMake(NULL, 0, 0);
+    self->pool       = rho_memory_pool_make(NULL, 0, 0);
     self->list_front = NULL;
     self->list_back  = NULL;
 
@@ -75,13 +75,13 @@ B32 pLinuxAsyncIoQueueCreate(PLinuxAsyncIoQueue* self, PMemoryPool pool)
 
     if (handle == -1) return 0;
 
-    self->handle     = handle;
-    self->pool       = pool;
+    self->handle = handle;
+    self->pool   = pool;
 
     return 1;
 }
 
-void pLinuxAsyncIoQueueDestroy(PLinuxAsyncIoQueue* self)
+void rho_linux_io_queue_destroy(RLinuxIoQueue* self)
 {
     int status = 0;
 
@@ -92,16 +92,16 @@ void pLinuxAsyncIoQueueDestroy(PLinuxAsyncIoQueue* self)
     }
     while (status == -1 && errno == EINTR);
 
-    pMemorySet(self, sizeof *self, 0xAB);
+    rho_memory_set(self, sizeof *self, 0xAB);
 }
 
-PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event)
+RIoEvent* rho_linux_io_queue_poll_event(RLinuxIoQueue* self, RInt timeout, RMemoryArena* arena)
 {
-    Int time = timeout >= 0 ? timeout : -1;
+    RInt time = timeout >= 0 ? timeout : -1;
 
-    PAsyncIoEventKind result = PAsyncIoEvent_None;
-    PEpollEvent       notif  = {0};
-    int               status = 0;
+    RLinuxEpollEvent notif  = {0};
+    RIoEvent*        result = NULL;
+    int              status = 0;
 
     do {
         status = epoll_wait(self->handle, &notif, 1, time);
@@ -110,21 +110,21 @@ PAsyncIoEventKind pLinuxAsyncIoQueuePollEvent(PLinuxAsyncIoQueue* self, Int time
 
     if (status <= 0) return result;
 
-    PLinuxAsyncIoTask* value = pLinuxAsyncIoQueueRemoveByAddress(self, notif.data.ptr);
+    RLinuxIoTask* value = rho_linux_io_queue_remove_by_address(self, notif.data.ptr);
 
     if (value != NULL && value->callback != NULL)
-        result = ((PLinuxAsyncIoProc*) value->callback)(value, arena, event);
+        result = ((RLinuxIoProc*) value->callback)(value, arena);
 
-    pMemoryPoolRelease(&self->pool, value);
+    rho_memory_pool_release(&self->pool, value);
 
     return result;
 }
 
-B32 pLinuxAsyncIoQueueSubmit(PLinuxAsyncIoQueue* self, PLinuxAsyncIoTask* value)
+RBool32 rho_linux_io_queue_submit(RLinuxIoQueue* self, RLinuxIoTask* value)
 {
     if (value == NULL) return 0;
 
-    pLinuxAsyncIoQueueInsertBack(self, value);
+    rho_linux_io_queue_insert_back(self, value);
 
     return 1;
 }

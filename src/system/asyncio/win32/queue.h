@@ -1,5 +1,5 @@
-#ifndef P_SYSTEM_WIN32_ASYNCIO_QUEUE_H
-#define P_SYSTEM_WIN32_ASYNCIO_QUEUE_H
+#ifndef RHO_SYSTEM_ASYNCIO_WIN32_QUEUE_H
+#define RHO_SYSTEM_ASYNCIO_WIN32_QUEUE_H
 
 #include "import.h"
 
@@ -12,44 +12,44 @@
 // the array would have an implicit free list to get a new block in constant time but still access active ones by index.
 // This removes the need for an explicity memory pool (and 16 bytes of header per node) and a linear time search through the list.
 
-#define __PWin32AsyncIoTaskTag__ struct { \
-    OVERLAPPED overlap;                   \
-    void*      callback;                  \
-                                          \
-    PWin32AsyncIoTask* list_next;         \
+#define __RWin32IoTaskTag__ struct { \
+    OVERLAPPED overlap;              \
+    void*      callback;             \
+                                     \
+    RWin32IoTask* list_next;         \
 }
 
-typedef struct PWin32AsyncIoTask PWin32AsyncIoTask;
+typedef struct RWin32IoTask RWin32IoTask;
 
-struct PWin32AsyncIoTask
+struct RWin32IoTask
 {
     OVERLAPPED overlap;
     void*      callback;
 
-    PWin32AsyncIoTask* list_next;
+    RWin32IoTask* list_next;
 };
 
-typedef struct PWin32AsyncIoQueue
+typedef struct RWin32IoQueue
 {
     HANDLE handle;
 
-    PMemoryPool pool;
+    RMemoryPool pool;
 
-    PWin32AsyncIoTask* list_front;
-    PWin32AsyncIoTask* list_back;
+    RWin32IoTask* list_front;
+    RWin32IoTask* list_back;
 }
-PWin32AsyncIoQueue;
+RWin32IoQueue;
 
-typedef PAsyncIoEventKind (PWin32AsyncIoProc) (void*, Int, PMemoryArena*, PAsyncIoEvent** event);
+typedef RIoEvent* (RWin32IoProc) (void*, RInt, RMemoryArena*);
 
-PWin32AsyncIoQueue* pWin32AsyncIoQueueReserve(PMemoryArena* arena);
+RWin32IoQueue* rho_win32_io_queue_reserve(RMemoryArena* arena);
 
-B32 pWin32AsyncIoQueueCreate(PWin32AsyncIoQueue* self, PMemoryPool pool);
+RBool32 rho_win32_io_queue_create(RWin32IoQueue* self, RMemoryPool pool);
 
-void pWin32AsyncIoQueueDestroy(PWin32AsyncIoQueue* self);
+void rho_win32_io_queue_destroy(RWin32IoQueue* self);
 
-PAsyncIoEventKind pWin32AsyncIoQueuePollEvent(PWin32AsyncIoQueue* self, Int timeout, PMemoryArena* arena, PAsyncIoEvent** event);
+RIoEvent* rho_win32_io_queue_poll_event(RWin32IoQueue* self, RInt timeout, RMemoryArena* arena);
 
-B32 pWin32AsyncIoQueueSubmit(PWin32AsyncIoQueue* self, PWin32AsyncIoTask* value);
+RBool32 rho_win32_io_queue_submit(RWin32IoQueue* self, RWin32IoTask* value);
 
 #endif

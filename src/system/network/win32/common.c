@@ -1,29 +1,20 @@
-#ifndef P_SYSTEM_WIN32_NETWORK_COMMON_C
-#define P_SYSTEM_WIN32_NETWORK_COMMON_C
+#ifndef RHO_SYSTEM_NETWORK_WIN32_COMMON_C
+#define RHO_SYSTEM_NETWORK_WIN32_COMMON_C
 
 #include "common.h"
 
-static volatile LONG p_win32_winsock_count = 0;
+static volatile LONG rho_win32_winsock_count = 0;
 
 LPFN_CONNECTEX WSAConnectEx = (LPFN_CONNECTEX) NULL;
 LPFN_ACCEPTEX  WSAAcceptEx  = (LPFN_ACCEPTEX)  NULL;
 
-B32 pWin32NetworkStart()
-{
-    if (InterlockedIncrement(&p_win32_winsock_count) == 1)
-        return pWin32NetworkStartImpl();
-
-    return 1;
-}
-
-B32 pWin32NetworkStartImpl()
+static RBool32 __rho_win32_network_start__()
 {
     WSADATA data;
 
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) return 0;
 
-    SOCKET handle = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP,
-        0, 0, WSA_FLAG_OVERLAPPED);
+    SOCKET handle = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, 0, 0, WSA_FLAG_OVERLAPPED);
 
     if (handle == INVALID_SOCKET) return 0;
 
@@ -31,28 +22,22 @@ B32 pWin32NetworkStartImpl()
     GUID  guid0 = WSAID_CONNECTEX;
     GUID  guid1 = WSAID_ACCEPTEX;
 
-    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid0, sizeof guid0,
-        &WSAConnectEx, sizeof WSAConnectEx, &bytes, 0, 0);
+    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER,
+        &guid0, sizeof guid0, &WSAConnectEx, sizeof WSAConnectEx, &bytes, 0, 0);
 
-    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER, &guid1, sizeof guid1,
-        &WSAAcceptEx, sizeof WSAAcceptEx, &bytes, 0, 0);
+    WSAIoctl(handle, SIO_GET_EXTENSION_FUNCTION_POINTER,
+        &guid1, sizeof guid1, &WSAAcceptEx, sizeof WSAAcceptEx, &bytes, 0, 0);
 
     closesocket(handle);
 
     if (WSAConnectEx != NULL && WSAAcceptEx != NULL) return 1;
 
-    pWin32NetworkStop();
+    rho_win32_network_stop();
 
     return 0;
 }
 
-void pWin32NetworkStop()
-{
-    if (InterlockedDecrement(&p_win32_winsock_count) == 0)
-        pWin32NetworkStopImpl();
-}
-
-void pWin32NetworkStopImpl()
+static void __rho_win32_network_stop__()
 {
     WSAConnectEx = NULL;
     WSAAcceptEx  = NULL;
@@ -60,33 +45,47 @@ void pWin32NetworkStopImpl()
     WSACleanup();
 }
 
-PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size)
+RBool32 rho_win32_network_start()
 {
-    PWin32AddrStorage result = {0};
+    if (InterlockedIncrement(&rho_win32_winsock_count) == 1)
+        return __rho_win32_network_start__();
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    return 1;
+}
+
+void rho_win32_network_stop()
+{
+    if (InterlockedDecrement(&rho_win32_winsock_count) == 0)
+        __rho_win32_network_stop__();
+}
+
+RWin32AddrStorage rho_win32_addr_storage_make(RAddressIp address, RUint16 port, RInt* size)
+{
+    RWin32AddrStorage result = {0};
+
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     switch (address.kind) {
-        case PAddressIp_Ver4: {
-            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) &result;
+        case RAddressIp_Ver4: {
+            RWin32AddrIp4* ip4 = (RWin32AddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
 
-            pMemoryCopy(&ip4->sin_addr.s_addr,
-                P_ADDRESS_IP4_SIZE, address.ip4.values);
+            rho_memory_copy(&ip4->sin_addr.s_addr,
+                RHO_ADDRESS_IP4_SIZE, address.ip4.values);
 
             if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PAddressIp_Ver6: {
-            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) &result;
+        case RAddressIp_Ver6: {
+            RWin32AddrIp6* ip6 = (RWin32AddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
 
-            pMemoryCopy(ip6->sin6_addr.s6_addr,
-                P_ADDRESS_IP6_SIZE, address.ip6.values);
+            rho_memory_copy(ip6->sin6_addr.s6_addr,
+                RHO_ADDRESS_IP6_SIZE, address.ip6.values);
 
             if (size != 0) *size = sizeof *ip6;
         } break;
@@ -97,35 +96,35 @@ PWin32AddrStorage pWin32AddrStorageMake(PAddressIp address, U16 port, Int* size)
     return result;
 }
 
-PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* size)
+RWin32AddrStorage rho_win32_addr_storage_make_any(RAddressIpKind kind, RUint16 port, RInt* size)
 {
-    PWin32AddrStorage result = {0};
+    RWin32AddrStorage result = {0};
 
-    pMemorySet(&result, sizeof result, 0xAB);
+    rho_memory_set(&result, sizeof result, 0xAB);
 
     switch (kind) {
-        case PAddressIp_Ver4: {
-            U32 in4addr_any = INADDR_ANY;
+        case RAddressIp_Ver4: {
+            RUint32 in4addr_any = INADDR_ANY;
 
-            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) &result;
+            RWin32AddrIp4* ip4 = (RWin32AddrIp4*) &result;
 
             ip4->sin_family = AF_INET;
             ip4->sin_port   = htons(port);
 
-            pMemoryCopy(&ip4->sin_addr.s_addr,
-                P_ADDRESS_IP4_SIZE, &in4addr_any);
+            rho_memory_copy(&ip4->sin_addr.s_addr,
+                RHO_ADDRESS_IP4_SIZE, &in4addr_any);
 
             if (size != 0) *size = sizeof *ip4;
         } break;
 
-        case PAddressIp_Ver6: {
-            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) &result;
+        case RAddressIp_Ver6: {
+            RWin32AddrIp6* ip6 = (RWin32AddrIp6*) &result;
 
             ip6->sin6_family = AF_INET6;
             ip6->sin6_port   = htons(port);
 
-            pMemoryCopy(ip6->sin6_addr.s6_addr,
-                P_ADDRESS_IP6_SIZE, (void*) &in6addr_any);
+            rho_memory_copy(ip6->sin6_addr.s6_addr,
+                RHO_ADDRESS_IP6_SIZE, (void*) &in6addr_any);
 
             if (size != 0) *size = sizeof *ip6;
         } break;
@@ -136,11 +135,11 @@ PWin32AddrStorage pWin32AddrStorageMakeAny(PAddressIpKind kind, U16 port, Int* s
     return result;
 }
 
-Int pWin32AddrStorageGetSize(PWin32AddrStorage* self)
+RInt rho_win32_addr_storage_size(RWin32AddrStorage* self)
 {
     switch (self->ss_family) {
-        case AF_INET:  return sizeof (PWin32AddrIp4);
-        case AF_INET6: return sizeof (PWin32AddrIp6);
+        case AF_INET:  return sizeof (RWin32AddrIp4);
+        case AF_INET6: return sizeof (RWin32AddrIp6);
 
         default: break;
     }
@@ -148,27 +147,27 @@ Int pWin32AddrStorageGetSize(PWin32AddrStorage* self)
     return 0;
 }
 
-PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self)
+RAddressIp rho_win32_addr_storage_address(RWin32AddrStorage* self)
 {
-    PAddressIp result = pAddressIpNone();
+    RAddressIp result = rAddressIpNone();
 
     switch (self->ss_family) {
         case AF_INET: {
-            PWin32AddrIp4* ip4 = (PWin32AddrIp4*) self;
+            RWin32AddrIp4* ip4 = (RWin32AddrIp4*) self;
 
-            result.kind = PAddressIp_Ver4;
+            result.kind = RAddressIp_Ver4;
 
-            pMemoryCopy(result.ip4.values,
-                P_ADDRESS_IP4_SIZE, &ip4->sin_addr.s_addr);
+            rho_memory_copy(result.ip4.values,
+                RHO_ADDRESS_IP4_SIZE, &ip4->sin_addr.s_addr);
         } break;
 
         case AF_INET6: {
-            PWin32AddrIp6* ip6 = (PWin32AddrIp6*) self;
+            RWin32AddrIp6* ip6 = (RWin32AddrIp6*) self;
 
-            result.kind = PAddressIp_Ver6;
+            result.kind = RAddressIp_Ver6;
 
-            pMemoryCopy(result.ip6.values,
-                P_ADDRESS_IP6_SIZE, &ip6->sin6_addr.s6_addr);
+            rho_memory_copy(result.ip6.values,
+                RHO_ADDRESS_IP6_SIZE, &ip6->sin6_addr.s6_addr);
         } break;
 
         default: return result;
@@ -177,19 +176,27 @@ PAddressIp pWin32AddrStorageGetAddress(PWin32AddrStorage* self)
     return result;
 }
 
-U16 pWin32AddrStorageGetPort(PWin32AddrStorage* self)
+RUint16 rho_win32_addr_storage_port(RWin32AddrStorage* self)
 {
     switch (self->ss_family) {
         case AF_INET:
-            return ntohs(((PWin32AddrIp4*) self)->sin_port);
+            return ntohs(((RWin32AddrIp4*) self)->sin_port);
 
         case AF_INET6:
-            return ntohs(((PWin32AddrIp6*) self)->sin6_port);
+            return ntohs(((RWin32AddrIp6*) self)->sin6_port);
 
         default: break;
     }
 
     return 0;
+}
+
+RHostIp rho_win32_addr_storage_host(RWin32AddrStorage* self)
+{
+    RAddressIp address = rho_win32_addr_storage_address(self);
+    RUint16    port    = rho_win32_addr_storage_port(self);
+
+    return rho_host_ip_make(address, port);
 }
 
 #endif
