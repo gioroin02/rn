@@ -2,10 +2,10 @@
 
 set "compiler=zig cc"
 
-set "impl=%impl% src\base\export.c"
-set "impl=%impl% src\base\memory\export.c"
-set "impl=%impl% src\system\memory\export.c"
-set "impl=%impl% src\system\network\export.c"
+set "impl=%impl% src\rho-base\export.c"
+set "impl=%impl% src\rho-base\memory\export.c"
+set "impl=%impl% src\rho-system\memory\export.c"
+set "impl=%impl% src\rho-system\network\export.c"
 
 set "test_address_ip=test\system\network\address-ip.c"
 set "test_server_udp=test\system\network\server-udp.c"

@@ -1,5 +1,5 @@
-#include "../../src/base/string/export.h"
-#include "../../src/structure/export.h"
+#include "../../src/rho-base/string/export.h"
+#include "../../src/rho-structure/export.h"
 
 #include <stdio.h>
 

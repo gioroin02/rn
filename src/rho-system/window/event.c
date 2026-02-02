@@ -26,6 +26,18 @@ RWindowEvent rho_window_event_quit(void* window)
     return result;
 }
 
+RWindowEvent rho_window_event_paint(void* window)
+{
+    RWindowEvent result = {0};
+
+    rho_memory_set(&result, sizeof result, 0xAB);
+
+    result.kind         = RWindowEvent_Paint;
+    result.paint.window = window;
+
+    return result;
+}
+
 RWindowEvent rho_window_event_keyboard_key(void* window, RWindowKeyboardKey key, RBool32 pressed, RInt scan)
 {
     RWindowEvent result = {0};

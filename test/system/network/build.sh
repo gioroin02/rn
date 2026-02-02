@@ -1,9 +1,9 @@
 compiler="gcc --debug"
 
-impl="$impl src/base/export.c"
-impl="$impl src/base/memory/export.c"
-impl="$impl src/system/memory/export.c"
-impl="$impl src/system/network/export.c"
+impl="$impl src/rho-base/export.c"
+impl="$impl src/rho-base/memory/export.c"
+impl="$impl src/rho-system/memory/export.c"
+impl="$impl src/rho-system/network/export.c"
 
 test_address_ip="test/system/network/address-ip.c"
 test_server_udp="test/system/network/server-udp.c"

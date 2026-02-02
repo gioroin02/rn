@@ -1,8 +1,8 @@
-#include "../../../../src/base/string/export.h"
-#include "../../../../src/system/memory/export.h"
-#include "../../../../src/system/asyncio/export.h"
-#include "../../../../src/system/storage/export.h"
-#include "../../../../src/system/storage/async/export.h"
+#include "../../../../src/rho-base/string/export.h"
+#include "../../../../src/rho-system/memory/export.h"
+#include "../../../../src/rho-system/asyncio/export.h"
+#include "../../../../src/rho-system/storage/export.h"
+#include "../../../../src/rho-system/storage/async/export.h"
 
 #include <stdio.h>
 

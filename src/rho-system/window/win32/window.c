@@ -3,7 +3,7 @@
 
 #include "window.h"
 
-#define RHO_WIN32_WINDOW_TRIGGER_PAINT ((RInt) RWindowTrigger_Paint)
+#define RHO_WIN32_WINDOW_TIMER_PAINT ((RInt) 1)
 
 static RString16 rho_win32_utf8_to_utf16(RString8 string, RChar16* buffer, RInt size)
 {
@@ -25,6 +25,12 @@ static RECT rho_win32_adjust_window_rect(RInt left, RInt top, RInt right, RInt b
     return result;
 }
 
+static void rho_win32_window_callback(RWin32Window* self, RWindowEvent event)
+{
+    if (self->trig_proc != NULL)
+        ((RWindowCallback*) self->trig_proc)(self->trig_ctxt, event);
+}
+
 RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 {
     RWin32Window* self = (RWin32Window*) GetWindowLongPtr(handle, GWLP_USERDATA);
@@ -34,33 +40,30 @@ RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lpa
     RInt result = 0;
 
     switch (kind) {
-        case WM_ACTIVATE: {
-            RInt timer = RHO_WIN32_WINDOW_TRIGGER_PAINT;
+        case WM_ENTERSIZEMOVE:
+            SetTimer(self->handle, RHO_WIN32_WINDOW_TIMER_PAINT, 20, NULL);
+        break;
 
-            if (wparam != 0)
-                SetTimer(handle, timer, 5, NULL);
-            else
-                KillTimer(handle, timer);
-        } break;
+        case WM_EXITSIZEMOVE:
+            KillTimer(self->handle, RHO_WIN32_WINDOW_TIMER_PAINT);
+        break;
 
         case WM_CLOSE: PostQuitMessage(0); break;
 
         case WM_TIMER: {
-            if (wparam == RHO_WIN32_WINDOW_TRIGGER_PAINT)
+            if (wparam == RHO_WIN32_WINDOW_TIMER_PAINT)
                 InvalidateRect(self->handle, NULL, 1);
         } break;
 
         case WM_ERASEBKGND: result = 1; break;
 
         case WM_PAINT: {
-            PAINTSTRUCT paint = {0};
+            RWindowEvent event = rho_window_event_paint(self->handle);
+            PAINTSTRUCT  paint = {0};
 
             HDC device = BeginPaint(self->handle, &paint);
 
-            if (self->trig_proc != NULL) {
-                ((RWindowCallback*) self->trig_proc)(
-                    self->trig_ctxt, RWindowTrigger_Paint);
-            }
+            rho_win32_window_callback(self, event);
 
             EndPaint(self->handle, &paint);
         } break;
@@ -153,36 +156,41 @@ void rho_win32_window_destroy(RWin32Window* self)
     rho_win32_window_stop();
 }
 
-RBool32 rho_win32_window_poll_event(RWin32Window* self, RWindowEvent* event)
+RBool32 rho_win32_window_poll_events(RWin32Window* self)
 {
     MSG message = {0};
+
+    RWindowEvent temp = rho_window_event_none();
 
     while (PeekMessageW(&message, 0, 0, 0, PM_REMOVE) > 0) {
         TranslateMessage(&message);
         DispatchMessageW(&message);
 
         switch (message.message) {
-            case WM_QUIT: *event = rho_window_event_quit((RWindow*) self); return 1;
+            case WM_QUIT: temp = rho_window_event_quit((RWindow*) self); break;
 
             case WM_KEYDOWN: {
                 RWindowKeyboardKey key  = rho_win32_window_convert_key(message.wParam);
                 RInt               scan = (message.lParam >> 16) & 0xff;
 
-                *event = rho_window_event_keyboard_key((RWindow*) self, key, 1, scan);
-            } return 1;
+                temp = rho_window_event_keyboard_key((RWindow*) self, key, 1, scan);
+            } break;
 
             case WM_KEYUP: {
                 RWindowKeyboardKey key  = rho_win32_window_convert_key(message.wParam);
                 RInt               scan = (message.lParam >> 16) & 0xff;
 
-                *event = rho_window_event_keyboard_key((RWindow*) self, key, 0, scan);
-            } return 1;
+                temp = rho_window_event_keyboard_key((RWindow*) self, key, 0, scan);
+            } break;
 
             default: break;
         }
+
+        if (temp.kind != RWindowEvent_None)
+            rho_win32_window_callback(self, temp);
     }
 
-    return 0;
+    return 1;
 }
 
 void rho_win32_window_swap_buffers(RWin32Window* self)

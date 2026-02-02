@@ -3,6 +3,6 @@
 
 #include "../export.h"
 
-#include "../../../graphics/opengl/export.h"
+#include "../../../rho-graphics/opengl/export.h"
 
 #endif

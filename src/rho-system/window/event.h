@@ -87,6 +87,7 @@ typedef enum RWindowEventKind
 {
     RWindowEvent_None,
     RWindowEvent_Quit,
+    RWindowEvent_Paint,
     RWindowEvent_KeyboardKey,
 }
 RWindowEventKind;
@@ -96,6 +97,12 @@ typedef struct RWindowEventQuit
     void* window;
 }
 RWindowEventQuit;
+
+typedef struct RWindowEventPaint
+{
+    void* window;
+}
+RWindowEventPaint;
 
 typedef struct RWindowEventKeyboardKey
 {
@@ -115,6 +122,7 @@ typedef struct RWindowEvent
     union
     {
         RWindowEventQuit        quit;
+        RWindowEventPaint       paint;
         RWindowEventKeyboardKey keyboard_key;
     };
 }
@@ -123,6 +131,8 @@ RWindowEvent;
 RWindowEvent rho_window_event_none();
 
 RWindowEvent rho_window_event_quit(void* window);
+
+RWindowEvent rho_window_event_paint(void* window);
 
 RWindowEvent rho_window_event_keyboard_key(void* window, RWindowKeyboardKey key, RBool32 pressed, RInt scan);
 

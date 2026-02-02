@@ -12,7 +12,7 @@
     #define __rho_window_reserve__      rho_win32_window_reserve
     #define __rho_window_create__       rho_win32_window_create
     #define __rho_window_destroy__      rho_win32_window_destroy
-    #define __rho_window_poll_event__   rho_win32_window_poll_event
+    #define __rho_window_poll_events__  rho_win32_window_poll_events
     #define __rho_window_swap_buffers__ rho_win32_window_swap_buffers
     #define __rho_window_set_attribs__  rho_win32_window_set_attribs
     #define __rho_window_get_attribs__  rho_win32_window_get_attribs
@@ -59,9 +59,9 @@ void rho_window_destroy(RWindow* self)
     return __rho_window_destroy__((__RWindow__*) self);
 }
 
-RBool32 rho_window_poll_event(RWindow* self, RWindowEvent* event)
+RBool32 rho_window_poll_events(RWindow* self)
 {
-    return __rho_window_poll_event__((__RWindow__*) self, event);
+    return __rho_window_poll_events__((__RWindow__*) self);
 }
 
 void rho_window_swap_buffers(RWindow* self)

@@ -11,13 +11,6 @@ typedef enum RWindowVisibility
 }
 RWindowVisibility;
 
-typedef enum RWindowTrigger
-{
-    RWindowTrigger_None,
-    RWindowTrigger_Paint,
-}
-RWindowTrigger;
-
 typedef struct RWindowAttribs
 {
     RWindowVisibility visibility;
@@ -37,7 +30,7 @@ RWindowAttribs;
 
 typedef struct RWindow { RUint8 __private__; } RWindow;
 
-typedef void (RWindowCallback) (void*, RWindowTrigger);
+typedef void (RWindowCallback) (void*, RWindowEvent);
 
 RWindowAttribs rho_window_attribs_make();
 
@@ -47,7 +40,7 @@ RBool32 rho_window_create(RWindow* self, RString8 title, RInt width, RInt height
 
 void rho_window_destroy(RWindow* self);
 
-RBool32 rho_window_poll_event(RWindow* self, RWindowEvent* event);
+RBool32 rho_window_poll_events(RWindow* self);
 
 void rho_window_swap_buffers(RWindow* self);
 

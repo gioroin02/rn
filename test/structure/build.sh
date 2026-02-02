@@ -1,9 +1,9 @@
 compiler="gcc --debug"
 
-impl="$impl src/base/export.c"
-impl="$impl src/base/memory/export.c"
-impl="$impl src/base/string/export.c"
-impl="$impl src/structure/export.c"
+impl="$impl src/rho-base/export.c"
+impl="$impl src/rho-base/memory/export.c"
+impl="$impl src/rho-base/string/export.c"
+impl="$impl src/rho-structure/export.c"
 
 test_array="test/structure/array.c"
 test_map="test/structure/map.c"

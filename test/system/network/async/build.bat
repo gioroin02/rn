@@ -2,12 +2,12 @@
 
 set "compiler=zig cc"
 
-set "impl=%impl% src\base\export.c"
-set "impl=%impl% src\base\memory\export.c"
-set "impl=%impl% src\system\memory\export.c"
-set "impl=%impl% src\system\asyncio\export.c"
-set "impl=%impl% src\system\network\export.c"
-set "impl=%impl% src\system\network\async\export.c"
+set "impl=%impl% src\rho-base\export.c"
+set "impl=%impl% src\rho-base\memory\export.c"
+set "impl=%impl% src\rho-system\memory\export.c"
+set "impl=%impl% src\rho-system\asyncio\export.c"
+set "impl=%impl% src\rho-system\network\export.c"
+set "impl=%impl% src\rho-system\network\async\export.c"
 
 set "test_server_tcp=test\system\network\async\server-tcp.c"
 set "test_client_tcp=test\system\network\async\client-tcp.c"

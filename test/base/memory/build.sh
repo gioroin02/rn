@@ -1,7 +1,7 @@
 compiler="gcc --debug"
 
-impl="$impl src/base/export.c"
-impl="$impl src/base/memory/export.c"
+impl="$impl src/rho-base/export.c"
+impl="$impl src/rho-base/memory/export.c"
 
 test_order="test/base/memory/order.c"
 test_arena="test/base/memory/arena.c"

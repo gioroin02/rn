@@ -22,7 +22,7 @@ RBool32 rho_win32_window_create(RWin32Window* self, RString8 title, RInt width, 
 
 void rho_win32_window_destroy(RWin32Window* self);
 
-RBool32 rho_win32_window_poll_event(RWin32Window* self, RWindowEvent* event);
+RBool32 rho_win32_window_poll_events(RWin32Window* self);
 
 void rho_win32_window_swap_buffers(RWin32Window* self);
 

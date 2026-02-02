@@ -1,8 +1,8 @@
-#include "../../../src/base/string/export.h"
-#include "../../../src/system/memory/export.h"
-#include "../../../src/system/window/export.h"
-#include "../../../src/system/window/opengl/export.h"
-#include "../../../src/system/time/export.h"
+#include "../../../src/rho-base/string/export.h"
+#include "../../../src/rho-system/memory/export.h"
+#include "../../../src/rho-system/window/export.h"
+#include "../../../src/rho-system/window/opengl/export.h"
+#include "../../../src/rho-system/time/export.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -21,14 +21,11 @@ Context;
 
 void context_update(Context* self)
 {
-    if (rho_window_keyboard_is_stopping(&self->keyboard, RWindowKeyboard_Escape) != 0)
-        self->active = 0;
-
     rho_clock_tick(self->clock);
 
     RFloat32 elapsed = rho_clock_seconds(self->clock);
 
-    printf("\x1b\x63%.3f Hz\n", 1.0 / elapsed);
+    printf("\x1b\x63%8.3f (Hz)\n", 1.0 / elapsed);
 
     self->time += elapsed;
 }
@@ -40,14 +37,22 @@ void context_paint(Context* self)
     rho_window_swap_buffers(self->window);
 }
 
-void context_window_callback(Context* self, RWindowTrigger trigger)
+void context_window_callback(Context* self, RWindowEvent event)
 {
-    context_update(self);
+    switch (event.kind) {
+        case RWindowEvent_Quit: self->active = 0; break;
 
-    switch (trigger) {
-        case RWindowTrigger_Paint:
+        case RWindowEvent_KeyboardKey: {
+            rho_window_keyboard_on_event(&self->keyboard, event.keyboard_key);
+
+            if (rho_window_keyboard_is_stopping(&self->keyboard, RWindowKeyboard_Escape) != 0)
+                self->active = 0;
+        } break;
+
+        case RWindowEvent_Paint: {
+            context_update(self);
             context_paint(self);
-        break;
+        } break;
 
         default: break;
     }
@@ -89,23 +94,10 @@ int main(int argc, char** argv)
     rho_window_set_attribs(context.window, attribs);
 
     while (context.active != 0) {
-        RWindowEvent event = {0};
+        rho_window_poll_events(context.window);
 
-        rho_memory_set(&event, sizeof event, 0xAB);
-
-        while (rho_window_poll_event(context.window, &event) != 0) {
-            switch (event.kind) {
-                case RWindowEvent_Quit: context.active = 0; break;
-
-                case RWindowEvent_KeyboardKey:
-                    rho_window_keyboard_on_event(&context.keyboard, event.keyboard_key);
-                break;
-
-                default: break;
-            }
-
-            rho_memory_set(&event, sizeof event, 0xAB);
-        }
+        context_update(&context);
+        context_paint(&context);
     }
 
     rho_window_destroy(context.window);
