@@ -96,26 +96,34 @@ RBool32 __rho_array_copy__(RArrayTag* self, void* values, RInt index, void* valu
 
 RBool32 __rho_array_slot_open__(RArrayTag* self, void* values, RInt index)
 {
-    RInt start = self->array_stride * index;
-    RInt stop  = self->array_stride * self->array_size;
-
     if (index < 0 || index > self->array_count) return 0;
 
-    rho_memory_shift_forw(&((RUint8*) values)[start],
-        stop, self->array_stride, 0xAB);
+    RInt start = self->array_stride * index;
+    RInt stop  = self->array_stride * self->array_count;
+    RInt about = self->array_stride;
+
+    for (RInt i = stop; i > start; i -= 1)
+        ((RUint8*) values)[i - 1 + about] = ((RUint8*) values)[i - 1];
+
+    for (RInt i = start; i < start + about; i += 1)
+        ((RUint8*) values)[i] = 0xAB;
 
     return 1;
 }
 
 RBool32 __rho_array_slot_close__(RArrayTag* self, void* values, RInt index)
 {
-    RInt start = self->array_stride * index;
-    RInt stop  = self->array_stride * self->array_size;
-
     if (index < 0 || index >= self->array_count) return 0;
 
-    rho_memory_shift_back(&((RUint8*) values)[start],
-        stop, self->array_stride, 0xAB);
+    RInt start = self->array_stride * index;
+    RInt stop  = self->array_stride * (self->array_count - 1);
+    RInt about = self->array_stride;
+
+    for (RInt i = start; i < stop; i += 1)
+        ((RUint8*) values)[i] = ((RUint8*) values)[i + about];
+
+    for (RInt i = stop; i < start + about; i += 1)
+        ((RUint8*) values)[i] = 0xAB;
 
     return 1;
 }

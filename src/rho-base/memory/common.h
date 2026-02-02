@@ -42,10 +42,6 @@ void* rho_memory_copy_be(void* pntr, RInt count, RInt size, void* value);
 
 void* rho_memory_copy_le(void* pntr, RInt count, RInt size, void* value);
 
-void* rho_memory_shift_forw(void* pntr, RInt size, RInt about, RUint8 value);
-
-void* rho_memory_shift_back(void* pntr, RInt size, RInt about, RUint8 value);
-
 void* rho_memory_flip(void* pntr, RInt size);
 
 void* rho_memory_align_pntr(void* pntr, RUint align);

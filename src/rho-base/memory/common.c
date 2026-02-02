@@ -98,34 +98,6 @@ void* rho_memory_copy_le(void* pntr, RInt count, RInt size, void* value)
     return pntr;
 }
 
-void* rho_memory_shift_forw(void* pntr, RInt size, RInt about, RUint8 value)
-{
-    if (pntr == NULL || size < 0 || about < 0 || about >= size)
-        return pntr;
-
-    for (RInt i = size; i > about; i -= 1)
-        ((RUint8*) pntr)[i - 1] = ((RUint8*) pntr)[i - about - 1];
-
-    for (RInt i = about; i > 0; i -= 1)
-        ((RUint8*) pntr)[i - 1] = value;
-
-    return pntr;
-}
-
-void* rho_memory_shift_back(void* pntr, RInt size, RInt about, RUint8 value)
-{
-    if (pntr == NULL || size < 0 || about < 0 || about >= size)
-        return pntr;
-
-    for (RInt i = 0; i < size - about; i += 1)
-        ((RUint8*) pntr)[i] = ((RUint8*) pntr)[i + about];
-
-    for (RInt i = size - about; i < size; i += 1)
-        ((RUint8*) pntr)[i] = value;
-
-    return pntr;
-}
-
 void* rho_memory_flip(void* pntr, RInt size)
 {
     if (pntr == NULL || size <= 0) return NULL;
