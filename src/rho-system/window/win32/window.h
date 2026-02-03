@@ -11,8 +11,8 @@ typedef struct RWin32Window
 
     RWindowAttribs attribs;
 
-    void* trig_ctxt;
-    void* trig_proc;
+    void* ctxt;
+    void* proc;
 }
 RWin32Window;
 

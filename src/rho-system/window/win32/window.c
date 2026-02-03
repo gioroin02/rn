@@ -13,22 +13,30 @@ static RString16 rho_win32_utf8_to_utf16(RString8 string, RChar16* buffer, RInt 
     return rho_string16_make(buffer, size);
 }
 
-static RECT rho_win32_adjust_window_rect(RInt left, RInt top, RInt right, RInt bottom)
+static POINT rho_win32_window_rect(RInt width, RInt height)
 {
-    RECT result;
+    POINT result = {0};
+    RECT  rect   = {0};
 
-    result.left   = left;
-    result.top    = top + 40;
-    result.right  = right;
-    result.bottom = bottom;
+    rho_memory_set(&rect, sizeof rect, 0xAB);
+
+    rect.left   = 0;
+    rect.top    = 0;
+    rect.right  = width;
+    rect.bottom = height;
+
+    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0);
+
+    result.x = rect.right - rect.left;
+    result.y = rect.bottom - rect.top;
 
     return result;
 }
 
 static void rho_win32_window_callback(RWin32Window* self, RWindowEvent event)
 {
-    if (self->trig_proc != NULL)
-        ((RWindowCallback*) self->trig_proc)(self->trig_ctxt, event);
+    if (self->proc != NULL)
+        ((RWindowCallback*) self->proc)(self->ctxt, event);
 }
 
 RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
@@ -71,10 +79,16 @@ RInt rho_win32_winproc_regular(HWND handle, UINT kind, WPARAM wparam, LPARAM lpa
         case WM_GETMINMAXINFO: {
             MINMAXINFO* info = (MINMAXINFO*) lparam;
 
-            info->ptMinTrackSize.x = self->attribs.width_min;
-            info->ptMaxTrackSize.x = self->attribs.width_max;
-            info->ptMinTrackSize.y = self->attribs.height_min;
-            info->ptMaxTrackSize.y = self->attribs.height_max;
+            POINT min = rho_win32_window_rect(
+                self->attribs.width_min, self->attribs.height_min);
+
+            POINT max = rho_win32_window_rect(
+                self->attribs.width_max, self->attribs.height_max);
+
+            info->ptMinTrackSize.x = min.x;
+            info->ptMaxTrackSize.x = max.x;
+            info->ptMinTrackSize.y = min.y;
+            info->ptMaxTrackSize.y = max.y;
         } break;
 
         default: result = -1;
@@ -96,37 +110,32 @@ RBool32 rho_win32_window_create(RWin32Window* self, RString8 title, RInt width, 
 
     rho_memory_set(self, sizeof *self, 0xAB);
 
-    self->handle    = NULL;
-    self->device    = NULL;
-    self->opengl    = NULL;
-    self->trig_ctxt = NULL;
-    self->trig_proc = NULL;
-    self->attribs   = rho_window_attribs_make();
+    self->handle  = NULL;
+    self->device  = NULL;
+    self->opengl  = NULL;
+    self->ctxt    = NULL;
+    self->proc    = NULL;
+    self->attribs = rho_window_attribs_make();
 
     if (width <= 0 || height <= 0 || width > RHO_INT_MAX / height) return 0;
 
-    RECT      rect    = rho_win32_adjust_window_rect(0, 0, width, height);
     RString16 title16 = rho_win32_utf8_to_utf16(title, buffer, sizeof buffer);
+    RInt      style   = WS_OVERLAPPEDWINDOW;
 
     if (title16.size <= 0 || rho_win32_window_start() == 0) return 0;
 
-    RInt style = WS_OVERLAPPEDWINDOW;
-    RInt x     = 100;
-    RInt y     = 100;
-
-    width  = rect.right - rect.left;
-    height = rect.bottom - rect.top;
+    POINT area = rho_win32_window_rect(width, height);
 
     HWND handle = CreateWindowW(L"RWindowRegular", (RUint16*) title16.values,
-        style, x, y, width, height, NULL, NULL, NULL, NULL);
+        style, 100, 100, area.x, area.y, NULL, NULL, NULL, NULL);
 
     if (handle != NULL) {
         self->handle = handle;
         self->device = GetDC(handle);
 
         self->attribs.visibility = RWindowVisibility_None;
-        self->attribs.coord_x    = x;
-        self->attribs.coord_y    = y;
+        self->attribs.coord_x    = 100;
+        self->attribs.coord_y    = 100;
         self->attribs.width      = width;
         self->attribs.width_max  = 1920;
         self->attribs.width_min  = 400;
@@ -200,22 +209,17 @@ void rho_win32_window_swap_buffers(RWin32Window* self)
 
 RBool32 rho_win32_window_set_attribs(RWin32Window* self, RWindowAttribs attribs)
 {
-    WINDOWPLACEMENT placement = {0};
+    POINT area = rho_win32_window_rect(attribs.width, attribs.height);
 
-    placement.length                  = sizeof placement;
-    placement.rcNormalPosition.left   = attribs.coord_x;
-    placement.rcNormalPosition.top    = attribs.coord_y;
-    placement.rcNormalPosition.right  = attribs.coord_x + attribs.width;
-    placement.rcNormalPosition.bottom = attribs.coord_y + attribs.height;
+    SetWindowPos(self->handle, NULL, 0, 0, area.x, area.y,
+        SWP_NOZORDER | SWP_NOOWNERZORDER);
 
     switch (attribs.visibility) {
-        case RWindowVisibility_Hide: placement.showCmd = SW_HIDE; break;
-        case RWindowVisibility_Show: placement.showCmd = SW_SHOW; break;
+        case RWindowVisibility_Hide: ShowWindow(self->handle, SW_HIDE); break;
+        case RWindowVisibility_Show: ShowWindow(self->handle, SW_SHOW); break;
 
         default: break;
     }
-
-    SetWindowPlacement(self->handle, &placement);
 
     self->attribs = attribs;
 
@@ -224,20 +228,22 @@ RBool32 rho_win32_window_set_attribs(RWin32Window* self, RWindowAttribs attribs)
 
 RWindowAttribs rho_win32_window_get_attribs(RWin32Window* self)
 {
-    WINDOWPLACEMENT placement = {0};
-    RECT            rect      = {0};
+    RECT rect = {0};
 
-    GetWindowPlacement(self->handle, &placement);
-    GetWindowRect(self->handle, &rect);
+    GetClientRect(self->handle, &rect);
 
     self->attribs.coord_x = rect.left;
     self->attribs.coord_y = rect.top;
     self->attribs.width   = rect.right - rect.left;
     self->attribs.height  = rect.bottom - rect.top;
 
-    switch (placement.showCmd) {
-        case SW_HIDE: self->attribs.visibility = RWindowVisibility_Hide; break;
-        case SW_SHOW: self->attribs.visibility = RWindowVisibility_Show; break;
+    RUint32 visibility = 0;
+
+    visibility = IsWindowVisible(self->handle) != 0 ? 1 << 0 : 0;
+
+    switch (visibility) {
+        case 0:      self->attribs.visibility = RWindowVisibility_Show; break;
+        case 1 << 0: self->attribs.visibility = RWindowVisibility_Hide; break;
 
         default: break;
     }
@@ -247,15 +253,15 @@ RWindowAttribs rho_win32_window_get_attribs(RWin32Window* self)
 
 RBool32 rho_win32_window_set_callback(RWin32Window* self, void* ctxt, void* proc)
 {
-    self->trig_ctxt = ctxt;
-    self->trig_proc = proc;
+    self->ctxt = ctxt;
+    self->proc = proc;
 
     return 1;
 }
 
 void* rho_win32_window_get_callback(RWin32Window* self)
 {
-    return self->trig_proc;
+    return self->proc;
 }
 
 #endif
