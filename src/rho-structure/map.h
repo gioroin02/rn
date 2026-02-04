@@ -35,6 +35,9 @@ typedef RBool32 (RMapProcIsEqual) (void*, void*);
     __RMapTag__(ktype); ktype* keys; vtype* values; \
 }
 
+#define rho_array_pntr_keys(self)   ((self)->keys)
+#define rho_array_pntr_values(self) ((self)->values)
+
 #define rho_map_size(self)     __rho_map_size__(((RMapTag*) self))
 #define rho_map_count(self)    __rho_map_count__(((RMapTag*) self))
 #define rho_map_is_empty(self) __rho_map_is_empty__(((RMapTag*) self))

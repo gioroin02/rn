@@ -98,6 +98,8 @@ RBool32 __rho_array_slot_open__(RArrayTag* self, void* values, RInt index)
 {
     if (index < 0 || index > self->array_count) return 0;
 
+    if (self->array_count >= self->array_size) return 0;
+
     RInt start = self->array_stride * index;
     RInt stop  = self->array_stride * self->array_count;
     RInt about = self->array_stride;

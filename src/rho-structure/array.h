@@ -21,6 +21,8 @@ RArrayTag;
 
 #define RArray(type) struct { __RArrayTag__(); type* values; }
 
+#define rho_array_pntr(self) ((self)->values)
+
 #define rho_array_size(self)     __rho_array_size__(((RArrayTag*) self))
 #define rho_array_count(self)    __rho_array_count__(((RArrayTag*) self))
 #define rho_array_front(self)    __rho_array_front__(((RArrayTag*) self))
